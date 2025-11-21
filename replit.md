@@ -255,25 +255,29 @@ window.addEventListener('load', function() {
     if (window.circleUser && iframe) {
       clearInterval(checkUser);
       
-      // Détection automatique du thème
       const isDark = document.documentElement.classList.contains('dark') || 
                      document.body.classList.contains('dark-mode');
+      
+      // IMPORTANT: Circle.so utilise camelCase (publicUid, isAdmin, etc.)
+      // isAdmin est une STRING "true"/"false", il faut la convertir en boolean
+      const isAdmin = window.circleUser.isAdmin === 'true' || window.circleUser.isAdmin === true;
       
       const userData = {
         type: 'CIRCLE_USER_AUTH',
         user: {
-          publicUid: window.circleUser.public_uid || window.circleUser.id || window.circleUser.uid || window.circleUser.user_id || 'unknown',
+          publicUid: window.circleUser.publicUid || window.circleUser.id || 'unknown',
           email: window.circleUser.email,
           name: window.circleUser.name,
-          firstName: window.circleUser.first_name,
-          lastName: window.circleUser.last_name,
-          isAdmin: window.circleUser.is_admin || false,
+          firstName: window.circleUser.firstName,
+          lastName: window.circleUser.lastName,
+          isAdmin: isAdmin,
           timestamp: Date.now()
         },
         theme: isDark ? 'dark' : 'light'
       };
       
       console.log('📤 Sending to iframe:', userData);
+      console.log('🔧 isAdmin converted:', isAdmin);
       
       iframe.contentWindow.postMessage(
         userData, 
@@ -409,7 +413,10 @@ CREATE TABLE login_attempts (
 - ✅ Correction de sécurité : admin status sync
 - ✅ **Base de données persistante opérationnelle**
 - ✅ **Navigation bidirectionnelle dashboard ↔ user-home pour admins**
-- ✅ **Script Circle.so corrigé avec fallback publicUid multi-source**
+- ✅ **Script Circle.so corrigé avec camelCase (publicUid, isAdmin, firstName, lastName)**
+- ✅ **Conversion isAdmin de STRING vers boolean dans le script Circle.so**
+- ✅ **Backend utilise DEV_MODE au lieu de VITE_DEV_MODE**
+- ✅ **Authentification admin fonctionnelle en production avec Circle.so**
 
 ### 🔜 Améliorations Futures
 
@@ -429,4 +436,7 @@ CREATE TABLE login_attempts (
 - **Important** : Le statut admin est synchronisé depuis Circle.so à chaque connexion pour éviter les privilèges obsolètes
 - Les non-admins sont automatiquement redirigés vers `/user-home` s'ils tentent d'accéder au `/dashboard`
 - **Navigation** : Les admins ont accès aux deux pages (dashboard + user-home) avec des boutons de navigation. Les non-admins ne voient que la page utilisateur.
-- **Script Circle.so** : Le publicUid utilise un fallback multi-source (`public_uid || id || uid || user_id || 'unknown'`) pour supporter différentes versions de Circle.so
+- **Script Circle.so** : 
+  - Utilise **camelCase** : `publicUid`, `firstName`, `lastName`, `isAdmin` (pas snake_case)
+  - **IMPORTANT** : `isAdmin` est une STRING `"true"/"false"` retournée par Circle.so, le script la convertit en boolean
+  - Backend utilise `DEV_MODE` (pas `VITE_DEV_MODE` qui est frontend-only)
