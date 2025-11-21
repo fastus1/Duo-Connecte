@@ -42,6 +42,7 @@ export interface CircleUserData {
   name: string;
   firstName?: string;
   lastName?: string;
+  isAdmin?: boolean;
   timestamp: number;
 }
 

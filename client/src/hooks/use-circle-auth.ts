@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { circleUserDataSchema, type CircleUserData } from '@shared/schema';
+import { setThemeFromCircle } from '@/components/theme-provider';
 
 interface CircleAuthState {
   isListening: boolean;
@@ -53,6 +54,13 @@ export function useCircleAuth() {
         
         if (data.type === 'CIRCLE_USER_AUTH') {
           console.log('✅ Circle.so user data received');
+          
+          // Apply theme from Circle.so if provided
+          if (data.theme) {
+            console.log('🎨 Applying Circle.so theme:', data.theme);
+            setThemeFromCircle(data.theme);
+          }
+          
           setState({
             isListening: true,
             userData: data.user,

@@ -20,7 +20,7 @@ type LoginPinFormData = z.infer<typeof loginPinSchema>;
 
 interface PinLoginFormProps {
   userEmail: string;
-  onSuccess: (sessionToken: string, userId: string) => void;
+  onSuccess: (sessionToken: string, userId: string, isAdmin?: boolean) => void;
   onError: (message: string) => void;
 }
 
@@ -46,7 +46,7 @@ export function PinLoginForm({ userEmail, onSuccess, onError }: PinLoginFormProp
     onSuccess: (result) => {
       setRateLimitError(false);
       if (result.success) {
-        onSuccess(result.session_token, result.user_id);
+        onSuccess(result.session_token, result.user_id, result.is_admin);
       }
     },
     onError: (error: any) => {

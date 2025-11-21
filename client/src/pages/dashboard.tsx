@@ -43,6 +43,12 @@ export default function Dashboard() {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (userData && !userData.isAdmin) {
+      setLocation('/user-home');
+    }
+  }, [userData, setLocation]);
+
   const handleLogout = () => {
     localStorage.removeItem('session_token');
     localStorage.removeItem('user_id');

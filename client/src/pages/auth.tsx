@@ -21,6 +21,7 @@ export default function AuthPage() {
     public_uid?: string;
     email?: string;
     name?: string;
+    is_admin?: boolean;
     validationToken?: string;
   } | null>(null);
 
@@ -75,6 +76,7 @@ export default function AuthPage() {
         public_uid: result.user_id,
         email: userData.email,
         name: userData.name,
+        is_admin: result.is_admin || false,
         validationToken: result.validation_token, // Store validation token for secure account creation
       });
 
@@ -91,12 +93,17 @@ export default function AuthPage() {
     }
   };
 
-  const handleAuthSuccess = (sessionToken: string, userId: string) => {
+  const handleAuthSuccess = (sessionToken: string, userId: string, isAdmin?: boolean) => {
     localStorage.setItem('session_token', sessionToken);
     localStorage.setItem('user_id', userId);
     localStorage.setItem('session_timestamp', Date.now().toString());
     
-    setLocation('/dashboard');
+    // Route based on user role
+    if (isAdmin) {
+      setLocation('/dashboard');
+    } else {
+      setLocation('/user-home');
+    }
   };
 
   const handleError = (message: string) => {

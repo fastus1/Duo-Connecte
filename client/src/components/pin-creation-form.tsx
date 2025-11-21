@@ -28,7 +28,7 @@ interface PinCreationFormProps {
   userEmail: string;
   publicUid: string;
   validationToken: string;
-  onSuccess: (sessionToken: string, userId: string) => void;
+  onSuccess: (sessionToken: string, userId: string, isAdmin?: boolean) => void;
   onError: (message: string) => void;
 }
 
@@ -57,7 +57,7 @@ export function PinCreationForm({ userName, userEmail, publicUid, validationToke
     },
     onSuccess: (result) => {
       if (result.success) {
-        onSuccess(result.session_token, result.user_id);
+        onSuccess(result.session_token, result.user_id, result.is_admin);
       }
     },
     onError: (error: Error) => {

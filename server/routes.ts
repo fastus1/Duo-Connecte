@@ -20,6 +20,7 @@ interface ValidationCache {
   email: string;
   publicUid: string;
   name: string;
+  isAdmin: boolean;
   timestamp: number;
 }
 const validationCache = new Map<string, ValidationCache>();
@@ -54,6 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         publicUid: user.publicUid || 'dev123',
         email: user.email || 'dev@example.com',
         name: user.name || 'Dev User',
+        isAdmin: user.isAdmin || false,
         timestamp: Date.now(), // Fresh timestamp to pass anti-replay check
       } : user;
 
@@ -85,6 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email: userData.email,
           publicUid: userData.publicUid,
           name: userData.name || `User ${userData.publicUid}`,
+          isAdmin: userData.isAdmin || false,
           timestamp: Date.now(),
         });
 
@@ -94,6 +97,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           user_id: userData.publicUid,
           email: userData.email,
           name: userData.name,
+          is_admin: userData.isAdmin || false,
           validation_token: validationToken, // Short-lived token to prevent unauthorized account creation
         });
       }
@@ -105,10 +109,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // CRITICAL: Sync admin status from Circle.so on every login
+      await storage.updateUserRole(existingUser.id, userData.isAdmin || false);
+
       // Existing member - needs to enter PIN
       return res.json({
         status: 'existing_user',
         user_id: existingUser.id,
+        is_admin: userData.isAdmin || false,
         requires_pin: true,
       });
 
@@ -173,12 +181,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Hash the PIN
       const pinHash = await hashPin(pin);
 
-      // Create user
+      // Create user with isAdmin from validation cache
       const user = await storage.createUser({
         email,
         publicUid: public_uid,
         name,
         pinHash,
+        isAdmin: cachedData.isAdmin,
       });
 
       // Update last login
@@ -198,6 +207,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: true,
         session_token: sessionToken,
         user_id: user.id,
+        is_admin: user.isAdmin,
       });
 
     } catch (error) {
@@ -260,6 +270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         session_token: sessionToken,
         user_id: user.id,
         name: user.name,
+        is_admin: user.isAdmin,
       });
 
     } catch (error) {
@@ -284,6 +295,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: user.email,
         name: user.name,
         publicUid: user.publicUid,
+        isAdmin: user.isAdmin,
         lastLogin: user.lastLogin,
         createdAt: user.createdAt,
       });

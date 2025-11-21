@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   publicUid: text("public_uid").notNull().unique(),
   name: text("name").notNull(),
   pinHash: text("pin_hash").notNull(),
+  isAdmin: boolean("is_admin").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   lastLogin: timestamp("last_login"),
 });
@@ -26,6 +27,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   publicUid: true,
   name: true,
   pinHash: true,
+  isAdmin: true,
 });
 
 export const insertLoginAttemptSchema = createInsertSchema(loginAttempts).pick({
@@ -47,8 +49,10 @@ export const circleUserDataSchema = z.object({
     name: z.string().min(1),
     firstName: z.string().optional(),
     lastName: z.string().optional(),
+    isAdmin: z.boolean().optional().default(false),
     timestamp: z.number(),
   }),
+  theme: z.enum(['light', 'dark']).optional(),
 });
 
 export type CircleUserData = z.infer<typeof circleUserDataSchema>;

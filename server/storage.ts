@@ -8,6 +8,7 @@ export interface IStorage {
   getUserByPublicUid(publicUid: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserLastLogin(userId: string): Promise<void>;
+  updateUserRole(userId: string, isAdmin: boolean): Promise<void>;
   
   // Login attempt operations
   logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt>;
@@ -56,6 +57,14 @@ export class MemStorage implements IStorage {
     const user = this.users.get(userId);
     if (user) {
       user.lastLogin = new Date();
+      this.users.set(userId, user);
+    }
+  }
+
+  async updateUserRole(userId: string, isAdmin: boolean): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.isAdmin = isAdmin;
       this.users.set(userId, user);
     }
   }
