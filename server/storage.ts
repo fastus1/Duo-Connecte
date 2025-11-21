@@ -1,5 +1,8 @@
-import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt } from "@shared/schema";
+import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, users, loginAttempts } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { eq, and, gt } from "drizzle-orm";
+import ws from "ws";
 
 export interface IStorage {
   // User operations
@@ -89,4 +92,67 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DbStorage implements IStorage {
+  private db;
+
+  constructor(databaseUrl: string) {
+    this.db = drizzle({
+      connection: databaseUrl,
+      ws: ws,
+    });
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
+    return result[0];
+  }
+
+  async getUserByPublicUid(publicUid: string): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.publicUid, publicUid)).limit(1);
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await this.db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  async updateUserLastLogin(userId: string): Promise<void> {
+    await this.db.update(users)
+      .set({ lastLogin: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserRole(userId: string, isAdmin: boolean): Promise<void> {
+    await this.db.update(users)
+      .set({ isAdmin })
+      .where(eq(users.id, userId));
+  }
+
+  async logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt> {
+    const result = await this.db.insert(loginAttempts).values(attempt).returning();
+    return result[0];
+  }
+
+  async getRecentLoginAttempts(userId: string, windowMs: number): Promise<LoginAttempt[]> {
+    const cutoffTime = new Date(Date.now() - windowMs);
+    return await this.db.select().from(loginAttempts)
+      .where(
+        and(
+          eq(loginAttempts.userId, userId),
+          gt(loginAttempts.timestamp, cutoffTime)
+        )
+      );
+  }
+}
+
+// Use database storage if DATABASE_URL is set, otherwise use memory storage
+const databaseUrl = process.env.DATABASE_URL;
+export const storage = databaseUrl && databaseUrl !== 'memory' 
+  ? new DbStorage(databaseUrl)
+  : new MemStorage();
