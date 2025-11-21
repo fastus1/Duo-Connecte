@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { circleUserDataSchema, type CircleUserData } from '@shared/schema';
 import { setThemeFromCircle } from '@/components/theme-provider';
+import { useConfig } from '@/contexts/config-context';
 
 interface CircleAuthState {
   isListening: boolean;
@@ -9,6 +10,7 @@ interface CircleAuthState {
 }
 
 export function useCircleAuth() {
+  const { mode } = useConfig();
   const [state, setState] = useState<CircleAuthState>({
     isListening: false,
     userData: null,
@@ -16,7 +18,7 @@ export function useCircleAuth() {
   });
 
   useEffect(() => {
-    const devMode = import.meta.env.VITE_DEV_MODE === 'true';
+    const devMode = mode === 'dev';
     const circleOrigin = import.meta.env.VITE_CIRCLE_ORIGIN;
 
     if (devMode) {
@@ -83,7 +85,7 @@ export function useCircleAuth() {
       window.removeEventListener('message', handleMessage);
       setState(prev => ({ ...prev, isListening: false }));
     };
-  }, []);
+  }, [mode]);
 
   return state;
 }

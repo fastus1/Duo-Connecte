@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useCircleAuth } from '@/hooks/use-circle-auth';
+import { useConfig } from '@/contexts/config-context';
 import { PinCreationForm } from '@/components/pin-creation-form';
 import { PinLoginForm } from '@/components/pin-login-form';
-import { DevModeIndicator } from '@/components/dev-mode-indicator';
+import { ModeToggle } from '@/components/mode-toggle';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,7 @@ type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'error
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
+  const { mode } = useConfig();
   const { userData, error: circleError } = useCircleAuth();
   const [authStep, setAuthStep] = useState<AuthStep>('waiting');
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,7 @@ export default function AuthPage() {
     validationToken?: string;
   } | null>(null);
 
-  const devMode = import.meta.env.VITE_DEV_MODE === 'true';
+  const devMode = mode === 'dev';
 
   useEffect(() => {
     if (devMode) {
@@ -113,7 +115,7 @@ export default function AuthPage() {
   if (authStep === 'waiting' || isValidating) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <DevModeIndicator />
+        <ModeToggle />
         <Card className="w-full max-w-md shadow-lg" data-testid="card-loading">
           <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -129,7 +131,7 @@ export default function AuthPage() {
   if (authStep === 'error') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <DevModeIndicator />
+        <ModeToggle />
         <Card className="w-full max-w-md shadow-lg" data-testid="card-error">
           <CardHeader>
             <div className="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-destructive/10">
@@ -161,7 +163,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <DevModeIndicator />
+      <ModeToggle />
       
       {error && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-40">
