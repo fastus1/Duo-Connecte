@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, Home } from 'lucide-react';
+import { Loader2, Home, Shield, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DevModeIndicator } from '@/components/dev-mode-indicator';
@@ -87,13 +87,26 @@ export default function UserHome() {
             </div>
           </div>
           
-          <Button 
-            variant="outline" 
-            onClick={handleLogout}
-            data-testid="button-logout"
-          >
-            Déconnexion
-          </Button>
+          <div className="flex items-center gap-2">
+            {userData?.isAdmin && (
+              <Button 
+                variant="outline" 
+                onClick={() => setLocation('/dashboard')}
+                data-testid="button-dashboard"
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                Dashboard Admin
+              </Button>
+            )}
+            <Button 
+              variant="outline" 
+              onClick={handleLogout}
+              data-testid="button-logout"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Déconnexion
+            </Button>
+          </div>
         </div>
       </header>
 

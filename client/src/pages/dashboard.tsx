@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, CheckCircle, Loader2 } from 'lucide-react';
+import { LogOut, Shield, Clock, CheckCircle, Loader2, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -84,19 +84,29 @@ export default function Dashboard() {
               <Shield className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold">Application Sécurisée</h1>
-              <p className="text-sm text-muted-foreground">Authentification Circle.so</p>
+              <h1 className="text-xl font-semibold">Dashboard Admin</h1>
+              <p className="text-sm text-muted-foreground">Espace d'administration</p>
             </div>
           </div>
           
-          <Button 
-            variant="outline" 
-            onClick={handleLogout}
-            data-testid="button-logout"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Déconnexion
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setLocation('/user-home')}
+              data-testid="button-user-home"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Page d'accueil
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleLogout}
+              data-testid="button-logout"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Déconnexion
+            </Button>
+          </div>
         </div>
       </header>
 
