@@ -13,7 +13,7 @@ import {
 import { corsMiddleware } from "./app";
 import crypto from "crypto";
 
-const DEV_MODE = process.env.VITE_DEV_MODE === 'true';
+const DEV_MODE = process.env.DEV_MODE === 'true';
 
 // Temporary cache for validated Circle.so data (5 minutes expiry)
 interface ValidationCache {
