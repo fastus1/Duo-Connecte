@@ -262,7 +262,7 @@ window.addEventListener('load', function() {
       const userData = {
         type: 'CIRCLE_USER_AUTH',
         user: {
-          publicUid: window.circleUser.public_uid || window.circleUser.id,
+          publicUid: window.circleUser.public_uid || window.circleUser.id || window.circleUser.uid || window.circleUser.user_id || 'unknown',
           email: window.circleUser.email,
           name: window.circleUser.name,
           firstName: window.circleUser.first_name,
@@ -273,14 +273,18 @@ window.addEventListener('load', function() {
         theme: isDark ? 'dark' : 'light'
       };
       
+      console.log('📤 Sending to iframe:', userData);
+      
       iframe.contentWindow.postMessage(
         userData, 
-        'https://votre-app.replit.app'
+        'https://web-template-base-ok.replit.app'
       );
     }
   }, 100);
 });
 ```
+
+**Note importante** : Remplacez `https://web-template-base-ok.replit.app` par l'URL de votre déploiement Replit.
 
 ### Étape 3 : Intégrer l'iframe
 Sur votre page Circle.so, ajouter l'iframe :
@@ -404,6 +408,8 @@ CREATE TABLE login_attempts (
 - ✅ Review architect complet
 - ✅ Correction de sécurité : admin status sync
 - ✅ **Base de données persistante opérationnelle**
+- ✅ **Navigation bidirectionnelle dashboard ↔ user-home pour admins**
+- ✅ **Script Circle.so corrigé avec fallback publicUid multi-source**
 
 ### 🔜 Améliorations Futures
 
@@ -422,3 +428,5 @@ CREATE TABLE login_attempts (
 - Les couleurs s'adaptent automatiquement au thème clair/sombre
 - **Important** : Le statut admin est synchronisé depuis Circle.so à chaque connexion pour éviter les privilèges obsolètes
 - Les non-admins sont automatiquement redirigés vers `/user-home` s'ils tentent d'accéder au `/dashboard`
+- **Navigation** : Les admins ont accès aux deux pages (dashboard + user-home) avec des boutons de navigation. Les non-admins ne voient que la page utilisateur.
+- **Script Circle.so** : Le publicUid utilise un fallback multi-source (`public_uid || id || uid || user_id || 'unknown'`) pour supporter différentes versions de Circle.so
