@@ -59,17 +59,17 @@ export default function AuthPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/validate', {
+      const result = await fetch('/api/auth/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user: userData }),
+      }).then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Erreur de validation');
+        }
+        return data;
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Erreur de validation');
-      }
 
       setValidatedData({
         user_id: result.user_id,

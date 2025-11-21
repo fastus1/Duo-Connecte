@@ -79,9 +79,7 @@ export const pinRateLimiter = rateLimit({
   message: { error: 'Trop de tentatives. Veuillez réessayer dans 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req: Request) => {
-    return req.body.email || req.ip || 'unknown';
-  },
+  ipv6Subnet: 64, // IPv6 subnet masking for proper rate limiting
 });
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {

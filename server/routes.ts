@@ -24,40 +24,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Données utilisateur manquantes' });
       }
 
-      // Development mode bypass
-      if (DEV_MODE) {
-        console.log('🔧 DEV MODE: Skipping Circle.so validation');
-        const mockEmail = 'dev@example.com';
-        const existingUser = await storage.getUserByEmail(mockEmail);
-        
-        if (!existingUser) {
-          return res.json({
-            status: 'new_user',
-            user_id: 12345,
-            email: mockEmail,
-            name: 'Dev User',
-          });
-        }
+      // In DEV_MODE, use mock Circle.so data but still validate format
+      const userData = DEV_MODE ? {
+        id: user.id || 12345,
+        email: user.email || 'dev@example.com',
+        name: user.name || 'Dev User',
+        timestamp: Date.now(), // Fresh timestamp to pass anti-replay check
+      } : user;
 
-        return res.json({
-          status: 'existing_user',
-          user_id: existingUser.id,
-          requires_pin: true,
-        });
+      if (DEV_MODE) {
+        console.log('🔧 DEV MODE: Using mock Circle.so data but validating format');
       }
 
-      // Validate format and timestamp
-      const formatCheck = validateUserData(user);
+      // ALWAYS validate format and timestamp (even in DEV_MODE for security)
+      const formatCheck = validateUserData(userData);
       if (!formatCheck.valid) {
         return res.status(400).json({ error: formatCheck.error });
       }
 
       // Check if user exists by email
-      const existingUser = await storage.getUserByEmail(user.email);
+      const existingUser = await storage.getUserByEmail(userData.email);
 
       if (!existingUser) {
         // New user - check if Circle ID is already registered (shouldn't happen but safety check)
-        const userByCircleId = await storage.getUserByCircleId(user.id);
+        const userByCircleId = await storage.getUserByCircleId(userData.id);
         if (userByCircleId) {
           return res.status(403).json({ 
             error: 'Cet ID Circle.so est déjà associé à un autre email' 
@@ -67,14 +57,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // New member - needs to create PIN
         return res.json({
           status: 'new_user',
-          user_id: user.id,
-          email: user.email,
-          name: user.name,
+          user_id: userData.id,
+          email: userData.email,
+          name: userData.name,
         });
       }
 
       // Existing user - verify Circle ID matches
-      if (existingUser.circleId !== user.id) {
+      if (existingUser.circleId !== userData.id) {
         return res.status(403).json({ 
           error: 'Les données Circle.so ne correspondent pas au compte existant' 
         });

@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useMutation } from '@tanstack/react-query';
 import { Lock, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { apiRequest } from '@/lib/queryClient';
 
 const loginPinSchema = z.object({
   pin: z.string()
@@ -24,7 +26,6 @@ interface PinLoginFormProps {
 
 export function PinLoginForm({ userEmail, onSuccess, onError }: PinLoginFormProps) {
   const [showPin, setShowPin] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [rateLimitError, setRateLimitError] = useState(false);
 
   const form = useForm<LoginPinFormData>({
@@ -34,41 +35,37 @@ export function PinLoginForm({ userEmail, onSuccess, onError }: PinLoginFormProp
     },
   });
 
-  const onSubmit = async (data: LoginPinFormData) => {
-    setIsSubmitting(true);
-    setRateLimitError(false);
-    
-    try {
-      const response = await fetch('/api/auth/validate-pin', {
+  const validatePinMutation = useMutation({
+    mutationFn: async (data: LoginPinFormData) => {
+      const result = await apiRequest('/api/auth/validate-pin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: userEmail,
           pin: data.pin,
         }),
       });
-
-      const result = await response.json();
-
-      if (response.status === 429) {
-        setRateLimitError(true);
-        onError('Trop de tentatives. Veuillez réessayer dans 15 minutes.');
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(result.error || 'NIP incorrect');
-      }
-
+      return result;
+    },
+    onSuccess: (result) => {
+      setRateLimitError(false);
       if (result.success) {
         onSuccess(result.session_token, result.user_id);
       }
-    } catch (error) {
-      onError(error instanceof Error ? error.message : 'Erreur de connexion');
+    },
+    onError: (error: any) => {
+      if (error.message?.includes('429') || error.message?.includes('tentatives')) {
+        setRateLimitError(true);
+        onError('Trop de tentatives. Veuillez réessayer dans 15 minutes.');
+      } else {
+        onError(error.message || 'NIP incorrect');
+      }
       form.reset();
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: LoginPinFormData) => {
+    setRateLimitError(false);
+    validatePinMutation.mutate(data);
   };
 
   return (
@@ -110,7 +107,7 @@ export function PinLoginForm({ userEmail, onSuccess, onError }: PinLoginFormProp
                 maxLength={6}
                 placeholder="Entrez votre NIP"
                 className="h-12 pr-10 text-base"
-                disabled={isSubmitting || rateLimitError}
+                disabled={validatePinMutation.isPending || rateLimitError}
                 autoFocus
                 data-testid="input-login-pin"
               />
@@ -134,10 +131,10 @@ export function PinLoginForm({ userEmail, onSuccess, onError }: PinLoginFormProp
           <Button
             type="submit"
             className="w-full h-12 text-base font-semibold"
-            disabled={isSubmitting || !form.formState.isValid || rateLimitError}
+            disabled={validatePinMutation.isPending || !form.formState.isValid || rateLimitError}
             data-testid="button-validate-pin"
           >
-            {isSubmitting ? 'Vérification...' : 'Se connecter'}
+            {validatePinMutation.isPending ? 'Vérification...' : 'Se connecter'}
           </Button>
 
           <div className="text-center">

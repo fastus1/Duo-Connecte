@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useMutation } from '@tanstack/react-query';
 import { Lock, Eye, EyeOff, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { apiRequest } from '@/lib/queryClient';
 
 const pinSchema = z.object({
   pin: z.string()
@@ -32,7 +34,6 @@ interface PinCreationFormProps {
 export function PinCreationForm({ userName, userEmail, circleId, onSuccess, onError }: PinCreationFormProps) {
   const [showPin, setShowPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<PinFormData>({
     resolver: zodResolver(pinSchema),
@@ -42,13 +43,10 @@ export function PinCreationForm({ userName, userEmail, circleId, onSuccess, onEr
     },
   });
 
-  const onSubmit = async (data: PinFormData) => {
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch('/api/auth/create-pin', {
+  const createPinMutation = useMutation({
+    mutationFn: async (data: PinFormData) => {
+      const result = await apiRequest('/api/auth/create-pin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: userEmail,
           circle_id: circleId,
@@ -56,21 +54,20 @@ export function PinCreationForm({ userName, userEmail, circleId, onSuccess, onEr
           pin: data.pin,
         }),
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Erreur lors de la création du NIP');
-      }
-
+      return result;
+    },
+    onSuccess: (result) => {
       if (result.success) {
         onSuccess(result.session_token, result.user_id);
       }
-    } catch (error) {
-      onError(error instanceof Error ? error.message : 'Erreur lors de la création du NIP');
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+    onError: (error: Error) => {
+      onError(error.message || 'Erreur lors de la création du NIP');
+    },
+  });
+
+  const onSubmit = (data: PinFormData) => {
+    createPinMutation.mutate(data);
   };
 
   const pinValue = form.watch('pin');
@@ -108,7 +105,7 @@ export function PinCreationForm({ userName, userEmail, circleId, onSuccess, onEr
                   maxLength={6}
                   placeholder="Entrez 4-6 chiffres"
                   className="h-12 pr-10 text-base"
-                  disabled={isSubmitting}
+                  disabled={createPinMutation.isPending}
                   data-testid="input-pin"
                 />
                 <button
@@ -141,7 +138,7 @@ export function PinCreationForm({ userName, userEmail, circleId, onSuccess, onEr
                   maxLength={6}
                   placeholder="Confirmez votre NIP"
                   className="h-12 pr-10 text-base"
-                  disabled={isSubmitting}
+                  disabled={createPinMutation.isPending}
                   data-testid="input-confirm-pin"
                 />
                 <button
@@ -176,10 +173,10 @@ export function PinCreationForm({ userName, userEmail, circleId, onSuccess, onEr
           <Button
             type="submit"
             className="w-full h-12 text-base font-semibold"
-            disabled={isSubmitting || !form.formState.isValid}
+            disabled={createPinMutation.isPending || !form.formState.isValid}
             data-testid="button-create-pin"
           >
-            {isSubmitting ? 'Création en cours...' : 'Créer mon NIP'}
+            {createPinMutation.isPending ? 'Création en cours...' : 'Créer mon NIP'}
           </Button>
         </form>
       </CardContent>

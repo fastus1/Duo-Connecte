@@ -1,39 +1,47 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { LogOut, Shield, Clock, CheckCircle } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { LogOut, Shield, Clock, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DevModeIndicator } from '@/components/dev-mode-indicator';
+import { getSessionToken } from '@/lib/auth';
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
 
-  useEffect(() => {
-    const sessionToken = localStorage.getItem('session_token');
-    const sessionTimestamp = localStorage.getItem('session_timestamp');
-    
-    if (!sessionToken) {
-      setLocation('/');
-      return;
-    }
-
-    if (sessionTimestamp) {
-      const elapsed = Date.now() - parseInt(sessionTimestamp);
-      const sessionTimeout = 60 * 60 * 1000;
-      
-      if (elapsed > sessionTimeout) {
-        handleLogout();
-        return;
+  const { data: userData, isLoading, error } = useQuery({
+    queryKey: ['/api/auth/me'],
+    queryFn: async () => {
+      const token = getSessionToken();
+      if (!token) {
+        throw new Error('No session token');
       }
 
-      const timeoutId = setTimeout(() => {
-        handleLogout();
-      }, sessionTimeout - elapsed);
+      const response = await fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-      return () => clearTimeout(timeoutId);
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Session expired');
+        }
+        throw new Error('Failed to fetch user data');
+      }
+
+      return response.json();
+    },
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (error || !getSessionToken()) {
+      handleLogout();
     }
-  }, [setLocation]);
+  }, [error]);
 
   const handleLogout = () => {
     localStorage.removeItem('session_token');
@@ -41,6 +49,20 @@ export default function Dashboard() {
     localStorage.removeItem('session_timestamp');
     setLocation('/');
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <DevModeIndicator />
+        <Card className="w-full max-w-md shadow-lg">
+          <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-base text-muted-foreground">Chargement de vos données...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const sessionTimestamp = localStorage.getItem('session_timestamp');
   const sessionStart = sessionTimestamp ? new Date(parseInt(sessionTimestamp)) : null;

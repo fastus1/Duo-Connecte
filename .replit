@@ -37,3 +37,13 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[userenv]
+
+[userenv.development]
+VITE_DEV_MODE = "true"
+VITE_CIRCLE_ORIGIN = "https://your-space.circle.so"
+JWT_SECRET = "dev-jwt-secret-key-minimum-32-characters-long-for-security"
+DATABASE_URL = "memory"
+PORT = "5000"
+NODE_ENV = "development"
