@@ -29,11 +29,11 @@ const VALIDATION_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
 // Cleanup expired validations every minute
 setInterval(() => {
   const now = Date.now();
-  for (const [token, data] of validationCache.entries()) {
+  Array.from(validationCache.entries()).forEach(([token, data]) => {
     if (now - data.timestamp > VALIDATION_EXPIRY_MS) {
       validationCache.delete(token);
     }
-  }
+  });
 }, 60 * 1000);
 
 export async function registerRoutes(app: Express): Promise<Server> {
