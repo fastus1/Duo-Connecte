@@ -226,7 +226,11 @@ VITE_DEV_MODE=true
 npm run dev
 ```
 
-L'app sera accessible sur `http://localhost:5000` avec un utilisateur mock.
+L'app sera accessible sur `http://localhost:5000` avec un utilisateur mock **admin** :
+- Email: `dev@example.com`
+- Nom: `Dev User`
+- isAdmin: `true`
+- Redirection automatique vers `/dashboard`
 
 ### Mode Production (avec Circle.so)
 ```bash

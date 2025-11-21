@@ -55,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         publicUid: user.publicUid || 'dev123',
         email: user.email || 'dev@example.com',
         name: user.name || 'Dev User',
-        isAdmin: user.isAdmin || false,
+        isAdmin: user.isAdmin !== undefined ? user.isAdmin : true, // DEV user is admin by default
         timestamp: Date.now(), // Fresh timestamp to pass anti-replay check
       } : user;
 
