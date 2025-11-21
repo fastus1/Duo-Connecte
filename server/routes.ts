@@ -10,6 +10,7 @@ import {
   requireAuth,
   type CircleUserData 
 } from "./middleware";
+import { corsMiddleware } from "./app";
 import crypto from "crypto";
 
 const DEV_MODE = process.env.VITE_DEV_MODE === 'true';
@@ -35,6 +36,9 @@ setInterval(() => {
 }, 60 * 1000);
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Apply CORS only to API routes
+  app.use('/api', corsMiddleware);
   
   // POST /api/auth/validate - Validate Circle.so user data
   app.post('/api/auth/validate', async (req: Request, res: Response) => {

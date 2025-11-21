@@ -23,13 +23,13 @@ export function log(message: string, source = "express") {
 
 export const app = express();
 
-// Configure CORS for Circle.so integration
+// Configure CORS for Circle.so integration (API routes only)
 // Use CIRCLE_ORIGIN for backend (available in production)
 // Fallback to VITE_CIRCLE_ORIGIN for dev mode compatibility
 const circleOrigin = process.env.CIRCLE_ORIGIN || process.env.VITE_CIRCLE_ORIGIN;
 const devMode = process.env.DEV_MODE === 'true' || process.env.VITE_DEV_MODE === 'true';
 
-app.use(cors({
+export const corsMiddleware = cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
@@ -48,7 +48,7 @@ app.use(cors({
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
-}));
+});
 
 declare module 'http' {
   interface IncomingMessage {
