@@ -1,0 +1,36 @@
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api/space_groups? 401 (Unauthorized)
+
+backendRequestHelpers.ts:196 
+ GET https://communaute.avancersimplement.com/internal_api/spaces?include_sidebar=true 401 (Unauthorized)
+(index):10 
+ GET https://web-template-base-ok.replit.app/assets/index-DgfzNGOw.js net::ERR_ABORTED 500 (Internal Server Error)
+(index):11 
+ GET https://web-template-base-ok.replit.app/assets/index-BBVfD6Gy.css net::ERR_ABORTED 500 (Internal Server Error)
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api/search/community_bot/profiles?name= 401 (Unauthorized)
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api//gamification/settings? 401 (Unauthorized)
+untitled-page:143 ✅ Données utilisateur envoyées à l'iframe
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api/search/community_bot/profiles?name= 401 (Unauthorized)
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api//gamification/settings? 401 (Unauthorized)
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api/search/community_bot/profiles?name= 401 (Unauthorized)
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api//gamification/settings? 401 (Unauthorized)
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api/search/community_bot/profiles?name= 401 (Unauthorized)
+bugsnag.js:2610 t: You cannot perform this action.
+    at backendRequestHelpers.ts:93:9
+    at Object.next (4642-07ee3835a7181564.js:1:118327)
+    at i (4642-07ee3835a7181564.js:1:116117)
+    at c (4642-07ee3835a7181564.js:1:116314)
+backendRequestHelpers.ts:35 
+ GET https://communaute.avancersimplement.com/internal_api//gamification/settings? 401 (Unauthorized)
+bugsnag.js:2610 t: You cannot perform this action.
+    at backendRequestHelpers.ts:93:9
+    at Object.next (4642-07ee3835a7181564.js:1:118327)
+    at i (4642-07ee3835a7181564.js:1:116117)
+    at c (4642-07ee3835a7181564.js:1:116314)
