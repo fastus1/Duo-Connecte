@@ -24,8 +24,10 @@ export function log(message: string, source = "express") {
 export const app = express();
 
 // Configure CORS for Circle.so integration
-const circleOrigin = process.env.VITE_CIRCLE_ORIGIN;
-const devMode = process.env.VITE_DEV_MODE === 'true';
+// Use CIRCLE_ORIGIN for backend (available in production)
+// Fallback to VITE_CIRCLE_ORIGIN for dev mode compatibility
+const circleOrigin = process.env.CIRCLE_ORIGIN || process.env.VITE_CIRCLE_ORIGIN;
+const devMode = process.env.DEV_MODE === 'true' || process.env.VITE_DEV_MODE === 'true';
 
 app.use(cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
