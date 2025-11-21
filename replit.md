@@ -44,7 +44,7 @@ Template d'application web Node.js/Express + React/TypeScript conçue pour être
 - **Runtime** : Node.js 20
 - **Framework** : Express.js
 - **ORM** : Drizzle ORM
-- **Database** : PostgreSQL (ou SQLite pour dev)
+- **Database** : PostgreSQL (Neon) - persistante
 - **Authentication** : JWT + bcrypt
 - **Security** : express-rate-limit, CORS
 - **Validation** : Zod schemas
@@ -396,12 +396,14 @@ CREATE TABLE login_attempts (
 - ✅ Rate limiting middleware (5/15min)
 - ✅ Mode DEV avec utilisateur mock
 - ✅ Synchronisation automatique du statut admin
+- ✅ **Migration vers PostgreSQL persistante (Drizzle ORM + Neon)**
 
 **Phase 3 : Integration & Testing**
 - ✅ Connexion frontend ↔ backend fonctionnelle
 - ✅ Gestion erreurs et états de chargement
 - ✅ Review architect complet
 - ✅ Correction de sécurité : admin status sync
+- ✅ **Base de données persistante opérationnelle**
 
 ### 🔜 Améliorations Futures
 

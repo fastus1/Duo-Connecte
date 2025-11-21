@@ -2,6 +2,7 @@ import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt,
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { eq, and, gt } from "drizzle-orm";
+import { Pool, neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
 
 export interface IStorage {
@@ -96,10 +97,9 @@ export class DbStorage implements IStorage {
   private db;
 
   constructor(databaseUrl: string) {
-    this.db = drizzle({
-      connection: databaseUrl,
-      ws: ws,
-    });
+    neonConfig.webSocketConstructor = ws;
+    const pool = new Pool({ connectionString: databaseUrl });
+    this.db = drizzle({ client: pool });
   }
 
   async getUser(id: string): Promise<User | undefined> {
