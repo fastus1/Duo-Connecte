@@ -23,12 +23,27 @@ export function useCircleAuth() {
       return;
     }
 
+    // Vérification critique de la configuration
+    if (!circleOrigin) {
+      console.error('❌ VITE_CIRCLE_ORIGIN is not configured!');
+      setState({
+        isListening: false,
+        userData: null,
+        error: 'Configuration manquante: VITE_CIRCLE_ORIGIN non défini. Vérifiez vos secrets de production.',
+      });
+      return;
+    }
+
+    console.log('🔍 Waiting for Circle.so message from:', circleOrigin);
+
     const handleMessage = (event: MessageEvent) => {
-      if (circleOrigin && event.origin !== circleOrigin) {
-        console.error('❌ Unauthorized origin:', event.origin);
+      console.log('📨 Message received from:', event.origin);
+      
+      if (event.origin !== circleOrigin) {
+        console.error('❌ Unauthorized origin:', event.origin, '(expected:', circleOrigin + ')');
         setState(prev => ({
           ...prev,
-          error: 'Origine non autorisée',
+          error: `Origine non autorisée: ${event.origin}. Attendu: ${circleOrigin}`,
         }));
         return;
       }
