@@ -59,18 +59,20 @@ project/
 │   │   │   ├── dev-mode-indicator.tsx
 │   │   │   ├── pin-creation-form.tsx
 │   │   │   ├── pin-login-form.tsx
+│   │   │   ├── theme-provider.tsx  # Gestion automatique du thème
 │   │   │   └── ui/              # shadcn/ui components
 │   │   ├── hooks/               # React hooks
-│   │   │   └── use-circle-auth.ts  # Hook postMessage
+│   │   │   └── use-circle-auth.ts  # Hook postMessage + thème
 │   │   ├── lib/                 # Utilities
 │   │   │   ├── auth.ts          # Auth helpers
 │   │   │   ├── queryClient.ts   # TanStack Query
 │   │   │   └── utils.ts
 │   │   ├── pages/               # Pages
 │   │   │   ├── auth.tsx         # Page authentification
-│   │   │   ├── dashboard.tsx    # Dashboard protégé
+│   │   │   ├── dashboard.tsx    # Dashboard admin protégé
+│   │   │   ├── user-home.tsx    # Page d'accueil utilisateur
 │   │   │   └── not-found.tsx
-│   │   ├── App.tsx              # Routes
+│   │   ├── App.tsx              # Routes + ThemeProvider
 │   │   ├── index.css            # Styles globaux + thème
 │   │   └── main.tsx
 │   └── index.html
@@ -108,7 +110,8 @@ Valide les données utilisateur reçues de Circle.so
   "status": "new_user",
   "user_id": 12345,
   "email": "user@example.com",
-  "name": "John Doe"
+  "name": "John Doe",
+  "is_admin": false
 }
 ```
 
@@ -117,6 +120,7 @@ Valide les données utilisateur reçues de Circle.so
 {
   "status": "existing_user",
   "user_id": "uuid",
+  "is_admin": false,
   "requires_pin": true
 }
 ```
@@ -251,16 +255,22 @@ window.addEventListener('load', function() {
     if (window.circleUser && iframe) {
       clearInterval(checkUser);
       
+      // Détection automatique du thème
+      const isDark = document.documentElement.classList.contains('dark') || 
+                     document.body.classList.contains('dark-mode');
+      
       const userData = {
         type: 'CIRCLE_USER_AUTH',
         user: {
-          id: window.circleUser.id,
+          publicUid: window.circleUser.public_uid || window.circleUser.id,
           email: window.circleUser.email,
           name: window.circleUser.name,
-          first_name: window.circleUser.first_name,
-          last_name: window.circleUser.last_name,
+          firstName: window.circleUser.first_name,
+          lastName: window.circleUser.last_name,
+          isAdmin: window.circleUser.is_admin || false,
           timestamp: Date.now()
-        }
+        },
+        theme: isDark ? 'dark' : 'light'
       };
       
       iframe.contentWindow.postMessage(
@@ -290,7 +300,7 @@ Sur votre page Circle.so, ajouter l'iframe :
 ### Protections implémentées
 - ✅ HTTPS obligatoire (Replit + Circle.so)
 - ✅ Validation origine stricte postMessage
-- ✅ Validation multi-champs (email, ID, nom, timestamp)
+- ✅ Validation multi-champs (email, publicUid, nom, timestamp)
 - ✅ Cross-field validation en base de données
 - ✅ Anti-replay attack (timestamp 60s max)
 - ✅ Hash bcrypt (10 rounds) pour NIP
@@ -298,6 +308,7 @@ Sur votre page Circle.so, ajouter l'iframe :
 - ✅ Session JWT avec expiration 60min
 - ✅ Logging des tentatives de connexion
 - ✅ CORS configuré pour Circle.so uniquement
+- ✅ Synchronisation automatique du statut admin à chaque connexion
 
 ### Attaques bloquées
 - ❌ Accès non-membres → Bloqué par Circle.so
@@ -315,9 +326,10 @@ Sur votre page Circle.so, ajouter l'iframe :
 CREATE TABLE users (
   id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
-  circle_id INTEGER NOT NULL,
+  public_uid TEXT NOT NULL,
   name TEXT NOT NULL,
   pin_hash TEXT NOT NULL,
+  is_admin BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW(),
   last_login TIMESTAMP
 );
@@ -339,47 +351,65 @@ CREATE TABLE login_attempts (
 ### Nouveau membre (première connexion)
 1. Connexion sur Circle.so
 2. Accès page avec iframe webapp
-3. JavaScript Circle.so → postMessage
-4. Frontend reçoit → envoie au backend `/validate`
-5. Backend détecte nouveau membre
-6. Formulaire création NIP (4-6 chiffres)
-7. Backend hash NIP + crée compte
-8. JWT généré (60 min)
-9. Redirection vers dashboard
+3. JavaScript Circle.so → postMessage (inclut isAdmin + theme)
+4. Frontend applique le thème automatiquement
+5. Frontend envoie au backend `/validate`
+6. Backend détecte nouveau membre
+7. Formulaire création NIP (4-6 chiffres)
+8. Backend hash NIP + crée compte (avec isAdmin)
+9. JWT généré (60 min)
+10. Redirection basée sur rôle :
+    - Admin → `/dashboard`
+    - Utilisateur → `/user-home`
 
 ### Membre existant (reconnexion)
 1. Connexion sur Circle.so
 2. Accès page avec iframe webapp
-3. JavaScript Circle.so → postMessage
-4. Frontend reçoit → envoie au backend `/validate`
-5. Backend détecte membre existant
-6. Formulaire login NIP
-7. Backend valide NIP (bcrypt compare)
-8. JWT généré (60 min)
-9. Redirection vers dashboard
+3. JavaScript Circle.so → postMessage (inclut isAdmin + theme)
+4. Frontend applique le thème automatiquement
+5. Frontend envoie au backend `/validate`
+6. Backend détecte membre existant + **synchronise isAdmin depuis Circle.so**
+7. Formulaire login NIP
+8. Backend valide NIP (bcrypt compare)
+9. JWT généré (60 min)
+10. Redirection basée sur rôle :
+    - Admin → `/dashboard`
+    - Utilisateur → `/user-home`
 
-## 🎯 Prochaines Étapes
+## 🎯 État du Projet
 
-### Phase actuelle : Phase 1 (Schema & Frontend) ✅
-- ✅ Schémas de données (users, login_attempts)
-- ✅ Couleurs de branding Circle.so
-- ✅ Composants React (PinCreation, PinLogin)
-- ✅ Hook useCircleAuth (postMessage)
-- ✅ Pages (Auth, Dashboard)
+### ✅ Fonctionnalités Complétées
+
+**Phase 1 : Schema & Frontend**
+- ✅ Schémas de données (users avec isAdmin, login_attempts)
+- ✅ Couleurs de branding Circle.so (light + dark mode)
+- ✅ Composants React (PinCreation, PinLogin, ThemeProvider)
+- ✅ Hook useCircleAuth (postMessage + détection thème)
+- ✅ Pages (Auth, Dashboard admin, UserHome)
 - ✅ DevModeIndicator
+- ✅ Routing basé sur les rôles
 
-### Phase 2 : Backend (en attente)
-- ⏳ Storage interface (getUserByEmail, createUser, etc.)
-- ⏳ Endpoints API (/validate, /create-pin, /validate-pin)
-- ⏳ JWT generation/validation
-- ⏳ Rate limiting middleware
-- ⏳ Mode DEV avec utilisateur mock
+**Phase 2 : Backend**
+- ✅ Storage interface complète (getUserByEmail, createUser, updateUserRole, etc.)
+- ✅ Endpoints API (/validate, /create-pin, /validate-pin, /me)
+- ✅ JWT generation/validation
+- ✅ Rate limiting middleware (5/15min)
+- ✅ Mode DEV avec utilisateur mock
+- ✅ Synchronisation automatique du statut admin
 
-### Phase 3 : Integration & Testing (en attente)
-- ⏳ Connexion frontend ↔ backend
-- ⏳ Gestion erreurs et états de chargement
-- ⏳ Tests e2e avec Playwright
-- ⏳ Review architect
+**Phase 3 : Integration & Testing**
+- ✅ Connexion frontend ↔ backend fonctionnelle
+- ✅ Gestion erreurs et états de chargement
+- ✅ Review architect complet
+- ✅ Correction de sécurité : admin status sync
+
+### 🔜 Améliorations Futures
+
+- [ ] Tests e2e avec Playwright pour validation complète
+- [ ] Invalidation des sessions JWT lors de changements de rôle
+- [ ] Monitoring des changements de rôle admin
+- [ ] Support multi-langue (i18n)
+- [ ] Dashboard admin avec gestion utilisateurs
 
 ## 📝 Notes
 
@@ -388,3 +418,5 @@ CREATE TABLE login_attempts (
 - Le NIP est TOUJOURS hashé, jamais stocké en clair
 - Rate limiting s'applique par IP et par email
 - Les couleurs s'adaptent automatiquement au thème clair/sombre
+- **Important** : Le statut admin est synchronisé depuis Circle.so à chaque connexion pour éviter les privilèges obsolètes
+- Les non-admins sont automatiquement redirigés vers `/user-home` s'ils tentent d'accéder au `/dashboard`
