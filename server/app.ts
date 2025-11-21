@@ -39,8 +39,14 @@ export const corsMiddleware = cors({
       return callback(null, true);
     }
     
-    // In production, only allow Circle.so origin
-    if (circleOrigin && origin === circleOrigin) {
+    // In production, allow Circle.so origin AND the app's own origin
+    // (since API calls from the iframe come from the app itself)
+    const allowedOrigins = [
+      circleOrigin,
+      'https://web-template-base-ok.replit.app', // App's own origin
+    ].filter(Boolean); // Remove undefined values
+    
+    if (allowedOrigins.some(allowed => allowed === origin)) {
       return callback(null, true);
     }
     
