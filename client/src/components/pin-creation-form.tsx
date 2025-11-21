@@ -27,11 +27,12 @@ interface PinCreationFormProps {
   userName: string;
   userEmail: string;
   circleId: number;
+  validationToken: string;
   onSuccess: (sessionToken: string, userId: string) => void;
   onError: (message: string) => void;
 }
 
-export function PinCreationForm({ userName, userEmail, circleId, onSuccess, onError }: PinCreationFormProps) {
+export function PinCreationForm({ userName, userEmail, circleId, validationToken, onSuccess, onError }: PinCreationFormProps) {
   const [showPin, setShowPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
 
@@ -52,6 +53,7 @@ export function PinCreationForm({ userName, userEmail, circleId, onSuccess, onEr
           circle_id: circleId,
           name: userName,
           pin: data.pin,
+          validation_token: validationToken, // CRITICAL: Security token from /api/auth/validate
         }),
       });
       return result;

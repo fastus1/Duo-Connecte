@@ -22,6 +22,7 @@ export default function AuthPage() {
     email?: string;
     name?: string;
     circleId?: number;
+    validationToken?: string;
   } | null>(null);
 
   const devMode = import.meta.env.VITE_DEV_MODE === 'true';
@@ -76,6 +77,7 @@ export default function AuthPage() {
         email: userData.email,
         name: userData.name,
         circleId: userData.id,
+        validationToken: result.validation_token, // Store validation token for secure account creation
       });
 
       if (result.status === 'new_user') {
@@ -171,6 +173,7 @@ export default function AuthPage() {
           userName={validatedData.name || ''}
           userEmail={validatedData.email || ''}
           circleId={validatedData.circleId || 0}
+          validationToken={validatedData.validationToken || ''}
           onSuccess={handleAuthSuccess}
           onError={handleError}
         />

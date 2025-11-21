@@ -10,8 +10,29 @@ import {
   requireAuth,
   type CircleUserData 
 } from "./middleware";
+import crypto from "crypto";
 
 const DEV_MODE = process.env.VITE_DEV_MODE === 'true';
+
+// Temporary cache for validated Circle.so data (5 minutes expiry)
+interface ValidationCache {
+  email: string;
+  circleId: number;
+  name: string;
+  timestamp: number;
+}
+const validationCache = new Map<string, ValidationCache>();
+const VALIDATION_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
+
+// Cleanup expired validations every minute
+setInterval(() => {
+  const now = Date.now();
+  for (const [token, data] of validationCache.entries()) {
+    if (now - data.timestamp > VALIDATION_EXPIRY_MS) {
+      validationCache.delete(token);
+    }
+  }
+}, 60 * 1000);
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -54,12 +75,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
 
+        // Generate one-time validation token for new user
+        const validationToken = crypto.randomBytes(32).toString('hex');
+        validationCache.set(validationToken, {
+          email: userData.email,
+          circleId: userData.id,
+          name: userData.name || `User ${userData.id}`,
+          timestamp: Date.now(),
+        });
+
         // New member - needs to create PIN
         return res.json({
           status: 'new_user',
           user_id: userData.id,
           email: userData.email,
           name: userData.name,
+          validation_token: validationToken, // Short-lived token to prevent unauthorized account creation
         });
       }
 
@@ -83,15 +114,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // POST /api/auth/create-pin - Create PIN for new user
+  // POST /api/auth/create-pin - Create PIN for new user (REQUIRES validation token)
   app.post('/api/auth/create-pin', async (req: Request, res: Response) => {
     try {
-      const { email, circle_id, name, pin } = req.body;
+      const { email, circle_id, name, pin, validation_token } = req.body;
 
       // Validate input
-      if (!email || !circle_id || !name || !pin) {
+      if (!email || !circle_id || !name || !pin || !validation_token) {
         return res.status(400).json({ error: 'Données manquantes' });
       }
+
+      // CRITICAL: Verify validation token to prevent unauthorized account creation
+      const cachedData = validationCache.get(validation_token);
+      if (!cachedData) {
+        return res.status(403).json({ 
+          error: 'Token de validation invalide ou expiré. Veuillez recommencer l\'authentification.' 
+        });
+      }
+
+      // Verify the data matches the cached validation
+      if (cachedData.email !== email || cachedData.circleId !== circle_id) {
+        validationCache.delete(validation_token); // Clean up invalid attempt
+        return res.status(403).json({ 
+          error: 'Les données ne correspondent pas à la validation Circle.so' 
+        });
+      }
+
+      // Check if validation is still fresh (not expired)
+      if (Date.now() - cachedData.timestamp > VALIDATION_EXPIRY_MS) {
+        validationCache.delete(validation_token);
+        return res.status(403).json({ 
+          error: 'Token de validation expiré. Veuillez recommencer l\'authentification.' 
+        });
+      }
+
+      // Delete token (one-time use)
+      validationCache.delete(validation_token);
 
       // Validate PIN format (4-6 digits)
       if (!/^\d{4,6}$/.test(pin)) {
@@ -100,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Check if user already exists
+      // Double-check if user already exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
         return res.status(400).json({ 

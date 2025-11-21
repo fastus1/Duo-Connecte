@@ -60,8 +60,9 @@ export function validateUserData(data: CircleUserData): ValidationResult {
     return { valid: false, error: 'ID invalide' };
   }
 
-  if (!data.name || data.name.split(' ').length < 2) {
-    return { valid: false, error: 'Nom complet requis (prénom + nom)' };
+  // Accept any non-empty name (Circle.so may have users with single name)
+  if (!data.name || data.name.trim().length === 0) {
+    return { valid: false, error: 'Nom requis' };
   }
 
   const now = Date.now();
