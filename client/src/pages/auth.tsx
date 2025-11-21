@@ -18,10 +18,9 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [validatedData, setValidatedData] = useState<{
-    user_id?: string;
+    public_uid?: string;
     email?: string;
     name?: string;
-    circleId?: number;
     validationToken?: string;
   } | null>(null);
 
@@ -30,12 +29,12 @@ export default function AuthPage() {
   useEffect(() => {
     if (devMode) {
       const mockUserEmail = 'dev@example.com';
-      const mockCircleId = 12345;
+      const mockPublicUid = 'dev123';
       const mockName = 'Dev User';
       
       setValidatedData({
         email: mockUserEmail,
-        circleId: mockCircleId,
+        public_uid: mockPublicUid,
         name: mockName,
       });
       setAuthStep('new_user');
@@ -73,10 +72,9 @@ export default function AuthPage() {
       });
 
       setValidatedData({
-        user_id: result.user_id,
+        public_uid: result.user_id,
         email: userData.email,
         name: userData.name,
-        circleId: userData.id,
         validationToken: result.validation_token, // Store validation token for secure account creation
       });
 
@@ -172,7 +170,7 @@ export default function AuthPage() {
         <PinCreationForm
           userName={validatedData.name || ''}
           userEmail={validatedData.email || ''}
-          circleId={validatedData.circleId || 0}
+          publicUid={validatedData.public_uid || ''}
           validationToken={validatedData.validationToken || ''}
           onSuccess={handleAuthSuccess}
           onError={handleError}

@@ -18,7 +18,7 @@ const DEV_MODE = process.env.VITE_DEV_MODE === 'true';
 // Temporary cache for validated Circle.so data (5 minutes expiry)
 interface ValidationCache {
   email: string;
-  circleId: number;
+  publicUid: string;
   name: string;
   timestamp: number;
 }
@@ -51,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // In DEV_MODE, use mock Circle.so data but still validate format
       const userData = DEV_MODE ? {
-        id: user.id || 12345,
+        publicUid: user.publicUid || 'dev123',
         email: user.email || 'dev@example.com',
         name: user.name || 'Dev User',
         timestamp: Date.now(), // Fresh timestamp to pass anti-replay check
@@ -71,11 +71,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingUser = await storage.getUserByEmail(userData.email);
 
       if (!existingUser) {
-        // New user - check if Circle ID is already registered (shouldn't happen but safety check)
-        const userByCircleId = await storage.getUserByCircleId(userData.id);
-        if (userByCircleId) {
+        // New user - check if publicUid is already registered (shouldn't happen but safety check)
+        const userByPublicUid = await storage.getUserByPublicUid(userData.publicUid);
+        if (userByPublicUid) {
           return res.status(403).json({ 
-            error: 'Cet ID Circle.so est déjà associé à un autre email' 
+            error: 'Cet identifiant Circle.so est déjà associé à un autre email' 
           });
         }
 
@@ -83,23 +83,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const validationToken = crypto.randomBytes(32).toString('hex');
         validationCache.set(validationToken, {
           email: userData.email,
-          circleId: userData.id,
-          name: userData.name || `User ${userData.id}`,
+          publicUid: userData.publicUid,
+          name: userData.name || `User ${userData.publicUid}`,
           timestamp: Date.now(),
         });
 
         // New member - needs to create PIN
         return res.json({
           status: 'new_user',
-          user_id: userData.id,
+          user_id: userData.publicUid,
           email: userData.email,
           name: userData.name,
           validation_token: validationToken, // Short-lived token to prevent unauthorized account creation
         });
       }
 
-      // Existing user - verify Circle ID matches
-      if (existingUser.circleId !== userData.id) {
+      // Existing user - verify publicUid matches
+      if (existingUser.publicUid !== userData.publicUid) {
         return res.status(403).json({ 
           error: 'Les données Circle.so ne correspondent pas au compte existant' 
         });
@@ -121,10 +121,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // POST /api/auth/create-pin - Create PIN for new user (REQUIRES validation token)
   app.post('/api/auth/create-pin', async (req: Request, res: Response) => {
     try {
-      const { email, circle_id, name, pin, validation_token } = req.body;
+      const { email, public_uid, name, pin, validation_token } = req.body;
 
       // Validate input
-      if (!email || !circle_id || !name || !pin || !validation_token) {
+      if (!email || !public_uid || !name || !pin || !validation_token) {
         return res.status(400).json({ error: 'Données manquantes' });
       }
 
@@ -137,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Verify the data matches the cached validation
-      if (cachedData.email !== email || cachedData.circleId !== circle_id) {
+      if (cachedData.email !== email || cachedData.publicUid !== public_uid) {
         validationCache.delete(validation_token); // Clean up invalid attempt
         return res.status(403).json({ 
           error: 'Les données ne correspondent pas à la validation Circle.so' 
@@ -176,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create user
       const user = await storage.createUser({
         email,
-        circleId: circle_id,
+        publicUid: public_uid,
         name,
         pinHash,
       });
@@ -283,7 +283,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: user.id,
         email: user.email,
         name: user.name,
-        circleId: user.circleId,
+        publicUid: user.publicUid,
         lastLogin: user.lastLogin,
         createdAt: user.createdAt,
       });

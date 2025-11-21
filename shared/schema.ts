@@ -6,7 +6,7 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
-  circleId: integer("circle_id").notNull(),
+  publicUid: text("public_uid").notNull().unique(),
   name: text("name").notNull(),
   pinHash: text("pin_hash").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -23,7 +23,7 @@ export const loginAttempts = pgTable("login_attempts", {
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
-  circleId: true,
+  publicUid: true,
   name: true,
   pinHash: true,
 });
@@ -42,11 +42,11 @@ export type LoginAttempt = typeof loginAttempts.$inferSelect;
 export const circleUserDataSchema = z.object({
   type: z.literal('CIRCLE_USER_AUTH'),
   user: z.object({
-    id: z.number().positive(),
+    publicUid: z.string().min(1),
     email: z.string().email(),
     name: z.string().min(1),
-    first_name: z.string().optional(),
-    last_name: z.string().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
     timestamp: z.number(),
   }),
 });

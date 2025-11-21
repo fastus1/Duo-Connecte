@@ -5,7 +5,7 @@ export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  getUserByCircleId(circleId: number): Promise<User | undefined>;
+  getUserByPublicUid(publicUid: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserLastLogin(userId: string): Promise<void>;
   
@@ -33,9 +33,9 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async getUserByCircleId(circleId: number): Promise<User | undefined> {
+  async getUserByPublicUid(publicUid: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.circleId === circleId,
+      (user) => user.publicUid === publicUid,
     );
   }
 

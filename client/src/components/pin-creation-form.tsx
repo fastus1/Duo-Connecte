@@ -26,13 +26,13 @@ type PinFormData = z.infer<typeof pinSchema>;
 interface PinCreationFormProps {
   userName: string;
   userEmail: string;
-  circleId: number;
+  publicUid: string;
   validationToken: string;
   onSuccess: (sessionToken: string, userId: string) => void;
   onError: (message: string) => void;
 }
 
-export function PinCreationForm({ userName, userEmail, circleId, validationToken, onSuccess, onError }: PinCreationFormProps) {
+export function PinCreationForm({ userName, userEmail, publicUid, validationToken, onSuccess, onError }: PinCreationFormProps) {
   const [showPin, setShowPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
 
@@ -50,7 +50,7 @@ export function PinCreationForm({ userName, userEmail, circleId, validationToken
         method: 'POST',
         body: JSON.stringify({
           email: userEmail,
-          circle_id: circleId,
+          public_uid: publicUid,
           name: userName,
           pin: data.pin,
           validation_token: validationToken, // CRITICAL: Security token from /api/auth/validate

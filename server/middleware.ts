@@ -37,11 +37,11 @@ export async function comparePin(pin: string, hash: string): Promise<boolean> {
 }
 
 export interface CircleUserData {
-  id: number;
+  publicUid: string;
   email: string;
   name: string;
-  first_name?: string;
-  last_name?: string;
+  firstName?: string;
+  lastName?: string;
   timestamp: number;
 }
 
@@ -56,8 +56,8 @@ export function validateUserData(data: CircleUserData): ValidationResult {
     return { valid: false, error: 'Email invalide' };
   }
 
-  if (!data.id || typeof data.id !== 'number' || data.id <= 0) {
-    return { valid: false, error: 'ID invalide' };
+  if (!data.publicUid || typeof data.publicUid !== 'string' || data.publicUid.trim().length === 0) {
+    return { valid: false, error: 'Identifiant Circle.so invalide' };
   }
 
   // Accept any non-empty name (Circle.so may have users with single name)
