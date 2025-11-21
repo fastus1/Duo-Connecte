@@ -31,16 +31,15 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (devMode) {
-      const mockUserEmail = 'dev@example.com';
-      const mockPublicUid = 'dev123';
-      const mockName = 'Dev User';
+      const mockUserData = {
+        publicUid: 'dev123',
+        email: 'dev@example.com',
+        name: 'Dev User',
+        isAdmin: false,
+        timestamp: Date.now(),
+      };
       
-      setValidatedData({
-        email: mockUserEmail,
-        public_uid: mockPublicUid,
-        name: mockName,
-      });
-      setAuthStep('new_user');
+      validateCircleData(mockUserData);
       return;
     }
 
@@ -51,12 +50,13 @@ export default function AuthPage() {
     }
 
     if (userData) {
-      validateCircleData();
+      validateCircleData(userData);
     }
   }, [userData, circleError, devMode]);
 
-  const validateCircleData = async () => {
-    if (!userData) return;
+  const validateCircleData = async (userDataToValidate?: typeof userData) => {
+    const dataToValidate = userDataToValidate || userData;
+    if (!dataToValidate) return;
 
     setIsValidating(true);
     setError(null);
@@ -65,7 +65,7 @@ export default function AuthPage() {
       const result = await fetch('/api/auth/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user: userData }),
+        body: JSON.stringify({ user: dataToValidate }),
       }).then(async (response) => {
         const data = await response.json();
         if (!response.ok) {
@@ -76,10 +76,10 @@ export default function AuthPage() {
 
       setValidatedData({
         public_uid: result.user_id,
-        email: userData.email,
-        name: userData.name,
+        email: dataToValidate.email,
+        name: dataToValidate.name,
         is_admin: result.is_admin || false,
-        validationToken: result.validation_token, // Store validation token for secure account creation
+        validationToken: result.validation_token,
       });
 
       if (result.status === 'new_user') {
