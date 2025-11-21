@@ -46,17 +46,14 @@ export function PinCreationForm({ userName, userEmail, publicUid, validationToke
 
   const createPinMutation = useMutation({
     mutationFn: async (data: PinFormData) => {
-      const result = await apiRequest('/api/auth/create-pin', {
-        method: 'POST',
-        body: JSON.stringify({
-          email: userEmail,
-          public_uid: publicUid,
-          name: userName,
-          pin: data.pin,
-          validation_token: validationToken, // CRITICAL: Security token from /api/auth/validate
-        }),
+      const response = await apiRequest('POST', '/api/auth/create-pin', {
+        email: userEmail,
+        public_uid: publicUid,
+        name: userName,
+        pin: data.pin,
+        validation_token: validationToken, // CRITICAL: Security token from /api/auth/validate
       });
-      return result;
+      return await response.json();
     },
     onSuccess: (result) => {
       if (result.success) {

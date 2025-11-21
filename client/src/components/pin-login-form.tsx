@@ -37,14 +37,11 @@ export function PinLoginForm({ userEmail, onSuccess, onError }: PinLoginFormProp
 
   const validatePinMutation = useMutation({
     mutationFn: async (data: LoginPinFormData) => {
-      const result = await apiRequest('/api/auth/validate-pin', {
-        method: 'POST',
-        body: JSON.stringify({
-          email: userEmail,
-          pin: data.pin,
-        }),
+      const response = await apiRequest('POST', '/api/auth/validate-pin', {
+        email: userEmail,
+        pin: data.pin,
       });
-      return result;
+      return await response.json();
     },
     onSuccess: (result) => {
       setRateLimitError(false);
