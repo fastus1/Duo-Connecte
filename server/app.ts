@@ -23,11 +23,19 @@ export function log(message: string, source = "express") {
 
 export const app = express();
 
+// Trust proxy for rate limiting behind Replit's reverse proxy
+app.set('trust proxy', 1);
+
 // Configure CORS for Circle.so integration (API routes only)
 // Use CIRCLE_ORIGIN for backend (available in production)
 // Fallback to VITE_CIRCLE_ORIGIN for dev mode compatibility
 const circleOrigin = process.env.CIRCLE_ORIGIN || process.env.VITE_CIRCLE_ORIGIN;
 const devMode = process.env.DEV_MODE === 'true';
+
+// Get app's own origin dynamically from Replit environment
+const appOrigin = process.env.REPLIT_DEV_DOMAIN 
+  ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+  : process.env.REPLIT_DEPLOYMENT_URL || null;
 
 export const corsMiddleware = cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
@@ -43,7 +51,7 @@ export const corsMiddleware = cors({
     // (since API calls from the iframe come from the app itself)
     const allowedOrigins = [
       circleOrigin,
-      'https://web-template-base-ok.replit.app', // App's own origin
+      appOrigin, // App's own origin (dynamic from Replit env)
     ].filter(Boolean); // Remove undefined values
     
     if (allowedOrigins.some(allowed => allowed === origin)) {
