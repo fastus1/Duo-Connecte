@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { queryClient } from '@/lib/queryClient';
 
 type AppMode = 'dev' | 'prod';
 
@@ -15,34 +14,17 @@ interface ConfigProviderProps {
   children: ReactNode;
 }
 
-function clearAuthDataAndReload() {
-  localStorage.removeItem('session_token');
-  localStorage.removeItem('user_id');
-  localStorage.removeItem('session_timestamp');
-  localStorage.setItem('app_mode', 'prod');
-  queryClient.clear();
-  console.log('🔒 PROD MODE: Auth data cleared, reloading...');
-  window.location.href = '/';
-}
-
 export function ConfigProvider({ children }: ConfigProviderProps) {
   const [mode, setModeState] = useState<AppMode>(() => {
-    const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
-    
-    // In production (VITE_DEV_MODE !== 'true'), ALWAYS force prod mode
-    // This prevents localStorage from overriding production security
-    if (!envDevMode) {
-      localStorage.removeItem('app_mode'); // Clean up any stale dev mode
-      return 'prod';
-    }
-    
-    // In development, allow localStorage toggle
+    // Check localStorage first
     const stored = localStorage.getItem('app_mode') as AppMode;
     if (stored === 'dev' || stored === 'prod') {
       return stored;
     }
     
-    return 'dev';
+    // Fallback to env var (embedded at build time)
+    const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
+    return envDevMode ? 'dev' : 'prod';
   });
 
   useEffect(() => {
@@ -51,20 +33,11 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
   }, [mode]);
 
   const setMode = (newMode: AppMode) => {
-    if (newMode === 'prod' && mode !== 'prod') {
-      clearAuthDataAndReload();
-      return;
-    }
     setModeState(newMode);
   };
 
   const toggleMode = () => {
-    const newMode = mode === 'dev' ? 'prod' : 'dev';
-    if (newMode === 'prod') {
-      clearAuthDataAndReload();
-      return;
-    }
-    setModeState(newMode);
+    setModeState(prev => prev === 'dev' ? 'prod' : 'dev');
   };
 
   return (

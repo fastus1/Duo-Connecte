@@ -23,9 +23,9 @@ Template Node.js/Express + React/TypeScript pour intégration Circle.so via ifra
 
 ```
 client/src/
-  components/     # UI (pin-creation, pin-login, theme-provider, mode-toggle, loading-screen, access-denied-screen)
-  contexts/       # config-context.tsx (DEV/PROD), circle-auth-context.tsx (auth state)
-  hooks/          # use-toast.ts
+  components/     # UI (pin-creation, pin-login, theme-provider, mode-toggle)
+  contexts/       # config-context.tsx (DEV/PROD mode)
+  hooks/          # use-circle-auth.ts (postMessage + thème)
   pages/          # auth.tsx, dashboard.tsx, user-home.tsx
   lib/            # auth.ts, queryClient.ts
 
@@ -126,18 +126,9 @@ login_attempts: id, user_id, success, ip_address, timestamp
 - **Admins** : Accès `/dashboard` + `/user-home`, boutons navigation
 - **Utilisateurs** : `/user-home` uniquement, redirection auto si accès `/dashboard`
 
-## Blocage Accès Direct (Mode PROD)
-
-L'application bloque l'accès direct (hors iframe Circle.so) en mode PROD :
-1. **LoadingScreen** : Affiché pendant 3 secondes de vérification
-2. **AccessDeniedScreen** : Affiché si aucun message Circle.so reçu
-
-**Important** : Le passage DEV→PROD déclenche un rechargement complet de la page (`window.location.href = '/'`) pour garantir qu'aucun état React stale ne persiste. Cela évite tout bypass de sécurité.
-
 ## Notes Développeurs
 
-- Mode DEV bypass Circle.so avec utilisateur admin (dev@example.com)
-- Le toggle DEV/PROD en mode PROD cause un rechargement complet de la page
+- Mode DEV bypass Circle.so avec utilisateur admin
 - Sessions expirent après 60min
 - NIP toujours hashé (jamais en clair)
 - Thème sync automatique avec Circle.so
