@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { queryClient } from '@/lib/queryClient';
 
 type AppMode = 'dev' | 'prod';
 
@@ -14,15 +15,23 @@ interface ConfigProviderProps {
   children: ReactNode;
 }
 
+function clearAuthDataAndReload() {
+  localStorage.removeItem('session_token');
+  localStorage.removeItem('user_id');
+  localStorage.removeItem('session_timestamp');
+  localStorage.setItem('app_mode', 'prod');
+  queryClient.clear();
+  console.log('🔒 PROD MODE: Auth data cleared, reloading...');
+  window.location.href = '/';
+}
+
 export function ConfigProvider({ children }: ConfigProviderProps) {
   const [mode, setModeState] = useState<AppMode>(() => {
-    // Check localStorage first
     const stored = localStorage.getItem('app_mode') as AppMode;
     if (stored === 'dev' || stored === 'prod') {
       return stored;
     }
     
-    // Fallback to env var (embedded at build time)
     const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
     return envDevMode ? 'dev' : 'prod';
   });
@@ -33,11 +42,20 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
   }, [mode]);
 
   const setMode = (newMode: AppMode) => {
+    if (newMode === 'prod' && mode !== 'prod') {
+      clearAuthDataAndReload();
+      return;
+    }
     setModeState(newMode);
   };
 
   const toggleMode = () => {
-    setModeState(prev => prev === 'dev' ? 'prod' : 'dev');
+    const newMode = mode === 'dev' ? 'prod' : 'dev';
+    if (newMode === 'prod') {
+      clearAuthDataAndReload();
+      return;
+    }
+    setModeState(newMode);
   };
 
   return (

@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Loader2, AlertCircle } from 'lucide-react';
-import { useCircleAuth } from '@/hooks/use-circle-auth';
+import { useCircleAuth } from '@/contexts/circle-auth-context';
 import { useConfig } from '@/contexts/config-context';
 import { PinCreationForm } from '@/components/pin-creation-form';
 import { PinLoginForm } from '@/components/pin-login-form';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'error';
 
@@ -30,19 +30,6 @@ export default function AuthPage() {
   const devMode = mode === 'dev';
 
   useEffect(() => {
-    if (devMode) {
-      const mockUserData = {
-        publicUid: 'dev123',
-        email: 'dev@example.com',
-        name: 'Dev User',
-        isAdmin: true,
-        timestamp: Date.now(),
-      };
-      
-      validateCircleData(mockUserData);
-      return;
-    }
-
     if (circleError) {
       setError(circleError);
       setAuthStep('error');
@@ -52,11 +39,16 @@ export default function AuthPage() {
     if (userData) {
       validateCircleData(userData);
     }
-  }, [userData, circleError, devMode]);
+  }, [userData, circleError]);
 
-  const validateCircleData = async (userDataToValidate?: typeof userData) => {
-    const dataToValidate = userDataToValidate || userData;
-    if (!dataToValidate) return;
+  const validateCircleData = async (userDataToValidate: {
+    publicUid: string;
+    email: string;
+    name: string;
+    isAdmin: boolean;
+    timestamp: number;
+  }) => {
+    if (!userDataToValidate) return;
 
     setIsValidating(true);
     setError(null);
@@ -65,7 +57,7 @@ export default function AuthPage() {
       const result = await fetch('/api/auth/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user: dataToValidate }),
+        body: JSON.stringify({ user: userDataToValidate }),
       }).then(async (response) => {
         const data = await response.json();
         if (!response.ok) {
@@ -76,8 +68,8 @@ export default function AuthPage() {
 
       setValidatedData({
         public_uid: result.user_id,
-        email: dataToValidate.email,
-        name: dataToValidate.name,
+        email: userDataToValidate.email,
+        name: userDataToValidate.name,
         is_admin: result.is_admin || false,
         validationToken: result.validation_token,
       });
@@ -100,7 +92,6 @@ export default function AuthPage() {
     localStorage.setItem('user_id', userId);
     localStorage.setItem('session_timestamp', Date.now().toString());
     
-    // Route based on user role
     if (isAdmin) {
       setLocation('/dashboard');
     } else {
