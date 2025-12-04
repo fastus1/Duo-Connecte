@@ -41,6 +41,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Apply CORS only to API routes
   app.use('/api', corsMiddleware);
   
+  // GET /api/health - Health check endpoint for debugging
+  app.get('/api/health', async (req: Request, res: Response) => {
+    try {
+      // Test database connection
+      const testUser = await storage.getUserByEmail('test@nonexistent.com');
+      return res.json({ 
+        status: 'ok', 
+        database: 'connected',
+        dev_mode: DEV_MODE,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({ 
+        status: 'error', 
+        database: 'disconnected',
+        error: errorMessage,
+        dev_mode: DEV_MODE
+      });
+    }
+  });
+  
   // POST /api/auth/validate - Validate Circle.so user data
   app.post('/api/auth/validate', async (req: Request, res: Response) => {
     try {
