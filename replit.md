@@ -82,7 +82,7 @@ Utilisateur mock : `dev@example.com` (Admin, redirige vers `/dashboard`)
 Script JavaScript (Header Custom Code) :
 ```javascript
 (function() {
-  const IFRAME_ORIGIN = 'https://VOTRE-APP.replit.app';
+  const IFRAME_ORIGIN = 'https://web-template-base-ok.replit.app';
   let cachedUserData = null;
   
   function buildUserPayload() {
