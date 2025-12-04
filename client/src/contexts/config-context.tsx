@@ -59,13 +59,6 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
   };
 
   const toggleMode = () => {
-    // Only allow toggle in development environment
-    const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
-    if (!envDevMode) {
-      console.warn('🔒 Mode toggle disabled in production');
-      return;
-    }
-    
     const newMode = mode === 'dev' ? 'prod' : 'dev';
     if (newMode === 'prod') {
       clearAuthDataAndReload();

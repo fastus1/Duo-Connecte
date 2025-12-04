@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DevModeIndicator } from '@/components/dev-mode-indicator';
+import { ModeToggle } from '@/components/mode-toggle';
 import { getSessionToken } from '@/lib/auth';
 
 export default function Dashboard() {
@@ -76,6 +77,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <DevModeIndicator />
+      <ModeToggle forceShow={true} />
       
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">

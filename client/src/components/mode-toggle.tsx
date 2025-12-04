@@ -3,13 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Wrench, Globe } from 'lucide-react';
 
-export function ModeToggle() {
+interface ModeToggleProps {
+  forceShow?: boolean;
+}
+
+export function ModeToggle({ forceShow = false }: ModeToggleProps) {
   const { mode, toggleMode } = useConfig();
   const isDev = mode === 'dev';
   
-  // Only show toggle in development environment
+  // Only show toggle in development environment (unless forceShow is true)
   const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
-  if (!envDevMode) {
+  if (!envDevMode && !forceShow) {
     return null;
   }
 
