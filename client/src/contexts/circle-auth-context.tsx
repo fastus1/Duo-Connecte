@@ -54,6 +54,8 @@ export function CircleAuthProvider({ children }: CircleAuthProviderProps) {
         publicUid: 'dev123',
         email: 'dev@example.com',
         name: 'Dev User',
+        firstName: 'Dev',
+        lastName: 'User',
         isAdmin: true,
         timestamp: Date.now(),
       };
