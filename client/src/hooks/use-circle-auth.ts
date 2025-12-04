@@ -1,42 +1,43 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { circleUserDataSchema, type CircleUserData } from '@shared/schema';
 import { setThemeFromCircle } from '@/components/theme-provider';
 import { useConfig } from '@/contexts/config-context';
 
 interface CircleAuthState {
-  isListening: boolean;
+  isLoading: boolean;
   userData: CircleUserData['user'] | null;
   error: string | null;
-  timedOut: boolean;
 }
 
-const CIRCLE_AUTH_TIMEOUT_MS = 5000; // 5 seconds timeout (fallback only)
-const AUTH_REQUEST_RETRY_MS = 500; // Retry request every 500ms
-const MAX_RETRIES = 10; // Max retries before timeout
+const CIRCLE_ORIGIN = import.meta.env.VITE_CIRCLE_ORIGIN;
 
 export function useCircleAuth() {
   const { mode } = useConfig();
   const [state, setState] = useState<CircleAuthState>({
-    isListening: false,
+    isLoading: true,
     userData: null,
     error: null,
-    timedOut: false,
   });
-  const messageReceived = useRef(false);
-  const retryCount = useRef(0);
+
+  const requestAuthFromParent = useCallback(() => {
+    if (!CIRCLE_ORIGIN) return;
+    
+    try {
+      console.log('📤 Requesting auth from Circle.so parent...');
+      window.parent.postMessage({ type: 'CIRCLE_AUTH_REQUEST' }, CIRCLE_ORIGIN);
+    } catch (e) {
+      console.error('❌ Failed to send auth request:', e);
+    }
+  }, []);
 
   useEffect(() => {
     const devMode = mode === 'dev';
-    const circleOrigin = import.meta.env.VITE_CIRCLE_ORIGIN;
 
     // Reset state when mode changes
-    messageReceived.current = false;
-    retryCount.current = 0;
     setState({
-      isListening: false,
+      isLoading: !devMode,
       userData: null,
       error: null,
-      timedOut: false,
     });
 
     if (devMode) {
@@ -44,25 +45,25 @@ export function useCircleAuth() {
       return;
     }
 
-    // Vérification critique de la configuration
-    if (!circleOrigin) {
+    if (!CIRCLE_ORIGIN) {
       console.error('❌ VITE_CIRCLE_ORIGIN is not configured!');
       setState({
-        isListening: false,
+        isLoading: false,
         userData: null,
-        error: 'Configuration manquante: VITE_CIRCLE_ORIGIN non défini. Vérifiez vos secrets de production.',
-        timedOut: false,
+        error: 'Configuration manquante: VITE_CIRCLE_ORIGIN non défini.',
       });
       return;
     }
 
-    console.log('🔍 Setting up Circle.so auth listener for:', circleOrigin);
+    console.log('🔍 Setting up Circle.so auth listener for:', CIRCLE_ORIGIN);
+
+    let messageReceived = false;
+    let retryCount = 0;
+    const MAX_RETRIES = 10;
+    const RETRY_INTERVAL = 500;
 
     const handleMessage = (event: MessageEvent) => {
-      console.log('📨 Message received from:', event.origin);
-      
-      if (event.origin !== circleOrigin) {
-        console.error('❌ Unauthorized origin:', event.origin, '(expected:', circleOrigin + ')');
+      if (event.origin !== CIRCLE_ORIGIN) {
         return;
       }
 
@@ -71,77 +72,58 @@ export function useCircleAuth() {
         
         if (data.type === 'CIRCLE_USER_AUTH') {
           console.log('✅ Circle.so user data received');
-          messageReceived.current = true;
+          messageReceived = true;
           
-          // Apply theme from Circle.so if provided
           if (data.theme) {
             console.log('🎨 Applying Circle.so theme:', data.theme);
             setThemeFromCircle(data.theme);
           }
           
           setState({
-            isListening: true,
+            isLoading: false,
             userData: data.user,
             error: null,
-            timedOut: false,
           });
         }
       } catch (error) {
         console.error('❌ Invalid Circle.so data:', error);
-        setState(prev => ({
-          ...prev,
-          error: 'Données invalides reçues de Circle.so',
-        }));
       }
     };
 
     window.addEventListener('message', handleMessage);
-    setState(prev => ({ ...prev, isListening: true }));
 
-    // Request auth data from Circle.so parent (handshake)
-    const requestAuthFromParent = () => {
-      if (messageReceived.current) return;
-      
-      retryCount.current++;
-      console.log(`📤 Requesting auth from Circle.so (attempt ${retryCount.current}/${MAX_RETRIES})...`);
-      
-      try {
-        window.parent.postMessage({ type: 'CIRCLE_AUTH_REQUEST' }, circleOrigin);
-      } catch (e) {
-        console.error('❌ Failed to send auth request to parent:', e);
-      }
-    };
-
-    // Initial request
+    // Request auth data immediately
     requestAuthFromParent();
 
-    // Retry interval
+    // Retry mechanism
     const retryInterval = setInterval(() => {
-      if (messageReceived.current) {
+      if (messageReceived) {
         clearInterval(retryInterval);
         return;
       }
       
-      if (retryCount.current >= MAX_RETRIES) {
+      retryCount++;
+      
+      if (retryCount >= MAX_RETRIES) {
         clearInterval(retryInterval);
         console.error('⏱️ Timeout: No Circle.so response after', MAX_RETRIES, 'attempts');
-        setState(prev => ({
-          ...prev,
-          timedOut: true,
-          error: 'Cette application doit être accédée depuis Circle.so. Veuillez vous connecter à votre communauté Circle.so.',
-        }));
+        setState({
+          isLoading: false,
+          userData: null,
+          error: 'Accès depuis Circle.so requis. Veuillez vous connecter à votre communauté.',
+        });
         return;
       }
       
+      console.log(`📤 Retry ${retryCount}/${MAX_RETRIES}...`);
       requestAuthFromParent();
-    }, AUTH_REQUEST_RETRY_MS);
+    }, RETRY_INTERVAL);
 
     return () => {
       window.removeEventListener('message', handleMessage);
       clearInterval(retryInterval);
-      setState(prev => ({ ...prev, isListening: false }));
     };
-  }, [mode]);
+  }, [mode, requestAuthFromParent]);
 
   return state;
 }

@@ -15,7 +15,7 @@ type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'error
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { mode } = useConfig();
-  const { userData, error: circleError, timedOut } = useCircleAuth();
+  const { userData, error: circleError, isLoading } = useCircleAuth();
   const [authStep, setAuthStep] = useState<AuthStep>('waiting');
   const [error, setError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
@@ -112,8 +112,8 @@ export default function AuthPage() {
     setError(message);
   };
 
-  // Show timeout message if Circle.so message not received
-  if (timedOut && !devMode) {
+  // Show error message if Circle.so auth failed
+  if (circleError && !devMode) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <ModeToggle />
@@ -129,7 +129,7 @@ export default function AuthPage() {
           <CardContent className="space-y-4">
             <Alert className="bg-amber-500/10 border-amber-500/20">
               <AlertDescription data-testid="text-timeout-message">
-                {circleError || 'Cette application doit être accédée depuis Circle.so. Veuillez vous connecter à votre communauté.'}
+                {circleError}
               </AlertDescription>
             </Alert>
             <Button
@@ -146,7 +146,7 @@ export default function AuthPage() {
     );
   }
 
-  if ((authStep === 'waiting' || isValidating) && !timedOut) {
+  if ((authStep === 'waiting' || isValidating || isLoading) && !circleError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <ModeToggle />
