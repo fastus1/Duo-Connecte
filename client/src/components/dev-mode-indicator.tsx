@@ -7,7 +7,7 @@ export function DevModeIndicator() {
   if (!devMode) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50" data-testid="badge-dev-mode">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50" data-testid="badge-dev-mode">
       <Badge 
         variant="default" 
         className="bg-warning text-warning-foreground hover:bg-warning shadow-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-wide"
