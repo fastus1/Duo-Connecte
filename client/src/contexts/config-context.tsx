@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { clearCircleUserCache } from '@/hooks/use-circle-auth';
 
 type AppMode = 'dev' | 'prod';
 
@@ -12,6 +13,13 @@ const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
 interface ConfigProviderProps {
   children: ReactNode;
+}
+
+function clearAllAuthData() {
+  localStorage.removeItem('session_token');
+  localStorage.removeItem('user_id');
+  localStorage.removeItem('session_timestamp');
+  clearCircleUserCache();
 }
 
 export function ConfigProvider({ children }: ConfigProviderProps) {
@@ -36,21 +44,10 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
     const previousMode = mode;
     setModeState(newMode);
     
-    // When switching to PROD mode, clear auth data and reload to get fresh Circle.so data
-    if (previousMode === 'dev' && newMode === 'prod') {
-      localStorage.removeItem('session_token');
-      localStorage.removeItem('user_id');
-      localStorage.removeItem('session_timestamp');
-      console.log('🔒 PROD MODE: Auth data cleared, reloading...');
-      setTimeout(() => window.location.reload(), 100);
-    }
-    
-    // When switching to DEV mode, reload to use mock data
-    if (previousMode === 'prod' && newMode === 'dev') {
-      localStorage.removeItem('session_token');
-      localStorage.removeItem('user_id');
-      localStorage.removeItem('session_timestamp');
-      console.log('🔧 DEV MODE: Auth data cleared, reloading...');
+    // When switching modes, clear all auth data and reload
+    if (previousMode !== newMode) {
+      clearAllAuthData();
+      console.log(`🔄 Mode changed: ${previousMode.toUpperCase()} → ${newMode.toUpperCase()}, reloading...`);
       setTimeout(() => window.location.reload(), 100);
     }
   };

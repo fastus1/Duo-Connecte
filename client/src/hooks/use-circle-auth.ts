@@ -10,6 +10,43 @@ interface CircleAuthState {
 }
 
 const CIRCLE_ORIGIN = import.meta.env.VITE_CIRCLE_ORIGIN;
+const CIRCLE_USER_STORAGE_KEY = 'circle_user_data';
+const CIRCLE_USER_TIMESTAMP_KEY = 'circle_user_timestamp';
+const MAX_CACHE_AGE_MS = 60 * 60 * 1000; // 1 hour max cache
+
+function getCachedUserData(): CircleUserData['user'] | null {
+  try {
+    const timestamp = localStorage.getItem(CIRCLE_USER_TIMESTAMP_KEY);
+    const data = localStorage.getItem(CIRCLE_USER_STORAGE_KEY);
+    
+    if (!timestamp || !data) return null;
+    
+    const age = Date.now() - parseInt(timestamp, 10);
+    if (age > MAX_CACHE_AGE_MS) {
+      localStorage.removeItem(CIRCLE_USER_STORAGE_KEY);
+      localStorage.removeItem(CIRCLE_USER_TIMESTAMP_KEY);
+      return null;
+    }
+    
+    return JSON.parse(data);
+  } catch {
+    return null;
+  }
+}
+
+function setCachedUserData(userData: CircleUserData['user']): void {
+  try {
+    localStorage.setItem(CIRCLE_USER_STORAGE_KEY, JSON.stringify(userData));
+    localStorage.setItem(CIRCLE_USER_TIMESTAMP_KEY, Date.now().toString());
+  } catch {
+    console.error('Failed to cache Circle.so user data');
+  }
+}
+
+export function clearCircleUserCache(): void {
+  localStorage.removeItem(CIRCLE_USER_STORAGE_KEY);
+  localStorage.removeItem(CIRCLE_USER_TIMESTAMP_KEY);
+}
 
 export function useCircleAuth() {
   const { mode } = useConfig();
@@ -42,6 +79,7 @@ export function useCircleAuth() {
 
     if (devMode) {
       console.log('🔧 DEV MODE: Circle.so authentication bypassed');
+      clearCircleUserCache();
       return;
     }
 
@@ -53,6 +91,19 @@ export function useCircleAuth() {
         error: 'Configuration manquante: VITE_CIRCLE_ORIGIN non défini.',
       });
       return;
+    }
+
+    // Check for cached user data first
+    const cachedUser = getCachedUserData();
+    if (cachedUser) {
+      console.log('📦 Using cached Circle.so user data');
+      setState({
+        isLoading: false,
+        userData: cachedUser,
+        error: null,
+      });
+      // Still request fresh data in background
+      requestAuthFromParent();
     }
 
     console.log('🔍 Setting up Circle.so auth listener for:', CIRCLE_ORIGIN);
@@ -71,8 +122,11 @@ export function useCircleAuth() {
         const data = circleUserDataSchema.parse(event.data);
         
         if (data.type === 'CIRCLE_USER_AUTH') {
-          console.log('✅ Circle.so user data received');
+          console.log('✅ Circle.so user data received (fresh)');
           messageReceived = true;
+          
+          // Cache the user data for future refreshes
+          setCachedUserData(data.user);
           
           if (data.theme) {
             console.log('🎨 Applying Circle.so theme:', data.theme);
@@ -92,36 +146,41 @@ export function useCircleAuth() {
 
     window.addEventListener('message', handleMessage);
 
-    // Request auth data immediately
-    requestAuthFromParent();
-
-    // Retry mechanism
-    const retryInterval = setInterval(() => {
-      if (messageReceived) {
-        clearInterval(retryInterval);
-        return;
-      }
-      
-      retryCount++;
-      
-      if (retryCount >= MAX_RETRIES) {
-        clearInterval(retryInterval);
-        console.error('⏱️ Timeout: No Circle.so response after', MAX_RETRIES, 'attempts');
-        setState({
-          isLoading: false,
-          userData: null,
-          error: 'Accès depuis Circle.so requis. Veuillez vous connecter à votre communauté.',
-        });
-        return;
-      }
-      
-      console.log(`📤 Retry ${retryCount}/${MAX_RETRIES}...`);
+    // Only start retry mechanism if no cached data
+    if (!cachedUser) {
       requestAuthFromParent();
-    }, RETRY_INTERVAL);
+
+      const retryInterval = setInterval(() => {
+        if (messageReceived) {
+          clearInterval(retryInterval);
+          return;
+        }
+        
+        retryCount++;
+        
+        if (retryCount >= MAX_RETRIES) {
+          clearInterval(retryInterval);
+          console.error('⏱️ Timeout: No Circle.so response after', MAX_RETRIES, 'attempts');
+          setState({
+            isLoading: false,
+            userData: null,
+            error: 'Accès depuis Circle.so requis. Veuillez vous connecter à votre communauté.',
+          });
+          return;
+        }
+        
+        console.log(`📤 Retry ${retryCount}/${MAX_RETRIES}...`);
+        requestAuthFromParent();
+      }, RETRY_INTERVAL);
+
+      return () => {
+        window.removeEventListener('message', handleMessage);
+        clearInterval(retryInterval);
+      };
+    }
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      clearInterval(retryInterval);
     };
   }, [mode, requestAuthFromParent]);
 
