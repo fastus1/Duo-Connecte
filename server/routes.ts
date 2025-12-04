@@ -122,7 +122,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error) {
       console.error('Error in /api/auth/validate:', error);
-      return res.status(500).json({ error: 'Erreur serveur lors de la validation' });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error details:', errorMessage);
+      return res.status(500).json({ 
+        error: 'Erreur serveur lors de la validation',
+        details: process.env.DEV_MODE === 'true' ? errorMessage : undefined
+      });
     }
   });
 
