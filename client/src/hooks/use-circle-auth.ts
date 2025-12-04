@@ -10,7 +10,9 @@ interface CircleAuthState {
   timedOut: boolean;
 }
 
-const CIRCLE_AUTH_TIMEOUT_MS = 3000; // 3 seconds timeout
+const CIRCLE_AUTH_TIMEOUT_MS = 5000; // 5 seconds timeout (fallback only)
+const AUTH_REQUEST_RETRY_MS = 500; // Retry request every 500ms
+const MAX_RETRIES = 10; // Max retries before timeout
 
 export function useCircleAuth() {
   const { mode } = useConfig();
@@ -21,6 +23,7 @@ export function useCircleAuth() {
     timedOut: false,
   });
   const messageReceived = useRef(false);
+  const retryCount = useRef(0);
 
   useEffect(() => {
     const devMode = mode === 'dev';
@@ -28,6 +31,7 @@ export function useCircleAuth() {
 
     // Reset state when mode changes
     messageReceived.current = false;
+    retryCount.current = 0;
     setState({
       isListening: false,
       userData: null,
@@ -52,8 +56,7 @@ export function useCircleAuth() {
       return;
     }
 
-    console.log('🔍 Waiting for Circle.so message from:', circleOrigin);
-    console.log('⏱️ Timeout set to', CIRCLE_AUTH_TIMEOUT_MS, 'ms');
+    console.log('🔍 Setting up Circle.so auth listener for:', circleOrigin);
 
     const handleMessage = (event: MessageEvent) => {
       console.log('📨 Message received from:', event.origin);
@@ -95,22 +98,47 @@ export function useCircleAuth() {
     window.addEventListener('message', handleMessage);
     setState(prev => ({ ...prev, isListening: true }));
 
-    // Timeout: if no message received after CIRCLE_AUTH_TIMEOUT_MS, show error
-    const timeoutId = setTimeout(() => {
-      if (!messageReceived.current) {
-        console.error('⏱️ Timeout: No Circle.so message received after', CIRCLE_AUTH_TIMEOUT_MS, 'ms');
-        console.error('🚫 Access blocked: App must be accessed from Circle.so iframe');
+    // Request auth data from Circle.so parent (handshake)
+    const requestAuthFromParent = () => {
+      if (messageReceived.current) return;
+      
+      retryCount.current++;
+      console.log(`📤 Requesting auth from Circle.so (attempt ${retryCount.current}/${MAX_RETRIES})...`);
+      
+      try {
+        window.parent.postMessage({ type: 'CIRCLE_AUTH_REQUEST' }, circleOrigin);
+      } catch (e) {
+        console.error('❌ Failed to send auth request to parent:', e);
+      }
+    };
+
+    // Initial request
+    requestAuthFromParent();
+
+    // Retry interval
+    const retryInterval = setInterval(() => {
+      if (messageReceived.current) {
+        clearInterval(retryInterval);
+        return;
+      }
+      
+      if (retryCount.current >= MAX_RETRIES) {
+        clearInterval(retryInterval);
+        console.error('⏱️ Timeout: No Circle.so response after', MAX_RETRIES, 'attempts');
         setState(prev => ({
           ...prev,
           timedOut: true,
           error: 'Cette application doit être accédée depuis Circle.so. Veuillez vous connecter à votre communauté Circle.so.',
         }));
+        return;
       }
-    }, CIRCLE_AUTH_TIMEOUT_MS);
+      
+      requestAuthFromParent();
+    }, AUTH_REQUEST_RETRY_MS);
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      clearTimeout(timeoutId);
+      clearInterval(retryInterval);
       setState(prev => ({ ...prev, isListening: false }));
     };
   }, [mode]);

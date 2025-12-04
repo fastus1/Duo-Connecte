@@ -77,34 +77,64 @@ Utilisateur mock : `dev@example.com` (Admin, redirige vers `/dashboard`)
 
 ## Intégration Circle.so
 
+**Handshake bidirectionnel** : L'iframe peut demander les données à Circle.so à tout moment (déconnexion, changement de mode), pas seulement au chargement initial.
+
 Script JavaScript (Header Custom Code) :
 ```javascript
-window.addEventListener('load', function() {
-  const iframe = document.querySelector('iframe[src*="replit.app"]');
-  const checkUser = setInterval(function() {
-    if (window.circleUser && iframe) {
-      clearInterval(checkUser);
-      // isAdmin est STRING "true"/"false" - convertir en boolean
-      const isAdmin = window.circleUser.isAdmin === 'true' || window.circleUser.isAdmin === true;
-      iframe.contentWindow.postMessage({
-        type: 'CIRCLE_USER_AUTH',
-        user: {
-          publicUid: window.circleUser.publicUid,
-          email: window.circleUser.email,
-          name: window.circleUser.name,
-          isAdmin: isAdmin,
-          timestamp: Date.now()
-        },
-        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-      }, 'https://VOTRE-APP.replit.app');
+(function() {
+  const IFRAME_ORIGIN = 'https://VOTRE-APP.replit.app';
+  let cachedUserData = null;
+  
+  function buildUserPayload() {
+    if (!window.circleUser) return null;
+    const isAdmin = window.circleUser.isAdmin === 'true' || window.circleUser.isAdmin === true;
+    return {
+      type: 'CIRCLE_USER_AUTH',
+      user: {
+        publicUid: window.circleUser.publicUid,
+        email: window.circleUser.email,
+        name: window.circleUser.name,
+        isAdmin: isAdmin,
+        timestamp: Date.now()
+      },
+      theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+    };
+  }
+  
+  function sendAuthToIframe(iframe) {
+    const payload = buildUserPayload();
+    if (payload && iframe && iframe.contentWindow) {
+      cachedUserData = payload;
+      iframe.contentWindow.postMessage(payload, IFRAME_ORIGIN);
     }
-  }, 100);
-});
+  }
+  
+  // Écouter les demandes de l'iframe
+  window.addEventListener('message', function(event) {
+    if (event.origin !== IFRAME_ORIGIN) return;
+    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+      const iframe = document.querySelector('iframe[src*="replit.app"]');
+      sendAuthToIframe(iframe);
+    }
+  });
+  
+  // Envoi initial au chargement
+  window.addEventListener('load', function() {
+    const iframe = document.querySelector('iframe[src*="replit.app"]');
+    const checkUser = setInterval(function() {
+      if (window.circleUser && iframe) {
+        clearInterval(checkUser);
+        sendAuthToIframe(iframe);
+      }
+    }, 100);
+  });
+})();
 ```
 
 **Points critiques Circle.so** :
 - Utilise **camelCase** : `publicUid`, `isAdmin`, `firstName`, `lastName`
 - `isAdmin` retourné comme STRING `"true"`/`"false"`, doit être converti en boolean
+- Le script écoute `CIRCLE_AUTH_REQUEST` et répond avec les données utilisateur (handshake)
 
 ## Sécurité
 
