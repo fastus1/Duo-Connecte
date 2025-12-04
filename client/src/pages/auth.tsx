@@ -15,7 +15,7 @@ type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'error
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { mode } = useConfig();
-  const { userData, error: circleError } = useCircleAuth();
+  const { userData, error: circleError, timedOut } = useCircleAuth();
   const [authStep, setAuthStep] = useState<AuthStep>('waiting');
   const [error, setError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
@@ -112,7 +112,41 @@ export default function AuthPage() {
     setError(message);
   };
 
-  if (authStep === 'waiting' || isValidating) {
+  // Show timeout message if Circle.so message not received
+  if (timedOut && !devMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <ModeToggle />
+        <Card className="w-full max-w-md shadow-lg" data-testid="card-timeout">
+          <CardHeader>
+            <div className="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-amber-500/10">
+              <AlertCircle className="h-6 w-6 text-amber-500" />
+            </div>
+            <CardTitle className="text-2xl font-semibold text-center">
+              Accès restreint
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert className="bg-amber-500/10 border-amber-500/20">
+              <AlertDescription data-testid="text-timeout-message">
+                {circleError || 'Cette application doit être accédée depuis Circle.so. Veuillez vous connecter à votre communauté.'}
+              </AlertDescription>
+            </Alert>
+            <Button
+              onClick={() => window.location.reload()}
+              variant="outline"
+              className="w-full h-12"
+              data-testid="button-retry"
+            >
+              Réessayer
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if ((authStep === 'waiting' || isValidating) && !timedOut) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <ModeToggle />
