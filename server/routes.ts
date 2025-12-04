@@ -66,6 +66,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // ALWAYS validate format and timestamp (even in DEV_MODE for security)
       const formatCheck = validateUserData(userData);
       if (!formatCheck.valid) {
+        console.error('❌ Validation failed:', formatCheck.error, 'for user data:', {
+          email: userData.email,
+          publicUid: userData.publicUid,
+          name: userData.name,
+          timestamp: userData.timestamp,
+          timestampAge: Date.now() - userData.timestamp,
+        });
         return res.status(400).json({ error: formatCheck.error });
       }
 
