@@ -27,13 +27,22 @@ function clearAuthDataAndReload() {
 
 export function ConfigProvider({ children }: ConfigProviderProps) {
   const [mode, setModeState] = useState<AppMode>(() => {
+    const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
+    
+    // In production (VITE_DEV_MODE !== 'true'), ALWAYS force prod mode
+    // This prevents localStorage from overriding production security
+    if (!envDevMode) {
+      localStorage.removeItem('app_mode'); // Clean up any stale dev mode
+      return 'prod';
+    }
+    
+    // In development, allow localStorage toggle
     const stored = localStorage.getItem('app_mode') as AppMode;
     if (stored === 'dev' || stored === 'prod') {
       return stored;
     }
     
-    const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
-    return envDevMode ? 'dev' : 'prod';
+    return 'dev';
   });
 
   useEffect(() => {
@@ -50,6 +59,13 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
   };
 
   const toggleMode = () => {
+    // Only allow toggle in development environment
+    const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
+    if (!envDevMode) {
+      console.warn('🔒 Mode toggle disabled in production');
+      return;
+    }
+    
     const newMode = mode === 'dev' ? 'prod' : 'dev';
     if (newMode === 'prod') {
       clearAuthDataAndReload();

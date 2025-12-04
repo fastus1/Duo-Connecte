@@ -6,6 +6,12 @@ import { Wrench, Globe } from 'lucide-react';
 export function ModeToggle() {
   const { mode, toggleMode } = useConfig();
   const isDev = mode === 'dev';
+  
+  // Only show toggle in development environment
+  const envDevMode = import.meta.env.VITE_DEV_MODE === 'true';
+  if (!envDevMode) {
+    return null;
+  }
 
   return (
     <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
