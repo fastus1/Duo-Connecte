@@ -1,446 +1,135 @@
-# Circle.so Authentication Template - Webapp Replit
+# Circle.so Authentication Template
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
-Template d'application web Node.js/Express + React/TypeScript conçue pour être intégrée dans Circle.so via iframe, avec un système d'authentification "Defense in Depth" à 3 couches de sécurité.
+Template Node.js/Express + React/TypeScript pour intégration Circle.so via iframe avec authentification "Defense in Depth" à 3 couches.
 
-## 🏗️ Architecture de Sécurité
+**Usage** : Base réutilisable pour applications Circle.so.
 
-### Système d'authentification à 3 couches :
+## Architecture de Sécurité
 
-1. **Couche 1 : Authentification Circle.so**
-   - Pages réservées aux membres uniquement
-   - Gestion native du login par Circle.so
-   - Pas de forfait Business requis
+### 3 Couches d'Authentification
 
-2. **Couche 2 : Validation PostMessage + Multi-données**
-   - Réception sécurisée des données via `window.postMessage`
-   - Validation stricte de l'origine (Circle.so uniquement)
-   - Validation multi-champs côté serveur :
-     - Format email (regex)
-     - ID numérique positif
-     - Nom complet (prénom + nom)
-     - Timestamp anti-replay (max 60 secondes)
-   - Cross-field validation avec base de données
+1. **Circle.so** : Pages membres uniquement, login natif
+2. **PostMessage** : Validation origine + multi-champs (email, publicUid, timestamp 60s max)
+3. **NIP Personnel** : 4-6 chiffres, bcrypt 10 rounds, rate limit 5/15min, JWT 60min
 
-3. **Couche 3 : NIP Personnel (Multi-Factor)**
-   - NIP de 4-6 chiffres pour chaque utilisateur
-   - Hash bcrypt (10 rounds) - jamais stocké en clair
-   - Rate limiting : 5 tentatives par 15 minutes
-   - Session JWT avec expiration 60 minutes
+## Stack Technique
 
-## 🚀 Stack Technique
+- **Frontend** : React 18, TypeScript, Wouter, TanStack Query v5, shadcn/ui, Tailwind CSS
+- **Backend** : Node.js 20, Express, Drizzle ORM, PostgreSQL (Neon), JWT, bcrypt, express-rate-limit
 
-### Frontend
-- **Framework** : React 18 + TypeScript
-- **Routing** : Wouter
-- **State Management** : TanStack Query v5
-- **UI Components** : shadcn/ui + Radix UI
-- **Styling** : Tailwind CSS + CSS Variables
-- **Forms** : React Hook Form + Zod validation
-- **Icons** : Lucide React
-
-### Backend
-- **Runtime** : Node.js 20
-- **Framework** : Express.js
-- **ORM** : Drizzle ORM
-- **Database** : PostgreSQL (Neon) - persistante
-- **Authentication** : JWT + bcrypt
-- **Security** : express-rate-limit, CORS
-- **Validation** : Zod schemas
-
-## 📁 Structure du Projet
+## Structure
 
 ```
-project/
-├── client/                      # Frontend React
-│   ├── src/
-│   │   ├── components/          # Composants UI
-│   │   │   ├── dev-mode-indicator.tsx
-│   │   │   ├── pin-creation-form.tsx
-│   │   │   ├── pin-login-form.tsx
-│   │   │   ├── theme-provider.tsx  # Gestion automatique du thème
-│   │   │   └── ui/              # shadcn/ui components
-│   │   ├── hooks/               # React hooks
-│   │   │   └── use-circle-auth.ts  # Hook postMessage + thème
-│   │   ├── lib/                 # Utilities
-│   │   │   ├── auth.ts          # Auth helpers
-│   │   │   ├── queryClient.ts   # TanStack Query
-│   │   │   └── utils.ts
-│   │   ├── pages/               # Pages
-│   │   │   ├── auth.tsx         # Page authentification
-│   │   │   ├── dashboard.tsx    # Dashboard admin protégé
-│   │   │   ├── user-home.tsx    # Page d'accueil utilisateur
-│   │   │   └── not-found.tsx
-│   │   ├── App.tsx              # Routes + ThemeProvider
-│   │   ├── index.css            # Styles globaux + thème
-│   │   └── main.tsx
-│   └── index.html
-├── server/                      # Backend Express
-│   ├── app.ts                   # Configuration Express
-│   ├── routes.ts                # API endpoints
-│   ├── storage.ts               # Interface storage
-│   └── index-dev.ts             # Dev server
-├── shared/                      # Code partagé
-│   └── schema.ts                # Schémas Drizzle + Zod
-├── .env.example                 # Variables d'environnement
-└── replit.md                    # Ce fichier
+client/src/
+  components/     # UI (pin-creation, pin-login, theme-provider, mode-toggle)
+  contexts/       # config-context.tsx (DEV/PROD mode)
+  hooks/          # use-circle-auth.ts (postMessage + thème)
+  pages/          # auth.tsx, dashboard.tsx, user-home.tsx
+  lib/            # auth.ts, queryClient.ts
+
+server/
+  app.ts          # Express + CORS + trust proxy
+  routes.ts       # API endpoints
+  storage.ts      # DB interface
+  middleware.ts   # JWT, bcrypt, rate limiting
+
+shared/
+  schema.ts       # Drizzle + Zod schemas
 ```
 
-## 🔐 Endpoints API
+## API Endpoints
 
-### POST `/api/auth/validate`
-Valide les données utilisateur reçues de Circle.so
+### POST /api/auth/validate
+Valide données Circle.so, retourne `validation_token` (5min) pour nouveaux membres.
 
-**Body:**
-```json
-{
-  "user": {
-    "id": 12345,
-    "email": "user@example.com",
-    "name": "John Doe",
-    "timestamp": 1234567890000
-  }
-}
-```
+### POST /api/auth/create-pin
+Crée NIP avec `validation_token`, retourne `session_token` JWT.
 
-**Response (nouveau membre):**
-```json
-{
-  "status": "new_user",
-  "user_id": 12345,
-  "email": "user@example.com",
-  "name": "John Doe",
-  "is_admin": false
-}
-```
+### POST /api/auth/validate-pin
+Valide NIP (rate limited 5/15min), retourne `session_token` JWT.
 
-**Response (membre existant):**
-```json
-{
-  "status": "existing_user",
-  "user_id": "uuid",
-  "is_admin": false,
-  "requires_pin": true
-}
-```
+### GET /api/auth/me
+Infos utilisateur (protégé par JWT).
 
-### POST `/api/auth/create-pin`
-Crée un NIP pour un nouveau membre
+## Variables d'Environnement
 
-**Body:**
-```json
-{
-  "email": "user@example.com",
-  "circle_id": 12345,
-  "name": "John Doe",
-  "pin": "1234"
-}
-```
+### Backend (process.env)
+| Variable | Description |
+|----------|-------------|
+| DATABASE_URL | PostgreSQL Neon |
+| SESSION_SECRET | Secret sessions |
+| DEV_MODE | `true`/`false` - Mode développement |
+| CIRCLE_ORIGIN | Origine Circle.so |
 
-**Response:**
-```json
-{
-  "success": true,
-  "session_token": "jwt_token_here",
-  "user_id": "uuid"
-}
-```
+### Frontend (import.meta.env)
+| Variable | Description |
+|----------|-------------|
+| VITE_DEV_MODE | Mode DEV (compilé au build) |
+| VITE_CIRCLE_ORIGIN | Origine Circle.so |
 
-### POST `/api/auth/validate-pin`
-Valide le NIP d'un membre existant (rate limited: 5/15min)
+**Important** : `DEV_MODE` (backend) != `VITE_DEV_MODE` (frontend). Ne jamais utiliser `VITE_*` côté serveur.
 
-**Body:**
-```json
-{
-  "email": "user@example.com",
-  "pin": "1234"
-}
-```
+## Mode Développement
 
-**Response:**
-```json
-{
-  "success": true,
-  "session_token": "jwt_token_here",
-  "user_id": "uuid",
-  "name": "John Doe"
-}
-```
+Utilisateur mock : `dev@example.com` (Admin, redirige vers `/dashboard`)
 
-## 🎨 Design System
+## Intégration Circle.so
 
-### Couleurs de branding (Circle.so)
-
-**Mode clair :**
-- Primary: `#074491` (213 90% 29%)
-- Links: `#2563EB`
-- Success: `#009a2a`
-- Warning: `#ffb200`
-- Destructive: `#db0e00`
-
-**Mode sombre :**
-- Primary: `#3085F5` (211 100% 60%)
-- Background: `#2B2E33`
-- Success: `#009a2a`
-- Warning: `#ffb200`
-- Destructive: `#db0e00`
-
-### Typographie
-- Font: Inter (system-ui fallback)
-- Headers: text-2xl font-semibold
-- Labels: text-base font-medium
-- Body: text-base
-- Helper text: text-sm
-
-## ⚙️ Variables d'Environnement
-
-Créer un fichier `.env` basé sur `.env.example` :
-
-```bash
-# Obligatoires
-JWT_SECRET=votre_secret_jwt_très_long_et_complexe
-DATABASE_URL=postgresql://user:password@host:port/database
-
-# Circle.so (production)
-VITE_CIRCLE_ORIGIN=https://votre-espace.circle.so
-
-# Mode développement (bypass auth Circle.so)
-VITE_DEV_MODE=true
-
-# Optionnels (valeurs par défaut)
-SESSION_TIMEOUT=3600000
-PIN_ATTEMPTS_LIMIT=5
-PIN_ATTEMPTS_WINDOW=900000
-PORT=5000
-```
-
-## 🚀 Démarrage
-
-### Mode Développement (avec bypass auth)
-```bash
-# Définir la variable d'environnement
-VITE_DEV_MODE=true
-
-# Lancer l'application
-npm run dev
-```
-
-L'app sera accessible sur `http://localhost:5000` avec un utilisateur mock **admin** :
-- Email: `dev@example.com`
-- Nom: `Dev User`
-- isAdmin: `true`
-- Redirection automatique vers `/dashboard`
-
-### Mode Production (avec Circle.so)
-```bash
-# Définir les variables
-VITE_DEV_MODE=false
-VITE_CIRCLE_ORIGIN=https://votre-espace.circle.so
-
-# Lancer l'application
-npm run dev
-```
-
-## 🔗 Intégration Circle.so
-
-### Étape 1 : Configurer les pages protégées
-Dans Circle.so → Settings → Privacy → Pages :
-- Activer "Members Only" sur les pages contenant l'iframe
-
-### Étape 2 : Ajouter le code JavaScript
-Dans Circle.so → Settings → Custom Code → Header :
-
+Script JavaScript (Header Custom Code) :
 ```javascript
 window.addEventListener('load', function() {
   const iframe = document.querySelector('iframe[src*="replit.app"]');
-  
   const checkUser = setInterval(function() {
     if (window.circleUser && iframe) {
       clearInterval(checkUser);
-      
-      const isDark = document.documentElement.classList.contains('dark') || 
-                     document.body.classList.contains('dark-mode');
-      
-      // IMPORTANT: Circle.so utilise camelCase (publicUid, isAdmin, etc.)
-      // isAdmin est une STRING "true"/"false", il faut la convertir en boolean
+      // isAdmin est STRING "true"/"false" - convertir en boolean
       const isAdmin = window.circleUser.isAdmin === 'true' || window.circleUser.isAdmin === true;
-      
-      const userData = {
+      iframe.contentWindow.postMessage({
         type: 'CIRCLE_USER_AUTH',
         user: {
-          publicUid: window.circleUser.publicUid || window.circleUser.id || 'unknown',
+          publicUid: window.circleUser.publicUid,
           email: window.circleUser.email,
           name: window.circleUser.name,
-          firstName: window.circleUser.firstName,
-          lastName: window.circleUser.lastName,
           isAdmin: isAdmin,
           timestamp: Date.now()
         },
-        theme: isDark ? 'dark' : 'light'
-      };
-      
-      console.log('📤 Sending to iframe:', userData);
-      console.log('🔧 isAdmin converted:', isAdmin);
-      
-      iframe.contentWindow.postMessage(
-        userData, 
-        'https://web-template-base-ok.replit.app'
-      );
+        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+      }, 'https://VOTRE-APP.replit.app');
     }
   }, 100);
 });
 ```
 
-**Note importante** : Remplacez `https://web-template-base-ok.replit.app` par l'URL de votre déploiement Replit.
+**Points critiques Circle.so** :
+- Utilise **camelCase** : `publicUid`, `isAdmin`, `firstName`, `lastName`
+- `isAdmin` retourné comme STRING `"true"`/`"false"`, doit être converti en boolean
 
-### Étape 3 : Intégrer l'iframe
-Sur votre page Circle.so, ajouter l'iframe :
+## Sécurité
 
-```html
-<iframe 
-  src="https://votre-app.replit.app" 
-  width="100%" 
-  height="600" 
-  frameborder="0"
-  allow="clipboard-write"
-></iframe>
-```
+- Trust proxy configuré pour rate limiting
+- CORS dynamique (URL auto-détectée via REPLIT_DEV_DOMAIN/REPLIT_DEPLOYMENT_URL)
+- Validation timestamp anti-replay (60s max)
+- Sync admin depuis Circle.so à chaque login
+- bcrypt 10 rounds, JWT 60min
 
-## 🛡️ Sécurité
+## Base de Données
 
-### Protections implémentées
-- ✅ HTTPS obligatoire (Replit + Circle.so)
-- ✅ Validation origine stricte postMessage
-- ✅ Validation multi-champs (email, publicUid, nom, timestamp)
-- ✅ Cross-field validation en base de données
-- ✅ Anti-replay attack (timestamp 60s max)
-- ✅ Hash bcrypt (10 rounds) pour NIP
-- ✅ Rate limiting (5 tentatives/15min)
-- ✅ Session JWT avec expiration 60min
-- ✅ Logging des tentatives de connexion
-- ✅ CORS configuré pour Circle.so uniquement
-- ✅ Synchronisation automatique du statut admin à chaque connexion
-
-### Attaques bloquées
-- ❌ Accès non-membres → Bloqué par Circle.so
-- ❌ Usurpation entre membres → Bloquée par NIP
-- ❌ Manipulation données → Détectée par validation
-- ❌ Replay attacks → Bloqués par timestamp
-- ❌ Brute force NIP → Bloqué par rate limiting
-- ❌ XSS → Protégé par validation + React
-- ❌ SQL Injection → Protégé par Drizzle ORM
-
-## 📊 Base de Données
-
-### Table: users
 ```sql
-CREATE TABLE users (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT UNIQUE NOT NULL,
-  public_uid TEXT NOT NULL,
-  name TEXT NOT NULL,
-  pin_hash TEXT NOT NULL,
-  is_admin BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_login TIMESTAMP
-);
+users: id, email, public_uid, name, pin_hash, is_admin, created_at, last_login
+login_attempts: id, user_id, success, ip_address, timestamp
 ```
 
-### Table: login_attempts
-```sql
-CREATE TABLE login_attempts (
-  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id VARCHAR NOT NULL REFERENCES users(id),
-  success BOOLEAN NOT NULL,
-  ip_address TEXT,
-  timestamp TIMESTAMP DEFAULT NOW()
-);
-```
+## Navigation
 
-## 🔄 Flux Utilisateur
+- **Admins** : Accès `/dashboard` + `/user-home`, boutons navigation
+- **Utilisateurs** : `/user-home` uniquement, redirection auto si accès `/dashboard`
 
-### Nouveau membre (première connexion)
-1. Connexion sur Circle.so
-2. Accès page avec iframe webapp
-3. JavaScript Circle.so → postMessage (inclut isAdmin + theme)
-4. Frontend applique le thème automatiquement
-5. Frontend envoie au backend `/validate`
-6. Backend détecte nouveau membre
-7. Formulaire création NIP (4-6 chiffres)
-8. Backend hash NIP + crée compte (avec isAdmin)
-9. JWT généré (60 min)
-10. Redirection basée sur rôle :
-    - Admin → `/dashboard`
-    - Utilisateur → `/user-home`
+## Notes Développeurs
 
-### Membre existant (reconnexion)
-1. Connexion sur Circle.so
-2. Accès page avec iframe webapp
-3. JavaScript Circle.so → postMessage (inclut isAdmin + theme)
-4. Frontend applique le thème automatiquement
-5. Frontend envoie au backend `/validate`
-6. Backend détecte membre existant + **synchronise isAdmin depuis Circle.so**
-7. Formulaire login NIP
-8. Backend valide NIP (bcrypt compare)
-9. JWT généré (60 min)
-10. Redirection basée sur rôle :
-    - Admin → `/dashboard`
-    - Utilisateur → `/user-home`
-
-## 🎯 État du Projet
-
-### ✅ Fonctionnalités Complétées
-
-**Phase 1 : Schema & Frontend**
-- ✅ Schémas de données (users avec isAdmin, login_attempts)
-- ✅ Couleurs de branding Circle.so (light + dark mode)
-- ✅ Composants React (PinCreation, PinLogin, ThemeProvider)
-- ✅ Hook useCircleAuth (postMessage + détection thème)
-- ✅ Pages (Auth, Dashboard admin, UserHome)
-- ✅ DevModeIndicator
-- ✅ Routing basé sur les rôles
-
-**Phase 2 : Backend**
-- ✅ Storage interface complète (getUserByEmail, createUser, updateUserRole, etc.)
-- ✅ Endpoints API (/validate, /create-pin, /validate-pin, /me)
-- ✅ JWT generation/validation
-- ✅ Rate limiting middleware (5/15min)
-- ✅ Mode DEV avec utilisateur mock
-- ✅ Synchronisation automatique du statut admin
-- ✅ **Migration vers PostgreSQL persistante (Drizzle ORM + Neon)**
-
-**Phase 3 : Integration & Testing**
-- ✅ Connexion frontend ↔ backend fonctionnelle
-- ✅ Gestion erreurs et états de chargement
-- ✅ Review architect complet
-- ✅ Correction de sécurité : admin status sync
-- ✅ **Base de données persistante opérationnelle**
-- ✅ **Navigation bidirectionnelle dashboard ↔ user-home pour admins**
-- ✅ **Script Circle.so corrigé avec camelCase (publicUid, isAdmin, firstName, lastName)**
-- ✅ **Conversion isAdmin de STRING vers boolean dans le script Circle.so**
-- ✅ **Backend utilise DEV_MODE au lieu de VITE_DEV_MODE**
-- ✅ **Authentification admin fonctionnelle en production avec Circle.so**
-
-### 🔜 Améliorations Futures
-
-- [ ] Tests e2e avec Playwright pour validation complète
-- [ ] Invalidation des sessions JWT lors de changements de rôle
-- [ ] Monitoring des changements de rôle admin
-- [ ] Support multi-langue (i18n)
-- [ ] Dashboard admin avec gestion utilisateurs
-
-## 📝 Notes
-
-- Le mode DEV permet de développer sans Circle.so
-- Les sessions expirent après 60 min d'inactivité
-- Le NIP est TOUJOURS hashé, jamais stocké en clair
-- Rate limiting s'applique par IP et par email
-- Les couleurs s'adaptent automatiquement au thème clair/sombre
-- **Important** : Le statut admin est synchronisé depuis Circle.so à chaque connexion pour éviter les privilèges obsolètes
-- Les non-admins sont automatiquement redirigés vers `/user-home` s'ils tentent d'accéder au `/dashboard`
-- **Navigation** : Les admins ont accès aux deux pages (dashboard + user-home) avec des boutons de navigation. Les non-admins ne voient que la page utilisateur.
-- **Script Circle.so** : 
-  - Utilise **camelCase** : `publicUid`, `firstName`, `lastName`, `isAdmin` (pas snake_case)
-  - **IMPORTANT** : `isAdmin` est une STRING `"true"/"false"` retournée par Circle.so, le script la convertit en boolean
-  - Backend utilise `DEV_MODE` (pas `VITE_DEV_MODE` qui est frontend-only)
+- Mode DEV bypass Circle.so avec utilisateur admin
+- Sessions expirent après 60min
+- NIP toujours hashé (jamais en clair)
+- Thème sync automatique avec Circle.so
+- Statut admin sync à chaque connexion
