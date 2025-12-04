@@ -35,7 +35,7 @@ export default function AuthPage() {
         publicUid: 'dev123',
         email: 'dev@example.com',
         name: 'Dev User',
-        isAdmin: false,
+        isAdmin: true,
         timestamp: Date.now(),
       };
       
