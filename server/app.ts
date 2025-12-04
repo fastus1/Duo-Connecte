@@ -33,9 +33,29 @@ const circleOrigin = process.env.CIRCLE_ORIGIN || process.env.VITE_CIRCLE_ORIGIN
 const devMode = process.env.DEV_MODE === 'true';
 
 // Get app's own origin dynamically from Replit environment
-const appOrigin = process.env.REPLIT_DEV_DOMAIN 
-  ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-  : process.env.REPLIT_DEPLOYMENT_URL || null;
+// REPLIT_DOMAINS contains the deployment domain in production
+const getAppOrigins = (): string[] => {
+  const origins: string[] = [];
+  
+  // Dev domain
+  if (process.env.REPLIT_DEV_DOMAIN) {
+    origins.push(`https://${process.env.REPLIT_DEV_DOMAIN}`);
+  }
+  
+  // Deployment URL
+  if (process.env.REPLIT_DEPLOYMENT_URL) {
+    origins.push(process.env.REPLIT_DEPLOYMENT_URL);
+  }
+  
+  // REPLIT_DOMAINS contains comma-separated list of domains
+  if (process.env.REPLIT_DOMAINS) {
+    process.env.REPLIT_DOMAINS.split(',').forEach(domain => {
+      origins.push(`https://${domain.trim()}`);
+    });
+  }
+  
+  return origins;
+};
 
 export const corsMiddleware = cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
@@ -47,19 +67,22 @@ export const corsMiddleware = cors({
       return callback(null, true);
     }
     
-    // In production, allow Circle.so origin AND the app's own origin
-    // (since API calls from the iframe come from the app itself)
+    // In production, allow Circle.so origin AND the app's own origins
     const allowedOrigins = [
       circleOrigin,
-      appOrigin, // App's own origin (dynamic from Replit env)
-    ].filter(Boolean); // Remove undefined values
+      ...getAppOrigins(),
+    ].filter(Boolean);
     
-    if (allowedOrigins.some(allowed => allowed === origin)) {
+    // Log for debugging (remove in production)
+    console.log('CORS check - Origin:', origin, 'Allowed:', allowedOrigins);
+    
+    if (allowedOrigins.some(allowed => origin.includes(allowed?.replace('https://', '') || ''))) {
       return callback(null, true);
     }
     
-    // Otherwise reject
-    callback(new Error('Not allowed by CORS'));
+    // Otherwise reject with proper CORS error (not 500)
+    console.error('CORS rejected:', origin);
+    return callback(null, false);
   },
   credentials: true,
 });
