@@ -8,7 +8,7 @@ export function ModeToggle() {
   const isDev = mode === 'dev';
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-full px-3 py-2 border shadow-lg">
+    <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
       <Badge 
         variant={isDev ? "default" : "secondary"}
         className="text-xs font-medium"
