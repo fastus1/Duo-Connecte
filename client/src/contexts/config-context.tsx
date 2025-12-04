@@ -33,11 +33,31 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
   }, [mode]);
 
   const setMode = (newMode: AppMode) => {
+    const previousMode = mode;
     setModeState(newMode);
+    
+    // When switching to PROD mode, clear auth data and reload to get fresh Circle.so data
+    if (previousMode === 'dev' && newMode === 'prod') {
+      localStorage.removeItem('session_token');
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('session_timestamp');
+      console.log('🔒 PROD MODE: Auth data cleared, reloading...');
+      setTimeout(() => window.location.reload(), 100);
+    }
+    
+    // When switching to DEV mode, reload to use mock data
+    if (previousMode === 'prod' && newMode === 'dev') {
+      localStorage.removeItem('session_token');
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('session_timestamp');
+      console.log('🔧 DEV MODE: Auth data cleared, reloading...');
+      setTimeout(() => window.location.reload(), 100);
+    }
   };
 
   const toggleMode = () => {
-    setModeState(prev => prev === 'dev' ? 'prod' : 'dev');
+    const newMode = mode === 'dev' ? 'prod' : 'dev';
+    setMode(newMode);
   };
 
   return (

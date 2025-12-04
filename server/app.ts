@@ -73,15 +73,11 @@ export const corsMiddleware = cors({
       ...getAppOrigins(),
     ].filter(Boolean);
     
-    // Log for debugging (remove in production)
-    console.log('CORS check - Origin:', origin, 'Allowed:', allowedOrigins);
-    
     if (allowedOrigins.some(allowed => origin.includes(allowed?.replace('https://', '') || ''))) {
       return callback(null, true);
     }
     
-    // Otherwise reject with proper CORS error (not 500)
-    console.error('CORS rejected:', origin);
+    // Otherwise reject with proper CORS error
     return callback(null, false);
   },
   credentials: true,
