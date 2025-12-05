@@ -170,8 +170,9 @@ login_attempts: id, user_id, success, ip_address, timestamp
 font-family: 'Montserrat', sans-serif;
 font-weight: 900;           /* Black */
 font-style: italic;
-color: #074491;             /* Primary blue */
 text-transform: uppercase;
+/* Mode clair: */ color: #074491;   /* Primary blue */
+/* Mode sombre: */ color: #3085F5;  /* Light blue */
 ```
 
 #### "Présente" (Sous-titre des apps)

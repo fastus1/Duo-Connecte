@@ -147,3 +147,81 @@
 - Vertical scrolling: Enabled within iframe
 - No fixed positioning except dev mode badge
 - Padding on mobile: px-4 (prevent edge cutoff)
+
+## Color Branding
+
+### Light Mode
+| Element | Color |
+|---------|-------|
+| Brand color | `#074491` |
+| Bouton text color | `#FFFFFF` |
+| Liens color | `#2563EB` |
+| Header background | `#FFFFFF` |
+| Header text color | `#000000` |
+| Header active text color | `#545861` |
+| Header active background color | `#F0F3F5` |
+| Sidebar background | `#FFFFFF` |
+| Sidebar text color | `#545861` |
+| Sidebar active item | `#074491` |
+| Sidebar active item text | `#FFFFFF` |
+| Sidebar hover item | `#F0F3F5` |
+
+### Dark Mode
+| Element | Color |
+|---------|-------|
+| Brand color | `#3085F5` |
+| Bouton text color | `#202226` |
+| Liens color | `#539DFF` |
+| Header background | `#2B2E33` |
+| Header text color | `#000000` |
+| Header active text color | `#E4E7EB` |
+| Header active background color | `#42464D` |
+| Sidebar background | `#2B2E33` |
+| Sidebar text color | `#E4E7EB` |
+| Sidebar active item | `#42464D` |
+| Sidebar active item text | `#FFFFFF` |
+| Sidebar hover item | `#42464D` |
+
+### Couleurs d'appoint (Utilisation judicieuse seulement)
+| Couleur | Hex |
+|---------|-----|
+| Orange | `#e05a03` |
+| Green | `#009a2a` |
+| Yellow | `#ffb200` |
+| Red | `#db0e00` |
+| Purple | `#641892` |
+| Magenta | `#a82360` |
+
+## Branding "Avancer Simplement"
+
+### Logo
+- **Mode clair** : Logo bleu (`logo-bleu-320`)
+- **Mode sombre** : Logo blanc (`logo-blanc-320`)
+- Composant : `client/src/components/logo.tsx`
+
+### Typographie de marque
+
+#### "AVANCER SIMPLEMENT" (Nom de la communauté)
+```css
+font-family: 'Montserrat', sans-serif;
+font-weight: 900;           /* Black */
+font-style: italic;
+text-transform: uppercase;
+/* Mode clair: */ color: #074491;
+/* Mode sombre: */ color: #3085F5;
+```
+
+#### "Présente" (Sous-titre des apps)
+```css
+font-family: Inter, sans-serif;
+font-weight: 400;           /* Normal */
+font-style: italic;
+letter-spacing: 0.05em;     /* tracking-wide */
+color: var(--muted-foreground);
+```
+
+### Structure d'app standard
+Toutes les apps présentées par Avancer Simplement utilisent ce design :
+1. Logo adaptatif (bleu/blanc selon thème)
+2. Titre "AVANCER SIMPLEMENT" en Montserrat Black Italic majuscules
+3. Sous-titre "Présente" en Inter Italic avec espacement
