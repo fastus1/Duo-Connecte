@@ -156,6 +156,45 @@ login_attempts: id, user_id, success, ip_address, timestamp
 - **Admins** : Accès `/dashboard` + `/user-home`, boutons navigation
 - **Utilisateurs** : `/user-home` uniquement, redirection auto si accès `/dashboard`
 
+## Branding "Avancer Simplement"
+
+### Logo
+- **Mode clair** : `logo-bleu-320` (logo bleu)
+- **Mode sombre** : `logo-blanc-320` (logo blanc)
+- Composant : `client/src/components/logo.tsx`
+
+### Typographie de marque
+
+#### "AVANCER SIMPLEMENT" (Nom de la communauté)
+```css
+font-family: 'Montserrat', sans-serif;
+font-weight: 900;           /* Black */
+font-style: italic;
+color: #074491;             /* Primary blue */
+text-transform: uppercase;
+```
+
+#### "Présente" (Sous-titre des apps)
+```css
+font-family: Inter, sans-serif;  /* Police par défaut */
+font-weight: 400;                /* Normal */
+font-style: italic;
+letter-spacing: 0.05em;          /* tracking-wide */
+color: var(--muted-foreground);  /* Gris #545861 */
+```
+
+### Utilisation
+Toutes les apps présentées par Avancer Simplement doivent utiliser ce design de base :
+1. Logo adaptatif (bleu/blanc selon thème)
+2. Titre "AVANCER SIMPLEMENT" en Montserrat Black Italic majuscules
+3. Sous-titre "Présente" en Inter Italic avec espacement
+
+### Couleurs principales
+| Élément | Couleur |
+|---------|---------|
+| Primary (bleu) | `#074491` |
+| Muted foreground (gris) | `#545861` |
+
 ## Notes Développeurs
 
 - Mode DEV bypass Circle.so avec utilisateur admin
