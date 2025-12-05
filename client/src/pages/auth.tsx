@@ -119,27 +119,24 @@ export default function AuthPage() {
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <ModeToggle />
         <Card className="w-full max-w-md shadow-lg" data-testid="card-timeout">
-          <CardHeader>
-            <div className="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-amber-500/10">
-              <AlertCircle className="h-6 w-6 text-amber-500" />
-            </div>
-            <CardTitle className="text-2xl font-semibold text-center">
+          <CardHeader className="text-center space-y-4">
+            <Logo size="lg" className="mx-auto" />
+            <CardTitle className="text-2xl font-semibold">
               Accès restreint
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Alert className="bg-amber-500/10 border-amber-500/20">
-              <AlertDescription data-testid="text-timeout-message">
-                {circleError}
-              </AlertDescription>
-            </Alert>
+            <p className="text-center text-muted-foreground" data-testid="text-timeout-message">
+              Vous devez accéder à cette page via la Plateforme Avancer Simplement
+            </p>
             <Button
-              onClick={() => window.location.reload()}
-              variant="outline"
+              asChild
               className="w-full h-12"
-              data-testid="button-retry"
+              data-testid="button-access-platform"
             >
-              Réessayer
+              <a href="https://communaute.avancersimplement.com/" target="_top">
+                Accéder à la plateforme
+              </a>
             </Button>
           </CardContent>
         </Card>
