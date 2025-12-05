@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DevModeIndicator } from '@/components/dev-mode-indicator';
+import { Logo } from '@/components/logo';
 import { getSessionToken } from '@/lib/auth';
 
 export default function Dashboard() {
@@ -80,9 +81,7 @@ export default function Dashboard() {
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary">
-              <Shield className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <Logo size="md" />
             <div>
               <h1 className="text-xl font-semibold">Dashboard Admin</h1>
               <p className="text-sm text-muted-foreground">Espace d'administration</p>

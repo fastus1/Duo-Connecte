@@ -6,6 +6,7 @@ import { useConfig } from '@/contexts/config-context';
 import { PinCreationForm } from '@/components/pin-creation-form';
 import { PinLoginForm } from '@/components/pin-login-form';
 import { ModeToggle } from '@/components/mode-toggle';
+import { Logo } from '@/components/logo';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -152,7 +153,8 @@ export default function AuthPage() {
         <ModeToggle />
         <Card className="w-full max-w-md shadow-lg" data-testid="card-loading">
           <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Logo size="lg" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
             <p className="text-base text-muted-foreground">
               {devMode ? 'Initialisation du mode développement...' : 'Connexion en cours...'}
             </p>

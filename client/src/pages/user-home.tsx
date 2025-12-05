@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, Home, Shield, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DevModeIndicator } from '@/components/dev-mode-indicator';
+import { Logo } from '@/components/logo';
 import { getSessionToken } from '@/lib/auth';
 
 export default function UserHome() {
@@ -72,9 +73,7 @@ export default function UserHome() {
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary">
-              <Home className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <Logo size="md" />
             <div>
               <h1 className="text-xl font-semibold">Espace Membre</h1>
               <p className="text-sm text-muted-foreground">Communauté Avancer Simplement</p>
