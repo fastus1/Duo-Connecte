@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DevModeIndicator } from '@/components/dev-mode-indicator';
 import { Logo } from '@/components/logo';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken } from '@/lib/auth';
 
 export default function UserHome() {
@@ -81,6 +82,7 @@ export default function UserHome() {
           </div>
           
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             {userData?.isAdmin && (
               <Button 
                 variant="outline" 

@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { DevModeIndicator } from '@/components/dev-mode-indicator';
 import { Logo } from '@/components/logo';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken } from '@/lib/auth';
 
 export default function Dashboard() {
@@ -89,6 +90,7 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button 
               variant="outline" 
               onClick={() => setLocation('/user-home')}
