@@ -200,7 +200,7 @@ export default function Dashboard() {
                 Cette template utilise un système d'authentification "Defense in Depth" à 3 couches
               </CardDescription>
             </CardHeader>
-            <CardContent className="prose prose-sm max-w-none">
+            <CardContent className="prose prose-sm dark:prose-invert max-w-none">
               <p>
                 Votre application est maintenant protégée par un système de sécurité robuste qui combine :
               </p>
