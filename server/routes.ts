@@ -42,8 +42,9 @@ setInterval(() => {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Apply CORS only to API routes
+  // Apply CORS to API routes and webhooks (webhooks called from Circle.so client-side scripts)
   app.use('/api', corsMiddleware);
+  app.use('/webhooks', corsMiddleware);
   
   // GET /api/health - Health check endpoint for debugging
   app.get('/api/health', async (req: Request, res: Response) => {
