@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { DevModeIndicator } from '@/components/dev-mode-indicator';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken } from '@/lib/auth';
@@ -18,12 +17,12 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const { data: configData, isLoading: configLoading } = useQuery<{ requireCircleLogin: boolean; requirePin: boolean }>({
+  const { data: configData, isLoading: configLoading } = useQuery<{ requireCircleDomain: boolean; requireCircleLogin: boolean; requirePin: boolean }>({
     queryKey: ['/api/config'],
   });
 
   const updateConfigMutation = useMutation({
-    mutationFn: async (config: { requireCircleLogin?: boolean; requirePin?: boolean }) => {
+    mutationFn: async (config: { requireCircleDomain?: boolean; requireCircleLogin?: boolean; requirePin?: boolean }) => {
       const token = getSessionToken();
       const response = await fetch('/api/config', {
         method: 'PATCH',
@@ -100,7 +99,6 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <DevModeIndicator />
         <Card className="w-full max-w-md shadow-lg">
           <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -116,8 +114,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DevModeIndicator />
-      
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -247,6 +243,23 @@ export default function Dashboard() {
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
+                  <Label htmlFor="require-circle-domain" className="text-sm font-medium">
+                    Couche 1 : Exiger le domaine Circle.so
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Si désactivé, l'app peut être accédée directement (mode développement)
+                  </p>
+                </div>
+                <Switch
+                  id="require-circle-domain"
+                  checked={configData?.requireCircleDomain ?? true}
+                  onCheckedChange={(checked) => updateConfigMutation.mutate({ requireCircleDomain: checked })}
+                  disabled={updateConfigMutation.isPending || configLoading}
+                  data-testid="switch-require-circle-domain"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
                   <Label htmlFor="require-circle-login" className="text-sm font-medium">
                     Couche 2 : Exiger la connexion Circle.so
                   </Label>
@@ -281,7 +294,7 @@ export default function Dashboard() {
               </div>
               <div className="pt-2 border-t">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Note :</strong> La couche 1 (accès via Circle.so) est toujours active et ne peut pas être désactivée.
+                  <strong>Note :</strong> Désactiver la Couche 1 permet de tester l'app sans être dans Circle.so. À réactiver en production.
                 </p>
               </div>
             </CardContent>

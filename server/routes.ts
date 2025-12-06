@@ -13,8 +13,6 @@ import {
 import { corsMiddleware } from "./app";
 import crypto from "crypto";
 
-const DEV_MODE = process.env.DEV_MODE === 'true';
-
 // Temporary cache for validated Circle.so data (5 minutes expiry)
 interface ValidationCache {
   email: string;
@@ -46,10 +44,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Test database connection
       const testUser = await storage.getUserByEmail('test@nonexistent.com');
+      const config = await storage.getAppConfig();
       return res.json({ 
         status: 'ok', 
         database: 'connected',
-        dev_mode: DEV_MODE,
+        config: {
+          requireCircleDomain: config.requireCircleDomain,
+          requireCircleLogin: config.requireCircleLogin,
+          requirePin: config.requirePin,
+        },
         timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -57,8 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ 
         status: 'error', 
         database: 'disconnected',
-        error: errorMessage,
-        dev_mode: DEV_MODE
+        error: errorMessage
       });
     }
   });
@@ -72,23 +74,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Données utilisateur manquantes' });
       }
 
-      // Get app configuration to check if PIN is required
+      // Get app configuration
       const appConfig = await storage.getAppConfig();
 
-      // In DEV_MODE, use mock Circle.so data but still validate format
-      const userData = DEV_MODE ? {
+      // Use data as provided by the frontend
+      // When requireCircleDomain is false, frontend sends mock data
+      const userData = {
         publicUid: user.publicUid || 'dev123',
         email: user.email || 'dev@example.com',
         name: user.name || 'Dev User',
-        isAdmin: user.isAdmin !== undefined ? user.isAdmin : true, // DEV user is admin by default
-        timestamp: Date.now(), // Fresh timestamp to pass anti-replay check
-      } : user;
+        isAdmin: user.isAdmin !== undefined ? user.isAdmin : false,
+        timestamp: user.timestamp || Date.now(),
+      };
 
-      if (DEV_MODE) {
-        console.log('🔧 DEV MODE: Using mock Circle.so data but validating format');
-      }
-
-      // ALWAYS validate format and timestamp (even in DEV_MODE for security)
+      // Validate format and timestamp
       const formatCheck = validateUserData(userData);
       if (!formatCheck.valid) {
         return res.status(400).json({ error: formatCheck.error });
@@ -443,6 +442,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const config = await storage.getAppConfig();
       return res.json({
+        requireCircleDomain: config.requireCircleDomain,
         requireCircleLogin: config.requireCircleLogin,
         requirePin: config.requirePin,
       });
@@ -462,15 +462,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
       }
 
-      const { requireCircleLogin, requirePin } = req.body;
+      const { requireCircleDomain, requireCircleLogin, requirePin } = req.body;
 
       const updatedConfig = await storage.updateAppConfig({
+        requireCircleDomain: requireCircleDomain !== undefined ? requireCircleDomain : undefined,
         requireCircleLogin: requireCircleLogin !== undefined ? requireCircleLogin : undefined,
         requirePin: requirePin !== undefined ? requirePin : undefined,
       });
 
       return res.json({
         success: true,
+        requireCircleDomain: updatedConfig.requireCircleDomain,
         requireCircleLogin: updatedConfig.requireCircleLogin,
         requirePin: updatedConfig.requirePin,
       });

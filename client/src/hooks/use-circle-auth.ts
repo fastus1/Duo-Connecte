@@ -1,12 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { circleUserDataSchema, type CircleUserData } from '@shared/schema';
 import { setThemeFromCircle } from '@/components/theme-provider';
-import { useConfig } from '@/contexts/config-context';
 
 interface CircleAuthState {
   isLoading: boolean;
   userData: CircleUserData['user'] | null;
   error: string | null;
+}
+
+interface AppConfig {
+  requireCircleDomain: boolean;
+  requireCircleLogin: boolean;
+  requirePin: boolean;
 }
 
 const CIRCLE_ORIGIN = import.meta.env.VITE_CIRCLE_ORIGIN;
@@ -49,7 +55,10 @@ export function clearCircleUserCache(): void {
 }
 
 export function useCircleAuth() {
-  const { mode } = useConfig();
+  const { data: configData, isLoading: configLoading } = useQuery<AppConfig>({
+    queryKey: ['/api/config'],
+  });
+  
   const [state, setState] = useState<CircleAuthState>({
     isLoading: true,
     userData: null,
@@ -68,17 +77,20 @@ export function useCircleAuth() {
   }, []);
 
   useEffect(() => {
-    const devMode = mode === 'dev';
+    // Wait for config to load
+    if (configLoading) return;
+    
+    const requireCircleDomain = configData?.requireCircleDomain ?? true;
 
-    // Reset state when mode changes
+    // Reset state when config changes
     setState({
-      isLoading: !devMode,
+      isLoading: requireCircleDomain,
       userData: null,
       error: null,
     });
 
-    if (devMode) {
-      console.log('🔧 DEV MODE: Circle.so authentication bypassed');
+    if (!requireCircleDomain) {
+      console.log('🔧 DEV MODE: Circle.so domain verification bypassed (Couche 1 désactivée)');
       clearCircleUserCache();
       return;
     }
@@ -182,7 +194,7 @@ export function useCircleAuth() {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [mode, requestAuthFromParent]);
+  }, [configData?.requireCircleDomain, configLoading, requestAuthFromParent]);
 
   return state;
 }

@@ -24,6 +24,7 @@ export const loginAttempts = pgTable("login_attempts", {
 
 export const appConfig = pgTable("app_config", {
   id: varchar("id").primaryKey().default("main"),
+  requireCircleDomain: boolean("require_circle_domain").notNull().default(true),
   requireCircleLogin: boolean("require_circle_login").notNull().default(true),
   requirePin: boolean("require_pin").notNull().default(true),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

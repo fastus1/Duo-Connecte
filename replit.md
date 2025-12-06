@@ -2,17 +2,24 @@
 
 ## Vue d'ensemble
 
-Template Node.js/Express + React/TypeScript pour intégration Circle.so via iframe avec authentification "Defense in Depth" à 3 couches.
+Template Node.js/Express + React/TypeScript pour intégration Circle.so via iframe avec authentification "Defense in Depth" à 3 couches configurables.
 
 **Usage** : Base réutilisable pour applications Circle.so.
 
 ## Architecture de Sécurité
 
-### 3 Couches d'Authentification
+### 3 Couches d'Authentification (Configurables via Dashboard Admin)
 
-1. **Circle.so** : Pages membres uniquement, login natif
-2. **PostMessage** : Validation origine + multi-champs (email, publicUid, timestamp 60s max)
-3. **NIP Personnel** : 4-6 chiffres, bcrypt 10 rounds, rate limit 5/15min, JWT 60min
+1. **Couche 1 - Domaine Circle.so** : Vérifie que l'app est dans l'iframe Circle.so (désactiver pour développement)
+2. **Couche 2 - Connexion Circle.so** : Validation postMessage (email, publicUid, timestamp 60s max)
+3. **Couche 3 - NIP Personnel** : 4-6 chiffres, bcrypt 10 rounds, rate limit 5/15min, JWT 60min
+
+### Configuration Dynamique
+
+Toutes les couches sont configurables via le Dashboard Admin (table `app_config`):
+- `requireCircleDomain` : Couche 1 ON/OFF
+- `requireCircleLogin` : Couche 2 ON/OFF
+- `requirePin` : Couche 3 ON/OFF
 
 ## Stack Technique
 
@@ -23,8 +30,7 @@ Template Node.js/Express + React/TypeScript pour intégration Circle.so via ifra
 
 ```
 client/src/
-  components/     # UI (pin-creation, pin-login, theme-provider, mode-toggle)
-  contexts/       # config-context.tsx (DEV/PROD mode)
+  components/     # UI (pin-creation, pin-login, theme-provider, logo)
   hooks/          # use-circle-auth.ts (postMessage + thème)
   pages/          # auth.tsx, dashboard.tsx, user-home.tsx
   lib/            # auth.ts, queryClient.ts
@@ -47,37 +53,34 @@ Valide données Circle.so, retourne `validation_token` (5min) pour nouveaux memb
 ### POST /api/auth/create-pin
 Crée NIP avec `validation_token`, retourne `session_token` JWT.
 
+### POST /api/auth/create-user-no-pin
+Crée utilisateur sans NIP (quand Couche 3 désactivée).
+
 ### POST /api/auth/validate-pin
 Valide NIP (rate limited 5/15min), retourne `session_token` JWT.
 
 ### GET /api/auth/me
 Infos utilisateur (protégé par JWT).
 
+### GET /api/config
+Retourne la configuration des couches de sécurité.
+
+### PATCH /api/config
+Met à jour la configuration (admin seulement).
+
 ## Variables d'Environnement
 
-### Backend (process.env)
 | Variable | Description |
 |----------|-------------|
 | DATABASE_URL | PostgreSQL Neon |
 | SESSION_SECRET | Secret sessions |
-| DEV_MODE | `true`/`false` - Mode développement |
-| CIRCLE_ORIGIN | Origine Circle.so |
-
-### Frontend (import.meta.env)
-| Variable | Description |
-|----------|-------------|
-| VITE_DEV_MODE | Mode DEV (compilé au build) |
 | VITE_CIRCLE_ORIGIN | Origine Circle.so |
 
-**Important** : `DEV_MODE` (backend) != `VITE_DEV_MODE` (frontend). Ne jamais utiliser `VITE_*` côté serveur.
-
-## Mode Développement
-
-Utilisateur mock : `dev@example.com` (Admin, redirige vers `/dashboard`)
+**Note** : Le mode DEV/PROD est maintenant géré via le Dashboard Admin (Couche 1).
 
 ## Intégration Circle.so
 
-**Handshake bidirectionnel** : L'iframe peut demander les données à Circle.so à tout moment (déconnexion, changement de mode), pas seulement au chargement initial.
+**Handshake bidirectionnel** : L'iframe peut demander les données à Circle.so à tout moment.
 
 Script JavaScript (Header Custom Code) :
 ```javascript
@@ -109,7 +112,6 @@ Script JavaScript (Header Custom Code) :
     }
   }
   
-  // Écouter les demandes de l'iframe
   window.addEventListener('message', function(event) {
     if (event.origin !== IFRAME_ORIGIN) return;
     if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
@@ -118,7 +120,6 @@ Script JavaScript (Header Custom Code) :
     }
   });
   
-  // Envoi initial au chargement
   window.addEventListener('load', function() {
     const iframe = document.querySelector('iframe[src*="replit.app"]');
     const checkUser = setInterval(function() {
@@ -134,7 +135,6 @@ Script JavaScript (Header Custom Code) :
 **Points critiques Circle.so** :
 - Utilise **camelCase** : `publicUid`, `isAdmin`, `firstName`, `lastName`
 - `isAdmin` retourné comme STRING `"true"`/`"false"`, doit être converti en boolean
-- Le script écoute `CIRCLE_AUTH_REQUEST` et répond avec les données utilisateur (handshake)
 
 ## Sécurité
 
@@ -149,11 +149,12 @@ Script JavaScript (Header Custom Code) :
 ```sql
 users: id, email, public_uid, name, pin_hash, is_admin, created_at, last_login
 login_attempts: id, user_id, success, ip_address, timestamp
+app_config: id, require_circle_domain, require_circle_login, require_pin, updated_at
 ```
 
 ## Navigation
 
-- **Admins** : Accès `/dashboard` + `/user-home`, boutons navigation
+- **Admins** : Accès `/dashboard` + `/user-home`, boutons navigation + configuration sécurité
 - **Utilisateurs** : `/user-home` uniquement, redirection auto si accès `/dashboard`
 
 ## Branding "Avancer Simplement"
@@ -177,18 +178,12 @@ text-transform: uppercase;
 
 #### "Présente" (Sous-titre des apps)
 ```css
-font-family: Inter, sans-serif;  /* Police par défaut */
-font-weight: 400;                /* Normal */
+font-family: Inter, sans-serif;
+font-weight: 400;
 font-style: italic;
-letter-spacing: 0.05em;          /* tracking-wide */
-color: var(--muted-foreground);  /* Gris #545861 */
+letter-spacing: 0.05em;
+color: var(--muted-foreground);
 ```
-
-### Utilisation
-Toutes les apps présentées par Avancer Simplement doivent utiliser ce design de base :
-1. Logo adaptatif (bleu/blanc selon thème)
-2. Titre "AVANCER SIMPLEMENT" en Montserrat Black Italic majuscules
-3. Sous-titre "Présente" en Inter Italic avec espacement
 
 ### Couleurs principales
 | Élément | Couleur |
@@ -198,8 +193,9 @@ Toutes les apps présentées par Avancer Simplement doivent utiliser ce design d
 
 ## Notes Développeurs
 
-- Mode DEV bypass Circle.so avec utilisateur admin
+- Couche 1 désactivée = Mode développement (utilisateur mock `dev@example.com`)
 - Sessions expirent après 60min
 - NIP toujours hashé (jamais en clair)
 - Thème sync automatique avec Circle.so
 - Statut admin sync à chaque connexion
+- Configuration sécurité persistante en base de données

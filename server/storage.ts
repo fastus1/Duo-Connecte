@@ -20,7 +20,7 @@ export interface IStorage {
   
   // App config operations
   getAppConfig(): Promise<AppConfig>;
-  updateAppConfig(config: { requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig>;
+  updateAppConfig(config: { requireCircleDomain?: boolean; requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig>;
 }
 
 export class MemStorage implements IStorage {
@@ -100,15 +100,17 @@ export class MemStorage implements IStorage {
   async getAppConfig(): Promise<AppConfig> {
     return {
       id: "main",
+      requireCircleDomain: true,
       requireCircleLogin: true,
       requirePin: true,
       updatedAt: new Date(),
     };
   }
 
-  async updateAppConfig(config: { requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig> {
+  async updateAppConfig(config: { requireCircleDomain?: boolean; requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig> {
     return {
       id: "main",
+      requireCircleDomain: config.requireCircleDomain ?? true,
       requireCircleLogin: config.requireCircleLogin ?? true,
       requirePin: config.requirePin ?? true,
       updatedAt: new Date(),
@@ -182,7 +184,7 @@ export class DbStorage implements IStorage {
     return newConfig[0];
   }
 
-  async updateAppConfig(config: { requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig> {
+  async updateAppConfig(config: { requireCircleDomain?: boolean; requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig> {
     const result = await this.db.update(appConfig)
       .set({ 
         ...config,
