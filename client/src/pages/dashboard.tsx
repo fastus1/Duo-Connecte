@@ -192,8 +192,8 @@ export default function Dashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1 flex-1">
                   <Label htmlFor="require-circle-domain" className="text-sm font-medium">
                     Couche 1 : Exiger le domaine Circle.so
                   </Label>
@@ -201,16 +201,19 @@ export default function Dashboard() {
                     Si désactivé, l'app peut être accédée directement (mode développement)
                   </p>
                 </div>
-                <Switch
-                  id="require-circle-domain"
-                  checked={configData?.requireCircleDomain ?? true}
-                  onCheckedChange={(checked) => updateConfigMutation.mutate({ requireCircleDomain: checked })}
-                  disabled={updateConfigMutation.isPending || configLoading}
-                  data-testid="switch-require-circle-domain"
-                />
+                <div className="flex items-center gap-2">
+                  {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  <Switch
+                    id="require-circle-domain"
+                    checked={configData?.requireCircleDomain ?? true}
+                    onCheckedChange={(checked) => updateConfigMutation.mutate({ requireCircleDomain: checked })}
+                    disabled={updateConfigMutation.isPending || configLoading}
+                    data-testid="switch-require-circle-domain"
+                  />
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1 flex-1">
                   <Label htmlFor="require-circle-login" className="text-sm font-medium">
                     Couche 2 : Exiger la connexion Circle.so
                   </Label>
@@ -218,16 +221,19 @@ export default function Dashboard() {
                     Si désactivé, les visiteurs non-connectés peuvent voir l'app
                   </p>
                 </div>
-                <Switch
-                  id="require-circle-login"
-                  checked={configData?.requireCircleLogin ?? true}
-                  onCheckedChange={(checked) => updateConfigMutation.mutate({ requireCircleLogin: checked })}
-                  disabled={updateConfigMutation.isPending || configLoading}
-                  data-testid="switch-require-circle-login"
-                />
+                <div className="flex items-center gap-2">
+                  {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  <Switch
+                    id="require-circle-login"
+                    checked={configData?.requireCircleLogin ?? true}
+                    onCheckedChange={(checked) => updateConfigMutation.mutate({ requireCircleLogin: checked })}
+                    disabled={updateConfigMutation.isPending || configLoading}
+                    data-testid="switch-require-circle-login"
+                  />
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1 flex-1">
                   <Label htmlFor="require-pin" className="text-sm font-medium">
                     Couche 3 : Exiger le NIP personnel
                   </Label>
@@ -235,13 +241,16 @@ export default function Dashboard() {
                     Si désactivé, pas besoin de NIP pour accéder à l'app
                   </p>
                 </div>
-                <Switch
-                  id="require-pin"
-                  checked={configData?.requirePin ?? true}
-                  onCheckedChange={(checked) => updateConfigMutation.mutate({ requirePin: checked })}
-                  disabled={updateConfigMutation.isPending || configLoading}
-                  data-testid="switch-require-pin"
-                />
+                <div className="flex items-center gap-2">
+                  {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  <Switch
+                    id="require-pin"
+                    checked={configData?.requirePin ?? true}
+                    onCheckedChange={(checked) => updateConfigMutation.mutate({ requirePin: checked })}
+                    disabled={updateConfigMutation.isPending || configLoading}
+                    data-testid="switch-require-pin"
+                  />
+                </div>
               </div>
               <div className="pt-2 border-t">
                 <p className="text-xs text-muted-foreground">
