@@ -32,6 +32,7 @@ export const appConfig = pgTable("app_config", {
   paywallInfoUrl: text("paywall_info_url").default(""),
   paywallTitle: text("paywall_title").default("Accès Réservé"),
   paywallMessage: text("paywall_message").default("Cette application est réservée aux membres ayant souscrit à l'offre."),
+  webhookAppUrl: text("webhook_app_url").default(""),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
@@ -90,6 +91,7 @@ export const updateConfigSchema = z.object({
   paywallInfoUrl: z.string().optional(),
   paywallTitle: z.string().optional(),
   paywallMessage: z.string().optional(),
+  webhookAppUrl: z.string().optional(),
 });
 
 export const insertPaidMemberSchema = createInsertSchema(paidMembers).omit({
