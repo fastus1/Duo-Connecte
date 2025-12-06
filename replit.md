@@ -100,8 +100,36 @@ Supprime un membre payant (admin seulement).
 | DATABASE_URL | PostgreSQL Neon |
 | SESSION_SECRET | Secret sessions |
 | VITE_CIRCLE_ORIGIN | Origine Circle.so |
+| WEBHOOK_SECRET | Secret pour sécuriser le webhook de paiement |
 
 **Note** : Le mode DEV/PROD est maintenant géré via le Dashboard Admin (Couche 1).
+
+## Sécurité du Webhook
+
+Le webhook `/webhooks/circle-payment` est sécurisé par un secret partagé. Le script Circle.so doit inclure l'en-tête `X-Webhook-Secret`.
+
+**Script Circle.so mis à jour :**
+```html
+<script>
+const WEBHOOK_SECRET = 'VOTRE_SECRET_ICI'; // Copier depuis les variables d'environnement
+fetch('https://web-template-base-ok.replit.app/webhooks/circle-payment', {
+  method: 'POST',
+  headers: { 
+    'Content-Type': 'application/json',
+    'X-Webhook-Secret': WEBHOOK_SECRET
+  },
+  body: JSON.stringify({
+    event: 'payment_received',
+    user: { email: '{member_email}', timestamp: Math.floor(Date.now() / 1000) },
+    payment: {
+      paywall_display_name: '{paywall_display_name}',
+      amount_paid: '{amount_paid}',
+      coupon_code: '{coupon_code}'
+    }
+  })
+});
+</script>
+```
 
 ## Intégration Circle.so
 

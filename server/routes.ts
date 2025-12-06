@@ -193,6 +193,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Données manquantes' });
       }
 
+      // SERVER-SIDE PAYWALL CHECK: Prevent bypassing paywall via direct API calls
+      const appConfig = await storage.getAppConfig();
+      if (appConfig.requirePaywall && email) {
+        const paidMember = await storage.getPaidMemberByEmail(email.toLowerCase());
+        if (!paidMember) {
+          console.log(`[AUTH] Paywall block on create-pin for: ${email}`);
+          return res.status(403).json({ 
+            error: 'Accès réservé aux membres payants',
+            paywall_blocked: true 
+          });
+        }
+      }
+
       // CRITICAL: Verify validation token to prevent unauthorized account creation
       const cachedData = validationCache.get(validation_token);
       if (!cachedData) {
@@ -284,6 +297,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ error: 'Le NIP est requis pour créer un compte' });
       }
 
+      // SERVER-SIDE PAYWALL CHECK: Prevent bypassing paywall via direct API calls
+      if (appConfig.requirePaywall && email) {
+        const paidMember = await storage.getPaidMemberByEmail(email.toLowerCase());
+        if (!paidMember) {
+          console.log(`[AUTH] Paywall block on create-user-no-pin for: ${email}`);
+          return res.status(403).json({ 
+            error: 'Accès réservé aux membres payants',
+            paywall_blocked: true 
+          });
+        }
+      }
+
       // Validate input
       if (!email || !public_uid || !name || !validation_token) {
         return res.status(400).json({ error: 'Données manquantes' });
@@ -363,6 +388,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate input
       if (!email || !pin) {
         return res.status(400).json({ error: 'Email et NIP requis' });
+      }
+
+      // SERVER-SIDE PAYWALL CHECK: Prevent bypassing paywall via direct API calls
+      const appConfig = await storage.getAppConfig();
+      if (appConfig.requirePaywall && email) {
+        const paidMember = await storage.getPaidMemberByEmail(email.toLowerCase());
+        if (!paidMember) {
+          console.log(`[AUTH] Paywall block on validate-pin for: ${email}`);
+          return res.status(403).json({ 
+            error: 'Accès réservé aux membres payants',
+            paywall_blocked: true 
+          });
+        }
       }
 
       // Get user
@@ -645,17 +683,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // POST /webhooks/circle-payment - Receive payment notifications from Circle.so
   // This endpoint is called by Circle.so when a payment is completed
+  // Security: Requires X-Webhook-Secret header matching WEBHOOK_SECRET env var
   app.post('/webhooks/circle-payment', async (req: Request, res: Response) => {
     try {
+      const webhookSecret = process.env.WEBHOOK_SECRET;
+      const providedSecret = req.headers['x-webhook-secret'] as string;
+
+      // Log webhook attempt (for debugging)
+      console.log(`[WEBHOOK] Payment webhook called from ${req.ip} at ${new Date().toISOString()}`);
+
+      // Validate webhook secret
+      if (!webhookSecret) {
+        console.error('[WEBHOOK] WEBHOOK_SECRET not configured');
+        return res.status(500).json({ error: 'Webhook not configured' });
+      }
+
+      if (!providedSecret || providedSecret !== webhookSecret) {
+        console.warn(`[WEBHOOK] Invalid secret attempt from ${req.ip}`);
+        return res.status(401).json({ error: 'Non autorisé - secret invalide' });
+      }
+
       const { event, user, payment } = req.body;
 
       // Validate event type
       if (event !== 'payment_received') {
+        console.log(`[WEBHOOK] Unsupported event type: ${event}`);
         return res.status(400).json({ error: 'Type d\'événement non supporté' });
       }
 
       // Validate email
       if (!user?.email) {
+        console.log('[WEBHOOK] Missing email in payload');
         return res.status(400).json({ error: 'Email requis' });
       }
 
@@ -664,6 +722,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if already registered
       const existingMember = await storage.getPaidMemberByEmail(email);
       if (existingMember) {
+        console.log(`[WEBHOOK] Member already registered: ${email}`);
         return res.json({ 
           success: true, 
           message: 'Membre déjà enregistré',
@@ -679,6 +738,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         couponUsed: payment?.coupon_code || null,
       });
 
+      console.log(`[WEBHOOK] New paid member registered: ${email}, plan: ${payment?.paywall_display_name || 'N/A'}`);
+
       return res.json({ 
         success: true, 
         message: 'Accès activé',
@@ -687,7 +748,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
     } catch (error) {
-      console.error('Error in /webhooks/circle-payment:', error);
+      console.error('[WEBHOOK] Error processing payment:', error);
       return res.status(500).json({ error: 'Erreur lors de l\'enregistrement du paiement' });
     }
   });
@@ -707,6 +768,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error) {
       console.error('Error in GET /api/admin/paid-members:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // POST /api/admin/paid-members - Manually add a paid member (admin only)
+  app.post('/api/admin/paid-members', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      const { email } = req.body;
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ error: 'Email requis' });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+      
+      // Check if already exists
+      const existing = await storage.getPaidMemberByEmail(normalizedEmail);
+      if (existing) {
+        return res.status(400).json({ error: 'Ce membre est déjà enregistré' });
+      }
+
+      const newMember = await storage.createPaidMember({
+        email: normalizedEmail,
+        paymentPlan: 'Manual',
+        amountPaid: null,
+        couponUsed: null,
+      });
+
+      console.log(`[ADMIN] Paid member manually added: ${normalizedEmail} by ${user.email}`);
+
+      return res.json({ success: true, member: newMember });
+
+    } catch (error) {
+      console.error('Error in POST /api/admin/paid-members:', error);
       return res.status(500).json({ error: 'Erreur serveur' });
     }
   });

@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
-import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle } from 'lucide-react';
+import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -94,6 +93,84 @@ export default function Dashboard() {
       paywallPurchaseUrl,
       paywallInfoUrl,
     });
+  };
+
+  // Paid members management
+  interface PaidMember {
+    id: string;
+    email: string;
+    paymentDate: string;
+    paymentPlan: string | null;
+    amountPaid: string | null;
+  }
+
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+
+  const { data: paidMembersData, isLoading: paidMembersLoading } = useQuery<{ members: PaidMember[] }>({
+    queryKey: ['/api/admin/paid-members'],
+    queryFn: async () => {
+      const token = getSessionToken();
+      const response = await fetch('/api/admin/paid-members', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Failed to fetch paid members');
+      return response.json();
+    },
+  });
+
+  const addMemberMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const token = getSessionToken();
+      const response = await fetch('/api/admin/paid-members', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Erreur lors de l\'ajout');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/paid-members'] });
+      setNewMemberEmail('');
+      toast({ title: 'Membre ajouté', description: 'L\'email a été ajouté aux membres payants.' });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const deleteMemberMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const token = getSessionToken();
+      const response = await fetch(`/api/admin/paid-members/${encodeURIComponent(email)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Erreur lors de la suppression');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/paid-members'] });
+      toast({ title: 'Membre supprimé', description: 'L\'accès a été révoqué.' });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const handleAddMember = () => {
+    if (newMemberEmail.trim()) {
+      addMemberMutation.mutate(newMemberEmail.trim().toLowerCase());
+    }
   };
 
   const { data: userData, isLoading, error } = useQuery({
@@ -408,6 +485,79 @@ export default function Dashboard() {
                   'Enregistrer les paramètres du paywall'
                 )}
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Paid Members Management Card */}
+          <Card data-testid="card-paid-members">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-muted-foreground" />
+                <CardTitle className="text-lg">Membres Payants</CardTitle>
+              </div>
+              <CardDescription>
+                Gérez manuellement les accès payants (le webhook Circle.so ajoute automatiquement les nouveaux paiements)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Add new member */}
+              <div className="flex gap-2">
+                <Input
+                  placeholder="email@exemple.com"
+                  value={newMemberEmail}
+                  onChange={(e) => setNewMemberEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
+                  data-testid="input-new-member-email"
+                />
+                <Button
+                  onClick={handleAddMember}
+                  disabled={addMemberMutation.isPending || !newMemberEmail.trim()}
+                  data-testid="button-add-member"
+                >
+                  {addMemberMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Plus className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+
+              {/* Members list */}
+              <div className="border rounded-md divide-y max-h-64 overflow-y-auto">
+                {paidMembersLoading ? (
+                  <div className="p-4 text-center text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+                  </div>
+                ) : paidMembersData?.members?.length === 0 ? (
+                  <div className="p-4 text-center text-muted-foreground text-sm">
+                    Aucun membre payant enregistré
+                  </div>
+                ) : (
+                  paidMembersData?.members?.map((member) => (
+                    <div key={member.id} className="flex items-center justify-between p-3" data-testid={`row-member-${member.id}`}>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{member.email}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {member.paymentPlan || 'N/A'} • {new Date(member.paymentDate).toLocaleDateString('fr-FR')}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteMemberMutation.mutate(member.email)}
+                        disabled={deleteMemberMutation.isPending}
+                        data-testid={`button-delete-member-${member.id}`}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                <strong>Secret Webhook :</strong> Configurez l'en-tête <code className="bg-muted px-1 rounded">X-Webhook-Secret</code> dans votre script Circle.so pour sécuriser les paiements automatiques.
+              </p>
             </CardContent>
           </Card>
         </div>
