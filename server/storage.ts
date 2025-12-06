@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, users, loginAttempts, appConfig } from "@shared/schema";
+import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, type PaidMember, type InsertPaidMember, users, loginAttempts, appConfig, paidMembers } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { eq, and, gt } from "drizzle-orm";
@@ -20,16 +20,37 @@ export interface IStorage {
   
   // App config operations
   getAppConfig(): Promise<AppConfig>;
-  updateAppConfig(config: { requireCircleDomain?: boolean; requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig>;
+  updateAppConfig(config: Partial<Omit<AppConfig, 'id' | 'updatedAt'>>): Promise<AppConfig>;
+  
+  // Paid members operations
+  getPaidMemberByEmail(email: string): Promise<PaidMember | undefined>;
+  createPaidMember(member: InsertPaidMember): Promise<PaidMember>;
+  getAllPaidMembers(): Promise<PaidMember[]>;
+  deletePaidMember(email: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private loginAttempts: Map<string, LoginAttempt>;
+  private paidMembersMap: Map<string, PaidMember>;
+  private configState: AppConfig;
 
   constructor() {
     this.users = new Map();
     this.loginAttempts = new Map();
+    this.paidMembersMap = new Map();
+    this.configState = {
+      id: "main",
+      requireCircleDomain: true,
+      requireCircleLogin: true,
+      requirePaywall: false,
+      requirePin: true,
+      paywallPurchaseUrl: "",
+      paywallInfoUrl: "",
+      paywallTitle: "Accès Réservé",
+      paywallMessage: "Cette application est réservée aux membres ayant souscrit à l'offre.",
+      updatedAt: new Date(),
+    };
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -99,23 +120,42 @@ export class MemStorage implements IStorage {
   }
 
   async getAppConfig(): Promise<AppConfig> {
-    return {
-      id: "main",
-      requireCircleDomain: true,
-      requireCircleLogin: true,
-      requirePin: true,
-      updatedAt: new Date(),
-    };
+    return this.configState;
   }
 
-  async updateAppConfig(config: { requireCircleDomain?: boolean; requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig> {
-    return {
-      id: "main",
-      requireCircleDomain: config.requireCircleDomain ?? true,
-      requireCircleLogin: config.requireCircleLogin ?? true,
-      requirePin: config.requirePin ?? true,
+  async updateAppConfig(config: Partial<Omit<AppConfig, 'id' | 'updatedAt'>>): Promise<AppConfig> {
+    this.configState = {
+      ...this.configState,
+      ...config,
       updatedAt: new Date(),
     };
+    return this.configState;
+  }
+
+  async getPaidMemberByEmail(email: string): Promise<PaidMember | undefined> {
+    return this.paidMembersMap.get(email.toLowerCase());
+  }
+
+  async createPaidMember(member: InsertPaidMember): Promise<PaidMember> {
+    const id = randomUUID();
+    const paidMember: PaidMember = {
+      id,
+      email: member.email.toLowerCase(),
+      paymentDate: new Date(),
+      paymentPlan: member.paymentPlan ?? null,
+      amountPaid: member.amountPaid ?? null,
+      couponUsed: member.couponUsed ?? null,
+    };
+    this.paidMembersMap.set(paidMember.email, paidMember);
+    return paidMember;
+  }
+
+  async getAllPaidMembers(): Promise<PaidMember[]> {
+    return Array.from(this.paidMembersMap.values());
+  }
+
+  async deletePaidMember(email: string): Promise<void> {
+    this.paidMembersMap.delete(email.toLowerCase());
   }
 }
 
@@ -185,7 +225,7 @@ export class DbStorage implements IStorage {
     return newConfig[0];
   }
 
-  async updateAppConfig(config: { requireCircleDomain?: boolean; requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig> {
+  async updateAppConfig(config: Partial<Omit<AppConfig, 'id' | 'updatedAt'>>): Promise<AppConfig> {
     const result = await this.db.update(appConfig)
       .set({ 
         ...config,
@@ -194,6 +234,29 @@ export class DbStorage implements IStorage {
       .where(eq(appConfig.id, "main"))
       .returning();
     return result[0];
+  }
+
+  async getPaidMemberByEmail(email: string): Promise<PaidMember | undefined> {
+    const result = await this.db.select().from(paidMembers)
+      .where(eq(paidMembers.email, email.toLowerCase()))
+      .limit(1);
+    return result[0];
+  }
+
+  async createPaidMember(member: InsertPaidMember): Promise<PaidMember> {
+    const result = await this.db.insert(paidMembers).values({
+      ...member,
+      email: member.email.toLowerCase(),
+    }).returning();
+    return result[0];
+  }
+
+  async getAllPaidMembers(): Promise<PaidMember[]> {
+    return await this.db.select().from(paidMembers);
+  }
+
+  async deletePaidMember(email: string): Promise<void> {
+    await this.db.delete(paidMembers).where(eq(paidMembers.email, email.toLowerCase()));
   }
 }
 
