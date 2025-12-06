@@ -1,17 +1,56 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, CheckCircle, Loader2, Home } from 'lucide-react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { LogOut, Shield, Clock, CheckCircle, Loader2, Home, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { DevModeIndicator } from '@/components/dev-mode-indicator';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken } from '@/lib/auth';
+import { useToast } from '@/hooks/use-toast';
+import { queryClient } from '@/lib/queryClient';
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  const { data: configData, isLoading: configLoading } = useQuery<{ requireCircleLogin: boolean; requirePin: boolean }>({
+    queryKey: ['/api/config'],
+  });
+
+  const updateConfigMutation = useMutation({
+    mutationFn: async (config: { requireCircleLogin?: boolean; requirePin?: boolean }) => {
+      const token = getSessionToken();
+      const response = await fetch('/api/config', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(config),
+      });
+      if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/config'] });
+      toast({
+        title: 'Configuration mise à jour',
+        description: 'Les paramètres de sécurité ont été enregistrés.',
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour la configuration.',
+        variant: 'destructive',
+      });
+    },
+  });
 
   const { data: userData, isLoading, error } = useQuery({
     queryKey: ['/api/auth/me'],
@@ -194,6 +233,59 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
+
+          <Card data-testid="card-security-config">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Settings className="h-5 w-5 text-muted-foreground" />
+                <CardTitle className="text-lg">Configuration de sécurité</CardTitle>
+              </div>
+              <CardDescription>
+                Activez ou désactivez les couches de protection selon vos besoins
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label htmlFor="require-circle-login" className="text-sm font-medium">
+                    Couche 2 : Exiger la connexion Circle.so
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Si désactivé, les visiteurs non-connectés peuvent voir l'app
+                  </p>
+                </div>
+                <Switch
+                  id="require-circle-login"
+                  checked={configData?.requireCircleLogin ?? true}
+                  onCheckedChange={(checked) => updateConfigMutation.mutate({ requireCircleLogin: checked })}
+                  disabled={updateConfigMutation.isPending || configLoading}
+                  data-testid="switch-require-circle-login"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label htmlFor="require-pin" className="text-sm font-medium">
+                    Couche 3 : Exiger le NIP personnel
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Si désactivé, pas besoin de NIP pour accéder à l'app
+                  </p>
+                </div>
+                <Switch
+                  id="require-pin"
+                  checked={configData?.requirePin ?? true}
+                  onCheckedChange={(checked) => updateConfigMutation.mutate({ requirePin: checked })}
+                  disabled={updateConfigMutation.isPending || configLoading}
+                  data-testid="switch-require-pin"
+                />
+              </div>
+              <div className="pt-2 border-t">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Note :</strong> La couche 1 (accès via Circle.so) est toujours active et ne peut pas être désactivée.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card data-testid="card-welcome">
             <CardHeader>
