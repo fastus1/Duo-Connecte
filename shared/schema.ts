@@ -22,6 +22,13 @@ export const loginAttempts = pgTable("login_attempts", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+export const appConfig = pgTable("app_config", {
+  id: varchar("id").primaryKey().default("main"),
+  requireCircleLogin: boolean("require_circle_login").notNull().default(true),
+  requirePin: boolean("require_pin").notNull().default(true),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   publicUid: true,
@@ -40,6 +47,7 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertLoginAttempt = z.infer<typeof insertLoginAttemptSchema>;
 export type LoginAttempt = typeof loginAttempts.$inferSelect;
+export type AppConfig = typeof appConfig.$inferSelect;
 
 export const circleUserDataSchema = z.object({
   type: z.literal('CIRCLE_USER_AUTH'),
