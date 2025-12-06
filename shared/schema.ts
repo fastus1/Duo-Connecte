@@ -16,7 +16,7 @@ export const users = pgTable("users", {
 
 export const loginAttempts = pgTable("login_attempts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id),
+  userId: varchar("user_id"),
   success: boolean("success").notNull(),
   ipAddress: text("ip_address"),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
@@ -42,6 +42,35 @@ export const insertLoginAttemptSchema = createInsertSchema(loginAttempts).pick({
   userId: true,
   success: true,
   ipAddress: true,
+}).extend({
+  userId: z.string().nullable().optional(),
+});
+
+export const validateCircleUserSchema = z.object({
+  publicUid: z.string().min(1, "Identifiant Circle.so requis"),
+  email: z.string().email("Email invalide"),
+  name: z.string().min(1, "Nom requis"),
+  isAdmin: z.boolean().optional().default(false),
+  timestamp: z.number(),
+});
+
+export const createPinSchema = z.object({
+  email: z.string().email("Email invalide"),
+  public_uid: z.string().min(1, "Identifiant requis"),
+  name: z.string().min(1, "Nom requis"),
+  pin: z.string().regex(/^\d{4,6}$/, "Le NIP doit contenir 4 à 6 chiffres"),
+  validation_token: z.string().min(1, "Token de validation requis"),
+});
+
+export const validatePinSchema = z.object({
+  email: z.string().email("Email invalide"),
+  pin: z.string().min(1, "NIP requis"),
+});
+
+export const updateConfigSchema = z.object({
+  requireCircleDomain: z.boolean().optional(),
+  requireCircleLogin: z.boolean().optional(),
+  requirePin: z.boolean().optional(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

@@ -81,8 +81,9 @@ export class MemStorage implements IStorage {
   async logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt> {
     const id = randomUUID();
     const loginAttempt: LoginAttempt = {
-      ...attempt,
       id,
+      userId: attempt.userId ?? null,
+      success: attempt.success,
       ipAddress: attempt.ipAddress || null,
       timestamp: new Date(),
     };

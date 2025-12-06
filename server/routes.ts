@@ -12,6 +12,12 @@ import {
 } from "./middleware";
 import { corsMiddleware } from "./app";
 import crypto from "crypto";
+import { 
+  validateCircleUserSchema, 
+  createPinSchema, 
+  validatePinSchema, 
+  updateConfigSchema 
+} from "@shared/schema";
 
 // Temporary cache for validated Circle.so data (5 minutes expiry)
 interface ValidationCache {
@@ -143,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.logLoginAttempt({
           userId: existingUser.id,
           success: true,
-          ipAddress: req.ip || 'unknown',
+          ipAddress: req.ip || null,
         });
         const sessionToken = generateSessionToken(existingUser.id, existingUser.email);
         
@@ -246,7 +252,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.logLoginAttempt({
         userId: user.id,
         success: true,
-        ipAddress: req.ip || 'unknown',
+        ipAddress: req.ip || null,
       });
 
       // Generate session token
@@ -329,7 +335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.logLoginAttempt({
         userId: user.id,
         success: true,
-        ipAddress: req.ip || 'unknown',
+        ipAddress: req.ip || null,
       });
 
       const sessionToken = generateSessionToken(user.id, user.email);
@@ -362,9 +368,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         // Log failed attempt for non-existent user
         await storage.logLoginAttempt({
-          userId: 'unknown',
+          userId: null,
           success: false,
-          ipAddress: req.ip || 'unknown',
+          ipAddress: req.ip || null,
         });
         return res.status(404).json({ error: 'Utilisateur introuvable' });
       }
@@ -377,7 +383,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.logLoginAttempt({
           userId: user.id,
           success: false,
-          ipAddress: req.ip || 'unknown',
+          ipAddress: req.ip || null,
         });
 
         return res.status(401).json({ error: 'NIP incorrect' });
@@ -390,7 +396,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.logLoginAttempt({
         userId: user.id,
         success: true,
-        ipAddress: req.ip || 'unknown',
+        ipAddress: req.ip || null,
       });
 
       // Generate session token
@@ -425,9 +431,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUserByEmail(email);
       if (!user) {
         await storage.logLoginAttempt({
-          userId: 'unknown',
+          userId: null,
           success: false,
-          ipAddress: req.ip || 'unknown',
+          ipAddress: req.ip || null,
         });
         return res.status(404).json({ error: 'Utilisateur introuvable' });
       }
@@ -437,7 +443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.logLoginAttempt({
           userId: user.id,
           success: false,
-          ipAddress: req.ip || 'unknown',
+          ipAddress: req.ip || null,
         });
         return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
       }
@@ -448,7 +454,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.logLoginAttempt({
           userId: user.id,
           success: false,
-          ipAddress: req.ip || 'unknown',
+          ipAddress: req.ip || null,
         });
         return res.status(401).json({ error: 'NIP incorrect' });
       }
@@ -460,7 +466,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.logLoginAttempt({
         userId: user.id,
         success: true,
-        ipAddress: req.ip || 'unknown',
+        ipAddress: req.ip || null,
       });
 
       // Generate session token
