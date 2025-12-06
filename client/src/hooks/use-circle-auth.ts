@@ -126,12 +126,6 @@ export function useCircleAuth() {
     const RETRY_INTERVAL = 500;
 
     const handleMessage = (event: MessageEvent) => {
-      // Debug: log all incoming messages with CIRCLE_USER_AUTH type
-      if (event.data?.type === 'CIRCLE_USER_AUTH') {
-        console.log('📨 Message reçu de:', event.origin, '(attendu:', CIRCLE_ORIGIN, ')');
-        console.log('📨 Payload:', JSON.stringify(event.data));
-      }
-      
       if (event.origin !== CIRCLE_ORIGIN) {
         return;
       }

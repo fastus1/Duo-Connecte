@@ -43,7 +43,6 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
   useEffect(() => {
     const handleGlobalMessage = (event: MessageEvent) => {
       if (event.data?.type === 'CIRCLE_USER_AUTH' && event.data?.theme) {
-        console.log('🎨 ThemeProvider: Message reçu de', event.origin, '- theme:', event.data.theme);
         const newTheme = event.data.theme as 'light' | 'dark';
         localStorage.setItem('theme', newTheme);
         setThemeState(newTheme);

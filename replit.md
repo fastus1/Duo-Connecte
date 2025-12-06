@@ -86,81 +86,60 @@ Script JavaScript pour cette app (Header Custom Code Circle.so) :
 ```html
 <script>
 /************************************************************
- * SCRIPT : AUTHENTIFICATION COMPLÈTE + THÈME
- * 
- * Cible   : web-template-base-ok.replit.app
- * Données : Email, UID, nom, statut admin, timestamp, thème
- * Fix     : File d'attente si circleUser pas encore chargé
+ * SCRIPT : AUTH + THÈME SIMPLIFIÉ
+ * Cible : web-template-base-ok.replit.app
  ************************************************************/
 (function() {
   const IFRAME_ORIGIN = 'https://web-template-base-ok.replit.app';
-  let pendingRequest = null;
   
   function getTheme() {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
   }
   
-  function buildUserPayload() {
+  function buildPayload() {
     if (!window.circleUser) return null;
-    const isAdmin = window.circleUser.isAdmin === 'true' || window.circleUser.isAdmin === true;
     return {
       type: 'CIRCLE_USER_AUTH',
       user: {
         publicUid: window.circleUser.publicUid,
         email: window.circleUser.email,
         name: window.circleUser.name,
-        isAdmin: isAdmin,
+        isAdmin: window.circleUser.isAdmin === 'true' || window.circleUser.isAdmin === true,
         timestamp: Date.now()
       },
       theme: getTheme()
     };
   }
   
-  function sendAuthToIframe(iframe) {
-    const payload = buildUserPayload();
-    if (payload && iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage(payload, IFRAME_ORIGIN);
-      return true;
-    }
-    return false;
-  }
-  
-  function processPendingRequest() {
-    if (!pendingRequest) return;
+  function sendToIframe() {
     const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
-    if (sendAuthToIframe(iframe)) {
-      pendingRequest = null;
+    const payload = buildPayload();
+    if (iframe && iframe.contentWindow && payload) {
+      iframe.contentWindow.postMessage(payload, '*');
     }
   }
   
   // Écouter les demandes de l'iframe
   window.addEventListener('message', function(event) {
-    if (event.origin !== IFRAME_ORIGIN) return;
-    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
-      const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
-      if (!sendAuthToIframe(iframe)) {
-        // circleUser pas encore prêt, mettre en attente
-        pendingRequest = { timestamp: Date.now() };
-      }
+    if (event.origin === IFRAME_ORIGIN && event.data?.type === 'CIRCLE_AUTH_REQUEST') {
+      sendToIframe();
     }
   });
   
-  // Attendre que circleUser soit disponible
-  window.addEventListener('load', function() {
-    const checkUser = setInterval(function() {
-      if (window.circleUser) {
-        clearInterval(checkUser);
-        // Traiter requête en attente
-        processPendingRequest();
-        // Envoyer aussi au cas où l'iframe était prêt avant
-        const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
-        sendAuthToIframe(iframe);
+  // Envoyer dès que circleUser est disponible
+  let sent = false;
+  const interval = setInterval(function() {
+    if (window.circleUser && !sent) {
+      const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
+      if (iframe) {
+        sendToIframe();
+        sent = true;
+        clearInterval(interval);
       }
-    }, 100);
-    
-    // Timeout après 10 secondes
-    setTimeout(function() { clearInterval(checkUser); }, 10000);
-  });
+    }
+  }, 500);
+  
+  setTimeout(function() { clearInterval(interval); }, 30000);
 })();
 </script>
 ```
