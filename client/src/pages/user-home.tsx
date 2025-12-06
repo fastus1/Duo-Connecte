@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { getSessionToken } from '@/lib/auth';
+import { getSessionToken, clearAuth } from '@/lib/auth';
 
 interface AppConfig {
   requireCircleDomain: boolean;
@@ -58,10 +58,7 @@ export default function UserHome() {
   });
 
   const handleLogout = () => {
-    localStorage.removeItem('session_token');
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('is_admin');
-    localStorage.removeItem('session_timestamp');
+    clearAuth();
     if (isPublicMode) {
       window.location.reload();
     } else {

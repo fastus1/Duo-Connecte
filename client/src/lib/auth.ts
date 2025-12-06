@@ -20,6 +20,7 @@ export function isAuthenticated(): boolean {
 export function clearAuth(): void {
   localStorage.removeItem('session_token');
   localStorage.removeItem('user_id');
+  localStorage.removeItem('is_admin');
   localStorage.removeItem('session_timestamp');
 }
 

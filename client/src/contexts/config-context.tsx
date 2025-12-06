@@ -37,7 +37,6 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
 
   useEffect(() => {
     localStorage.setItem('app_mode', mode);
-    console.log(`🔧 App mode set to: ${mode.toUpperCase()}`);
   }, [mode]);
 
   const setMode = (newMode: AppMode) => {
@@ -47,7 +46,6 @@ export function ConfigProvider({ children }: ConfigProviderProps) {
     // When switching modes, clear all auth data and reload
     if (previousMode !== newMode) {
       clearAllAuthData();
-      console.log(`🔄 Mode changed: ${previousMode.toUpperCase()} → ${newMode.toUpperCase()}, reloading...`);
       setTimeout(() => window.location.reload(), 100);
     }
   };

@@ -45,7 +45,7 @@ function setCachedUserData(userData: CircleUserData['user']): void {
     localStorage.setItem(CIRCLE_USER_STORAGE_KEY, JSON.stringify(userData));
     localStorage.setItem(CIRCLE_USER_TIMESTAMP_KEY, Date.now().toString());
   } catch {
-    console.error('Failed to cache Circle.so user data');
+    // Silent fail - cache not critical
   }
 }
 
@@ -69,10 +69,9 @@ export function useCircleAuth() {
     if (!CIRCLE_ORIGIN) return;
     
     try {
-      console.log('📤 Requesting auth from Circle.so parent...');
       window.parent.postMessage({ type: 'CIRCLE_AUTH_REQUEST' }, CIRCLE_ORIGIN);
-    } catch (e) {
-      console.error('❌ Failed to send auth request:', e);
+    } catch {
+      // Silent fail - parent may not be available
     }
   }, []);
 
@@ -90,13 +89,11 @@ export function useCircleAuth() {
     });
 
     if (!requireCircleDomain) {
-      console.log('🔧 DEV MODE: Circle.so domain verification bypassed (Couche 1 désactivée)');
       clearCircleUserCache();
       return;
     }
 
     if (!CIRCLE_ORIGIN) {
-      console.error('❌ VITE_CIRCLE_ORIGIN is not configured!');
       setState({
         isLoading: false,
         userData: null,
@@ -108,7 +105,6 @@ export function useCircleAuth() {
     // Check for cached user data first
     const cachedUser = getCachedUserData();
     if (cachedUser) {
-      console.log('📦 Using cached Circle.so user data');
       setState({
         isLoading: false,
         userData: cachedUser,
@@ -117,8 +113,6 @@ export function useCircleAuth() {
       // Still request fresh data in background
       requestAuthFromParent();
     }
-
-    console.log('🔍 Setting up Circle.so auth listener for:', CIRCLE_ORIGIN);
 
     let messageReceived = false;
     let retryCount = 0;
@@ -134,14 +128,12 @@ export function useCircleAuth() {
         const data = circleUserDataSchema.parse(event.data);
         
         if (data.type === 'CIRCLE_USER_AUTH') {
-          console.log('✅ Circle.so user data received (fresh)');
           messageReceived = true;
           
           // Cache the user data for future refreshes
           setCachedUserData(data.user);
           
           if (data.theme) {
-            console.log('🎨 Applying Circle.so theme:', data.theme);
             setThemeFromCircle(data.theme);
           }
           
@@ -151,8 +143,8 @@ export function useCircleAuth() {
             error: null,
           });
         }
-      } catch (error) {
-        console.error('❌ Invalid Circle.so data:', error);
+      } catch {
+        // Invalid data format - ignore
       }
     };
 
@@ -172,7 +164,6 @@ export function useCircleAuth() {
         
         if (retryCount >= MAX_RETRIES) {
           clearInterval(retryInterval);
-          console.error('⏱️ Timeout: No Circle.so response after', MAX_RETRIES, 'attempts');
           setState({
             isLoading: false,
             userData: null,
@@ -181,7 +172,6 @@ export function useCircleAuth() {
           return;
         }
         
-        console.log(`📤 Retry ${retryCount}/${MAX_RETRIES}...`);
         requestAuthFromParent();
       }, RETRY_INTERVAL);
 
