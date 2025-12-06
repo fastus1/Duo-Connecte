@@ -54,12 +54,14 @@ export default function AuthPage() {
       return;
     }
 
-    // If Circle login is NOT required and no session, show public landing page
-    if (!appConfig.requireCircleLogin) {
-      setAuthStep('public_landing');
+    // Public mode: all 3 layers disabled - go directly to user-home (no login required)
+    const isPublicMode = !appConfig.requireCircleDomain && !appConfig.requireCircleLogin && !appConfig.requirePin;
+    if (isPublicMode) {
+      setLocation('/user-home');
       return;
     }
 
+    // Dev mode: Circle domain not required but Circle login is required - use mock data
     if (devMode) {
       const mockUserData = {
         publicUid: 'dev123',

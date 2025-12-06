@@ -1,22 +1,44 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, Shield, LogOut, Home } from 'lucide-react';
+import { Loader2, Shield, LogOut, Home, LogIn } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken } from '@/lib/auth';
 
+interface AppConfig {
+  requireCircleDomain: boolean;
+  requireCircleLogin: boolean;
+  requirePin: boolean;
+  isPublicMode: boolean;
+}
+
 export default function UserHome() {
   const [, setLocation] = useLocation();
+  const sessionToken = getSessionToken();
+  const isLoggedIn = !!sessionToken;
 
-  const { data: userData, isLoading, error } = useQuery({
+  const { data: appConfig, isLoading: configLoading } = useQuery<AppConfig>({
+    queryKey: ['/api/config'],
+  });
+
+  const isPublicMode = appConfig?.isPublicMode ?? false;
+
+  // Redirect to auth page if not logged in and not in public mode
+  useEffect(() => {
+    if (!configLoading && appConfig && !isPublicMode && !isLoggedIn) {
+      setLocation('/');
+    }
+  }, [configLoading, appConfig, isPublicMode, isLoggedIn, setLocation]);
+
+  const { data: userData, isLoading } = useQuery({
     queryKey: ['/api/auth/me'],
     queryFn: async () => {
       const token = getSessionToken();
       if (!token) {
-        throw new Error('No session token');
+        return null;
       }
 
       const response = await fetch('/api/auth/me', {
@@ -26,31 +48,28 @@ export default function UserHome() {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Session expired');
-        }
-        throw new Error('Failed to fetch user data');
+        return null;
       }
 
       return response.json();
     },
+    enabled: isLoggedIn,
     retry: false,
   });
-
-  useEffect(() => {
-    if (error || !getSessionToken()) {
-      handleLogout();
-    }
-  }, [error]);
 
   const handleLogout = () => {
     localStorage.removeItem('session_token');
     localStorage.removeItem('user_id');
+    localStorage.removeItem('is_admin');
     localStorage.removeItem('session_timestamp');
-    setLocation('/');
+    if (isPublicMode) {
+      window.location.reload();
+    } else {
+      setLocation('/');
+    }
   };
 
-  if (isLoading) {
+  if (isLoading && isLoggedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md shadow-lg">
@@ -63,12 +82,13 @@ export default function UserHome() {
     );
   }
 
-  const firstName = userData?.name?.split(' ')[0] || 'Utilisateur';
+  const firstName = userData?.name?.split(' ')[0] || 'Visiteur';
+  const isAdmin = userData?.isAdmin || false;
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
             <Logo size="md" />
             <div>
@@ -79,7 +99,7 @@ export default function UserHome() {
           
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            {userData?.isAdmin && (
+            {isAdmin && (
               <Button 
                 variant="outline" 
                 onClick={() => setLocation('/dashboard')}
@@ -89,14 +109,26 @@ export default function UserHome() {
                 Dashboard Admin
               </Button>
             )}
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              data-testid="button-logout"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Déconnexion
-            </Button>
+            {isLoggedIn ? (
+              <Button 
+                variant="outline" 
+                onClick={handleLogout}
+                data-testid="button-logout"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Déconnexion
+              </Button>
+            ) : (
+              <Button 
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation('/admin-login')}
+                data-testid="button-admin-login"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Admin
+              </Button>
+            )}
           </div>
         </div>
       </header>
