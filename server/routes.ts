@@ -72,6 +72,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Données utilisateur manquantes' });
       }
 
+      // Get app configuration to check if PIN is required
+      const appConfig = await storage.getAppConfig();
+
       // In DEV_MODE, use mock Circle.so data but still validate format
       const userData = DEV_MODE ? {
         publicUid: user.publicUid || 'dev123',
@@ -113,14 +116,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           timestamp: Date.now(),
         });
 
-        // New member - needs to create PIN
+        // New member - needs to create PIN (or auto-register if PIN not required)
         return res.json({
           status: 'new_user',
           user_id: userData.publicUid,
           email: userData.email,
           name: userData.name,
           is_admin: userData.isAdmin || false,
-          validation_token: validationToken, // Short-lived token to prevent unauthorized account creation
+          validation_token: validationToken,
+          requires_pin: appConfig.requirePin,
         });
       }
 
@@ -133,6 +137,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // CRITICAL: Sync admin status from Circle.so on every login
       await storage.updateUserRole(existingUser.id, userData.isAdmin || false);
+
+      // If PIN is NOT required, auto-login the user
+      if (!appConfig.requirePin) {
+        await storage.updateUserLastLogin(existingUser.id);
+        await storage.logLoginAttempt({
+          userId: existingUser.id,
+          success: true,
+          ipAddress: req.ip || 'unknown',
+        });
+        const sessionToken = generateSessionToken(existingUser.id, existingUser.email);
+        
+        return res.json({
+          status: 'auto_login',
+          user_id: existingUser.id,
+          is_admin: userData.isAdmin || false,
+          session_token: sessionToken,
+          requires_pin: false,
+        });
+      }
 
       // Existing member - needs to enter PIN
       return res.json({
@@ -240,6 +263,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in /api/auth/create-pin:', error);
       return res.status(500).json({ error: 'Erreur lors de la création du NIP' });
+    }
+  });
+
+  // POST /api/auth/create-user-no-pin - Create user without PIN (when PIN is not required)
+  app.post('/api/auth/create-user-no-pin', async (req: Request, res: Response) => {
+    try {
+      const { email, public_uid, name, validation_token } = req.body;
+
+      // Check if PIN is required
+      const appConfig = await storage.getAppConfig();
+      if (appConfig.requirePin) {
+        return res.status(403).json({ error: 'Le NIP est requis pour créer un compte' });
+      }
+
+      // Validate input
+      if (!email || !public_uid || !name || !validation_token) {
+        return res.status(400).json({ error: 'Données manquantes' });
+      }
+
+      // Verify validation token
+      const cachedData = validationCache.get(validation_token);
+      if (!cachedData) {
+        return res.status(403).json({ 
+          error: 'Token de validation invalide ou expiré. Veuillez recommencer l\'authentification.' 
+        });
+      }
+
+      // Verify the data matches
+      if (cachedData.email !== email || cachedData.publicUid !== public_uid) {
+        validationCache.delete(validation_token);
+        return res.status(403).json({ 
+          error: 'Les données ne correspondent pas à la validation Circle.so' 
+        });
+      }
+
+      // Check expiration
+      if (Date.now() - cachedData.timestamp > VALIDATION_EXPIRY_MS) {
+        validationCache.delete(validation_token);
+        return res.status(403).json({ 
+          error: 'Token de validation expiré. Veuillez recommencer l\'authentification.' 
+        });
+      }
+
+      validationCache.delete(validation_token);
+
+      // Check if user exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ error: 'Un compte existe déjà pour cet email' });
+      }
+
+      // Create user with random PIN (user will never need it)
+      const randomPin = crypto.randomBytes(6).toString('hex');
+      const pinHash = await hashPin(randomPin);
+
+      const user = await storage.createUser({
+        email,
+        publicUid: public_uid,
+        name,
+        pinHash,
+        isAdmin: cachedData.isAdmin,
+      });
+
+      await storage.updateUserLastLogin(user.id);
+      await storage.logLoginAttempt({
+        userId: user.id,
+        success: true,
+        ipAddress: req.ip || 'unknown',
+      });
+
+      const sessionToken = generateSessionToken(user.id, user.email);
+
+      return res.json({
+        success: true,
+        session_token: sessionToken,
+        user_id: user.id,
+        is_admin: user.isAdmin,
+      });
+
+    } catch (error) {
+      console.error('Error in /api/auth/create-user-no-pin:', error);
+      return res.status(500).json({ error: 'Erreur lors de la création du compte' });
     }
   });
 

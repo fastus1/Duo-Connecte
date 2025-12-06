@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useCircleAuth } from '@/hooks/use-circle-auth';
 import { useConfig } from '@/contexts/config-context';
@@ -11,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'error';
+type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'authenticated' | 'error';
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
@@ -30,7 +31,21 @@ export default function AuthPage() {
 
   const devMode = mode === 'dev';
 
+  // Fetch app security configuration
+  const { data: appConfig, isLoading: configLoading } = useQuery<{ requireCircleLogin: boolean; requirePin: boolean }>({
+    queryKey: ['/api/config'],
+  });
+
   useEffect(() => {
+    // Wait for config to load
+    if (configLoading || !appConfig) return;
+
+    // If Circle login is NOT required, go directly to user-home (public mode)
+    if (!appConfig.requireCircleLogin) {
+      setLocation('/user-home');
+      return;
+    }
+
     if (devMode) {
       const mockUserData = {
         publicUid: 'dev123',
@@ -53,7 +68,7 @@ export default function AuthPage() {
     if (userData) {
       validateCircleData(userData);
     }
-  }, [userData, circleError, devMode]);
+  }, [userData, circleError, devMode, appConfig, configLoading]);
 
   const validateCircleData = async (userDataToValidate?: typeof userData) => {
     const dataToValidate = userDataToValidate || userData;
@@ -75,6 +90,12 @@ export default function AuthPage() {
         return data;
       });
 
+      // Auto-login: backend returns session token directly (PIN not required)
+      if (result.status === 'auto_login' && result.session_token) {
+        handleAuthSuccess(result.session_token, result.user_id, result.is_admin);
+        return;
+      }
+
       setValidatedData({
         public_uid: result.user_id,
         email: dataToValidate.email,
@@ -82,6 +103,18 @@ export default function AuthPage() {
         is_admin: result.is_admin || false,
         validationToken: result.validation_token,
       });
+
+      // New user without PIN requirement - auto-create account
+      if (result.status === 'new_user' && result.requires_pin === false) {
+        await createUserWithoutPin(
+          dataToValidate.email,
+          result.user_id,
+          dataToValidate.name,
+          result.validation_token,
+          result.is_admin
+        );
+        return;
+      }
 
       if (result.status === 'new_user') {
         setAuthStep('new_user');
@@ -106,6 +139,38 @@ export default function AuthPage() {
       setLocation('/dashboard');
     } else {
       setLocation('/user-home');
+    }
+  };
+
+  const createUserWithoutPin = async (
+    email: string,
+    publicUid: string,
+    name: string,
+    validationToken: string,
+    isAdmin: boolean
+  ) => {
+    try {
+      const result = await fetch('/api/auth/create-user-no-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          public_uid: publicUid,
+          name,
+          validation_token: validationToken,
+        }),
+      }).then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Erreur lors de la création du compte');
+        }
+        return data;
+      });
+
+      handleAuthSuccess(result.session_token, result.user_id, result.is_admin);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de la création du compte');
+      setAuthStep('error');
     }
   };
 
