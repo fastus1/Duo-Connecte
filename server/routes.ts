@@ -57,6 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         config: {
           requireCircleDomain: config.requireCircleDomain,
           requireCircleLogin: config.requireCircleLogin,
+          requirePaywall: config.requirePaywall,
           requirePin: config.requirePin,
         },
         timestamp: new Date().toISOString()

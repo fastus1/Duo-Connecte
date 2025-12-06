@@ -1,11 +1,15 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, Loader2, Home, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken, clearAuth } from '@/lib/auth';
@@ -16,12 +20,41 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const { data: configData, isLoading: configLoading } = useQuery<{ requireCircleDomain: boolean; requireCircleLogin: boolean; requirePin: boolean }>({
+  interface AppConfig {
+    requireCircleDomain: boolean;
+    requireCircleLogin: boolean;
+    requirePaywall: boolean;
+    requirePin: boolean;
+    paywallPurchaseUrl: string;
+    paywallInfoUrl: string;
+    paywallTitle: string;
+    paywallMessage: string;
+  }
+
+  const { data: configData, isLoading: configLoading } = useQuery<AppConfig>({
     queryKey: ['/api/config'],
   });
 
+  // Local state for paywall settings
+  const [paywallTitle, setPaywallTitle] = useState('');
+  const [paywallMessage, setPaywallMessage] = useState('');
+  const [paywallPurchaseUrl, setPaywallPurchaseUrl] = useState('');
+  const [paywallInfoUrl, setPaywallInfoUrl] = useState('');
+  const [paywallSettingsLoaded, setPaywallSettingsLoaded] = useState(false);
+
+  // Load paywall settings when config is fetched
+  useEffect(() => {
+    if (configData && !paywallSettingsLoaded) {
+      setPaywallTitle(configData.paywallTitle || '');
+      setPaywallMessage(configData.paywallMessage || '');
+      setPaywallPurchaseUrl(configData.paywallPurchaseUrl || '');
+      setPaywallInfoUrl(configData.paywallInfoUrl || '');
+      setPaywallSettingsLoaded(true);
+    }
+  }, [configData, paywallSettingsLoaded]);
+
   const updateConfigMutation = useMutation({
-    mutationFn: async (config: { requireCircleDomain?: boolean; requireCircleLogin?: boolean; requirePin?: boolean }) => {
+    mutationFn: async (config: Partial<AppConfig>) => {
       const token = getSessionToken();
       const response = await fetch('/api/config', {
         method: 'PATCH',
@@ -31,7 +64,10 @@ export default function Dashboard() {
         },
         body: JSON.stringify(config),
       });
-      if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Erreur lors de la mise à jour');
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -41,14 +77,24 @@ export default function Dashboard() {
         description: 'Les paramètres de sécurité ont été enregistrés.',
       });
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({
         title: 'Erreur',
-        description: 'Impossible de mettre à jour la configuration.',
+        description: error.message || 'Impossible de mettre à jour la configuration.',
         variant: 'destructive',
       });
     },
   });
+
+  // Save paywall settings
+  const savePaywallSettings = () => {
+    updateConfigMutation.mutate({
+      paywallTitle,
+      paywallMessage,
+      paywallPurchaseUrl,
+      paywallInfoUrl,
+    });
+  };
 
   const { data: userData, isLoading, error } = useQuery({
     queryKey: ['/api/auth/me'],
@@ -148,7 +194,7 @@ export default function Dashboard() {
           <div>
             <h2 className="text-3xl font-semibold mb-2">Tableau de bord</h2>
             <p className="text-muted-foreground">
-              Vous êtes connecté de manière sécurisée avec l'authentification à 3 couches
+              Vous êtes connecté de manière sécurisée avec l'authentification à 4 couches
             </p>
           </div>
 
@@ -234,8 +280,36 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center justify-between gap-4">
                 <div className="space-y-1 flex-1">
+                  <Label htmlFor="require-paywall" className="text-sm font-medium">
+                    Couche 3 : Exiger le paiement (Paywall)
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Si activé, seuls les membres payants peuvent accéder à l'app
+                  </p>
+                  {configData?.requirePaywall && !configData?.requireCircleLogin && (
+                    <Alert variant="destructive" className="mt-2">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        Le paywall nécessite que la Couche 2 (Connexion Circle.so) soit activée.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  <Switch
+                    id="require-paywall"
+                    checked={configData?.requirePaywall ?? false}
+                    onCheckedChange={(checked) => updateConfigMutation.mutate({ requirePaywall: checked })}
+                    disabled={updateConfigMutation.isPending || configLoading || !configData?.requireCircleLogin}
+                    data-testid="switch-require-paywall"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1 flex-1">
                   <Label htmlFor="require-pin" className="text-sm font-medium">
-                    Couche 3 : Exiger le NIP personnel
+                    Couche 4 : Exiger le NIP personnel
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     Si désactivé, pas besoin de NIP pour accéder à l'app
@@ -257,6 +331,83 @@ export default function Dashboard() {
                   <strong>Note :</strong> Désactiver la Couche 1 permet de tester l'app sans être dans Circle.so. À réactiver en production.
                 </p>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Paywall Configuration Card */}
+          <Card data-testid="card-paywall-config">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Lock className="h-5 w-5 text-muted-foreground" />
+                <CardTitle className="text-lg">Configuration du Paywall</CardTitle>
+              </div>
+              <CardDescription>
+                Personnalisez l'écran affiché aux membres non-payants
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="paywall-title">Titre de l'écran de blocage</Label>
+                <Input
+                  id="paywall-title"
+                  placeholder="Accès Réservé"
+                  value={paywallTitle}
+                  onChange={(e) => setPaywallTitle(e.target.value)}
+                  data-testid="input-paywall-title"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="paywall-message">Message explicatif</Label>
+                <Textarea
+                  id="paywall-message"
+                  placeholder="Cette application est réservée aux membres payants de la communauté."
+                  value={paywallMessage}
+                  onChange={(e) => setPaywallMessage(e.target.value)}
+                  rows={3}
+                  data-testid="input-paywall-message"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="paywall-purchase-url">URL d'achat (bouton principal)</Label>
+                <Input
+                  id="paywall-purchase-url"
+                  placeholder="https://votre-communaute.circle.so/c/acheter"
+                  value={paywallPurchaseUrl}
+                  onChange={(e) => setPaywallPurchaseUrl(e.target.value)}
+                  data-testid="input-paywall-purchase-url"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Lien vers la page d'achat Circle.so ou Stripe
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="paywall-info-url">URL d'information (bouton secondaire)</Label>
+                <Input
+                  id="paywall-info-url"
+                  placeholder="https://votre-communaute.circle.so/c/info"
+                  value={paywallInfoUrl}
+                  onChange={(e) => setPaywallInfoUrl(e.target.value)}
+                  data-testid="input-paywall-info-url"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Lien vers une page explicative (optionnel)
+                </p>
+              </div>
+              <Button
+                onClick={savePaywallSettings}
+                disabled={updateConfigMutation.isPending}
+                className="w-full"
+                data-testid="button-save-paywall-settings"
+              >
+                {updateConfigMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Enregistrement...
+                  </>
+                ) : (
+                  'Enregistrer les paramètres du paywall'
+                )}
+              </Button>
             </CardContent>
           </Card>
         </div>

@@ -2,24 +2,34 @@
 
 ## Vue d'ensemble
 
-Template Node.js/Express + React/TypeScript pour intégration Circle.so via iframe avec authentification "Defense in Depth" à 3 couches configurables.
+Template Node.js/Express + React/TypeScript pour intégration Circle.so via iframe avec authentification "Defense in Depth" à 4 couches configurables.
 
 **Usage** : Base réutilisable pour applications Circle.so.
 
 ## Architecture de Sécurité
 
-### 3 Couches d'Authentification (Configurables via Dashboard Admin)
+### 4 Couches d'Authentification (Configurables via Dashboard Admin)
 
 1. **Couche 1 - Domaine Circle.so** : Vérifie que l'app est dans l'iframe Circle.so (désactiver pour développement)
 2. **Couche 2 - Connexion Circle.so** : Validation postMessage (email, publicUid, timestamp 60s max)
-3. **Couche 3 - NIP Personnel** : 4-6 chiffres, bcrypt 10 rounds, rate limit 5/15min, JWT 60min
+3. **Couche 3 - Paywall** : Vérifie si l'utilisateur a payé (sync via webhook Circle.so)
+4. **Couche 4 - NIP Personnel** : 4-6 chiffres, bcrypt 10 rounds, rate limit 5/15min, JWT 60min
 
 ### Configuration Dynamique
 
 Toutes les couches sont configurables via le Dashboard Admin (table `app_config`):
 - `requireCircleDomain` : Couche 1 ON/OFF
 - `requireCircleLogin` : Couche 2 ON/OFF
-- `requirePin` : Couche 3 ON/OFF
+- `requirePaywall` : Couche 3 ON/OFF (nécessite Couche 2 activée)
+- `requirePin` : Couche 4 ON/OFF
+
+### Configuration Paywall
+
+Paramètres personnalisables via Dashboard Admin :
+- `paywallTitle` : Titre de l'écran de blocage
+- `paywallMessage` : Message explicatif pour les non-payants
+- `paywallPurchaseUrl` : Lien vers la page d'achat
+- `paywallInfoUrl` : Lien vers plus d'informations (optionnel)
 
 ## Stack Technique
 
@@ -67,6 +77,21 @@ Retourne la configuration des couches de sécurité.
 
 ### PATCH /api/config
 Met à jour la configuration (admin seulement).
+
+### POST /api/auth/check-paywall
+Vérifie si un email a accès (membre payant).
+
+### POST /webhooks/circle-payment
+Webhook Circle.so pour notifications de paiement (ajoute/supprime membres payants).
+
+### GET /api/admin/paid-members
+Liste tous les membres payants (admin seulement).
+
+### POST /api/admin/paid-members
+Ajoute manuellement un membre payant (admin seulement).
+
+### DELETE /api/admin/paid-members/:email
+Supprime un membre payant (admin seulement).
 
 ## Variables d'Environnement
 
@@ -161,7 +186,9 @@ Script JavaScript pour cette app (Header Custom Code Circle.so) :
 ```sql
 users: id, email, public_uid, name, pin_hash, is_admin, created_at, last_login
 login_attempts: id, user_id, success, ip_address, timestamp
-app_config: id, require_circle_domain, require_circle_login, require_pin, updated_at
+app_config: id, require_circle_domain, require_circle_login, require_paywall, require_pin, 
+            paywall_purchase_url, paywall_info_url, paywall_title, paywall_message, updated_at
+paid_members: id, email (unique), public_uid, source, created_at
 ```
 
 ## Navigation
