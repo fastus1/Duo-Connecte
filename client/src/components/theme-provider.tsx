@@ -39,6 +39,21 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
     return () => window.removeEventListener(CIRCLE_THEME_EVENT, handleCircleTheme as EventListener);
   }, []);
 
+  // Global listener for Circle.so postMessage - accepts from any origin for theme sync
+  useEffect(() => {
+    const handleGlobalMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'CIRCLE_USER_AUTH' && event.data?.theme) {
+        console.log('🎨 ThemeProvider: Message reçu de', event.origin, '- theme:', event.data.theme);
+        const newTheme = event.data.theme as 'light' | 'dark';
+        localStorage.setItem('theme', newTheme);
+        setThemeState(newTheme);
+      }
+    };
+
+    window.addEventListener('message', handleGlobalMessage);
+    return () => window.removeEventListener('message', handleGlobalMessage);
+  }, []);
+
   useEffect(() => {
     const root = document.documentElement;
     
