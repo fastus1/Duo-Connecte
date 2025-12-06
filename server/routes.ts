@@ -517,12 +517,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/config', async (req: Request, res: Response) => {
     try {
       const config = await storage.getAppConfig();
-      // isPublicMode: true ONLY when ALL 3 layers are disabled
-      const isPublicMode = !config.requireCircleDomain && !config.requireCircleLogin && !config.requirePin;
+      // isPublicMode: true ONLY when ALL 4 layers are disabled
+      const isPublicMode = !config.requireCircleDomain && !config.requireCircleLogin && !config.requirePaywall && !config.requirePin;
       return res.json({
         requireCircleDomain: config.requireCircleDomain,
         requireCircleLogin: config.requireCircleLogin,
+        requirePaywall: config.requirePaywall,
         requirePin: config.requirePin,
+        paywallPurchaseUrl: config.paywallPurchaseUrl,
+        paywallInfoUrl: config.paywallInfoUrl,
+        paywallTitle: config.paywallTitle,
+        paywallMessage: config.paywallMessage,
         isPublicMode,
       });
     } catch (error) {
@@ -541,22 +546,186 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
       }
 
-      const { requireCircleDomain, requireCircleLogin, requirePin } = req.body;
+      const { 
+        requireCircleDomain, 
+        requireCircleLogin, 
+        requirePaywall,
+        requirePin,
+        paywallPurchaseUrl,
+        paywallInfoUrl,
+        paywallTitle,
+        paywallMessage,
+      } = req.body;
+
+      // Dependency check: Paywall requires Circle Login to be enabled
+      if (requirePaywall === true) {
+        const currentConfig = await storage.getAppConfig();
+        const circleLoginEnabled = requireCircleLogin !== undefined ? requireCircleLogin : currentConfig.requireCircleLogin;
+        if (!circleLoginEnabled) {
+          return res.status(400).json({ 
+            error: 'Le Paywall nécessite que la connexion Circle.so soit activée (pour obtenir l\'email de l\'utilisateur)' 
+          });
+        }
+      }
 
       const updatedConfig = await storage.updateAppConfig({
         requireCircleDomain: requireCircleDomain !== undefined ? requireCircleDomain : undefined,
         requireCircleLogin: requireCircleLogin !== undefined ? requireCircleLogin : undefined,
+        requirePaywall: requirePaywall !== undefined ? requirePaywall : undefined,
         requirePin: requirePin !== undefined ? requirePin : undefined,
+        paywallPurchaseUrl: paywallPurchaseUrl !== undefined ? paywallPurchaseUrl : undefined,
+        paywallInfoUrl: paywallInfoUrl !== undefined ? paywallInfoUrl : undefined,
+        paywallTitle: paywallTitle !== undefined ? paywallTitle : undefined,
+        paywallMessage: paywallMessage !== undefined ? paywallMessage : undefined,
       });
 
       return res.json({
         success: true,
         requireCircleDomain: updatedConfig.requireCircleDomain,
         requireCircleLogin: updatedConfig.requireCircleLogin,
+        requirePaywall: updatedConfig.requirePaywall,
         requirePin: updatedConfig.requirePin,
+        paywallPurchaseUrl: updatedConfig.paywallPurchaseUrl,
+        paywallInfoUrl: updatedConfig.paywallInfoUrl,
+        paywallTitle: updatedConfig.paywallTitle,
+        paywallMessage: updatedConfig.paywallMessage,
       });
     } catch (error) {
       console.error('Error in PATCH /api/config:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // POST /api/auth/check-paywall - Check if user has paid (requires email from Circle.so login)
+  app.post('/api/auth/check-paywall', async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      const config = await storage.getAppConfig();
+
+      // If paywall is disabled, grant access
+      if (!config.requirePaywall) {
+        return res.json({ hasAccess: true, paywallEnabled: false });
+      }
+
+      // Paywall enabled - check if user has paid
+      if (!email) {
+        return res.json({ 
+          hasAccess: false, 
+          paywallEnabled: true,
+          paywallTitle: config.paywallTitle,
+          paywallMessage: config.paywallMessage,
+          paywallPurchaseUrl: config.paywallPurchaseUrl,
+          paywallInfoUrl: config.paywallInfoUrl,
+        });
+      }
+
+      const paidMember = await storage.getPaidMemberByEmail(email);
+      
+      if (paidMember) {
+        return res.json({ hasAccess: true, paywallEnabled: true });
+      }
+
+      // User has not paid
+      return res.json({ 
+        hasAccess: false, 
+        paywallEnabled: true,
+        paywallTitle: config.paywallTitle,
+        paywallMessage: config.paywallMessage,
+        paywallPurchaseUrl: config.paywallPurchaseUrl,
+        paywallInfoUrl: config.paywallInfoUrl,
+      });
+
+    } catch (error) {
+      console.error('Error in /api/auth/check-paywall:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // POST /webhooks/circle-payment - Receive payment notifications from Circle.so
+  // This endpoint is called by Circle.so when a payment is completed
+  app.post('/webhooks/circle-payment', async (req: Request, res: Response) => {
+    try {
+      const { event, user, payment } = req.body;
+
+      // Validate event type
+      if (event !== 'payment_received') {
+        return res.status(400).json({ error: 'Type d\'événement non supporté' });
+      }
+
+      // Validate email
+      if (!user?.email) {
+        return res.status(400).json({ error: 'Email requis' });
+      }
+
+      const email = user.email.toLowerCase();
+
+      // Check if already registered
+      const existingMember = await storage.getPaidMemberByEmail(email);
+      if (existingMember) {
+        return res.json({ 
+          success: true, 
+          message: 'Membre déjà enregistré',
+          email,
+        });
+      }
+
+      // Register new paid member
+      const newMember = await storage.createPaidMember({
+        email,
+        paymentPlan: payment?.paywall_display_name || null,
+        amountPaid: payment?.amount_paid || null,
+        couponUsed: payment?.coupon_code || null,
+      });
+
+      return res.json({ 
+        success: true, 
+        message: 'Accès activé',
+        email: newMember.email,
+        paymentDate: newMember.paymentDate,
+      });
+
+    } catch (error) {
+      console.error('Error in /webhooks/circle-payment:', error);
+      return res.status(500).json({ error: 'Erreur lors de l\'enregistrement du paiement' });
+    }
+  });
+
+  // GET /api/admin/paid-members - List all paid members (admin only)
+  app.get('/api/admin/paid-members', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      const paidMembers = await storage.getAllPaidMembers();
+      return res.json({ members: paidMembers });
+
+    } catch (error) {
+      console.error('Error in GET /api/admin/paid-members:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // DELETE /api/admin/paid-members/:email - Remove a paid member (admin only)
+  app.delete('/api/admin/paid-members/:email', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      const { email } = req.params;
+      await storage.deletePaidMember(email);
+
+      return res.json({ success: true, message: 'Membre supprimé' });
+
+    } catch (error) {
+      console.error('Error in DELETE /api/admin/paid-members:', error);
       return res.status(500).json({ error: 'Erreur serveur' });
     }
   });
