@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, users, loginAttempts } from "@shared/schema";
+import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, users, loginAttempts, appConfig } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { eq, and, gt } from "drizzle-orm";
@@ -17,6 +17,10 @@ export interface IStorage {
   // Login attempt operations
   logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt>;
   getRecentLoginAttempts(userId: string, windowMs: number): Promise<LoginAttempt[]>;
+  
+  // App config operations
+  getAppConfig(): Promise<AppConfig>;
+  updateAppConfig(config: { requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig>;
 }
 
 export class MemStorage implements IStorage {
@@ -91,6 +95,24 @@ export class MemStorage implements IStorage {
       (attempt) => attempt.userId === userId && attempt.timestamp > cutoffTime,
     );
   }
+
+  async getAppConfig(): Promise<AppConfig> {
+    return {
+      id: "main",
+      requireCircleLogin: true,
+      requirePin: true,
+      updatedAt: new Date(),
+    };
+  }
+
+  async updateAppConfig(config: { requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig> {
+    return {
+      id: "main",
+      requireCircleLogin: config.requireCircleLogin ?? true,
+      requirePin: config.requirePin ?? true,
+      updatedAt: new Date(),
+    };
+  }
 }
 
 export class DbStorage implements IStorage {
@@ -148,6 +170,26 @@ export class DbStorage implements IStorage {
           gt(loginAttempts.timestamp, cutoffTime)
         )
       );
+  }
+
+  async getAppConfig(): Promise<AppConfig> {
+    const result = await this.db.select().from(appConfig).where(eq(appConfig.id, "main")).limit(1);
+    if (result[0]) {
+      return result[0];
+    }
+    const newConfig = await this.db.insert(appConfig).values({ id: "main" }).returning();
+    return newConfig[0];
+  }
+
+  async updateAppConfig(config: { requireCircleLogin?: boolean; requirePin?: boolean }): Promise<AppConfig> {
+    const result = await this.db.update(appConfig)
+      .set({ 
+        ...config,
+        updatedAt: new Date() 
+      })
+      .where(eq(appConfig.id, "main"))
+      .returning();
+    return result[0];
   }
 }
 

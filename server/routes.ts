@@ -333,6 +333,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GET /api/config - Get app configuration (public)
+  app.get('/api/config', async (req: Request, res: Response) => {
+    try {
+      const config = await storage.getAppConfig();
+      return res.json({
+        requireCircleLogin: config.requireCircleLogin,
+        requirePin: config.requirePin,
+      });
+    } catch (error) {
+      console.error('Error in GET /api/config:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // PATCH /api/config - Update app configuration (admin only)
+  app.patch('/api/config', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      const { requireCircleLogin, requirePin } = req.body;
+
+      const updatedConfig = await storage.updateAppConfig({
+        requireCircleLogin: requireCircleLogin !== undefined ? requireCircleLogin : undefined,
+        requirePin: requirePin !== undefined ? requirePin : undefined,
+      });
+
+      return res.json({
+        success: true,
+        requireCircleLogin: updatedConfig.requireCircleLogin,
+        requirePin: updatedConfig.requirePin,
+      });
+    } catch (error) {
+      console.error('Error in PATCH /api/config:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
