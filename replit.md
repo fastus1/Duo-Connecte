@@ -4,7 +4,32 @@
 
 Template Node.js/Express + React/TypeScript pour intégration Circle.so via iframe avec authentification "Defense in Depth" à 4 couches configurables.
 
-**Usage** : Base réutilisable pour applications Circle.so.
+**Usage** : Base réutilisable pour applications Circle.so sous la marque "Avancer Simplement".
+
+## Guide de Duplication
+
+### Pour créer une nouvelle application basée sur ce template :
+
+1. **Dupliquer le Repl** sur Replit
+2. **Créer une nouvelle base de données PostgreSQL** (onglet Database)
+3. **Configurer les variables d'environnement** :
+   - `SESSION_SECRET` : Générer un nouveau secret unique
+   - `WEBHOOK_SECRET` : Générer un nouveau secret pour le webhook
+   - `VITE_CIRCLE_ORIGIN` : L'origine de votre communauté Circle.so
+4. **Exécuter `npm run db:push`** pour créer les tables
+5. **Configurer le Dashboard Admin** : Paywall, couches de sécurité
+6. **Ajouter les scripts Circle.so** : Auth (Header) + Webhook (Paywall)
+
+### Ce qui est configurable via le Dashboard Admin :
+- 4 couches de sécurité (ON/OFF)
+- Paramètres du paywall (titre, message, URLs)
+- Membres payants (ajout/suppression manuel)
+- Générateur de script webhook
+
+### Ce qui reste constant (branding "Avancer Simplement") :
+- Logos (bleu en mode clair, blanc en mode sombre)
+- Typographie Montserrat Black Italic
+- Couleurs de marque (#074491, #3085F5)
 
 ## Architecture de Sécurité
 
@@ -64,7 +89,7 @@ Valide données Circle.so, retourne `validation_token` (5min) pour nouveaux memb
 Crée NIP avec `validation_token`, retourne `session_token` JWT.
 
 ### POST /api/auth/create-user-no-pin
-Crée utilisateur sans NIP (quand Couche 3 désactivée).
+Crée utilisateur sans NIP (quand Couche 4 désactivée).
 
 ### POST /api/auth/validate-pin
 Valide NIP (rate limited 5/15min), retourne `session_token` JWT.
@@ -97,53 +122,29 @@ Supprime un membre payant (admin seulement).
 
 | Variable | Description |
 |----------|-------------|
-| DATABASE_URL | PostgreSQL Neon |
-| SESSION_SECRET | Secret sessions |
-| VITE_CIRCLE_ORIGIN | Origine Circle.so |
-| WEBHOOK_SECRET | Secret pour sécuriser le webhook de paiement |
+| DATABASE_URL | PostgreSQL Neon (auto-généré) |
+| SESSION_SECRET | Secret pour JWT (générer unique par app) |
+| VITE_CIRCLE_ORIGIN | Origine Circle.so (ex: https://votre-communaute.circle.so) |
+| WEBHOOK_SECRET | Secret pour sécuriser le webhook (générer unique par app) |
 
 **Note** : Le mode DEV/PROD est maintenant géré via le Dashboard Admin (Couche 1).
 
-## Sécurité du Webhook
+---
 
-Le webhook `/webhooks/circle-payment` est sécurisé par un secret partagé. Le script Circle.so doit inclure l'en-tête `X-Webhook-Secret`.
+## Scripts Circle.so
 
-**Script Circle.so mis à jour :**
-```html
-<script>
-const WEBHOOK_SECRET = 'VOTRE_SECRET_ICI'; // Copier depuis les variables d'environnement
-fetch('https://web-template-base-ok.replit.app/webhooks/circle-payment', {
-  method: 'POST',
-  headers: { 
-    'Content-Type': 'application/json',
-    'X-Webhook-Secret': WEBHOOK_SECRET
-  },
-  body: JSON.stringify({
-    event: 'payment_received',
-    user: { email: '{member_email}', timestamp: Math.floor(Date.now() / 1000) },
-    payment: {
-      paywall_display_name: '{paywall_display_name}',
-      amount_paid: '{amount_paid}',
-      coupon_code: '{coupon_code}'
-    }
-  })
-});
-</script>
-```
+### Script 1 : Authentification (UNIVERSEL - Header Custom Code)
 
-## Intégration Circle.so
+**Ce script fonctionne pour TOUTES les apps Replit.** À placer dans le Header Custom Code de Circle.so une seule fois.
 
-**Handshake bidirectionnel** : L'iframe peut demander les données à Circle.so à tout moment.
-
-Script JavaScript pour cette app (Header Custom Code Circle.so) :
 ```html
 <script>
 /************************************************************
- * SCRIPT : AUTH + THÈME SIMPLIFIÉ
- * Cible : web-template-base-ok.replit.app
+ * SCRIPT UNIVERSEL : AUTH + THÈME
+ * Fonctionne avec toutes les apps *.replit.app
  ************************************************************/
 (function() {
-  const IFRAME_ORIGIN = 'https://web-template-base-ok.replit.app';
+  const ALLOWED_ORIGINS = /\.replit\.app$/;
   
   function getTheme() {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
@@ -164,31 +165,30 @@ Script JavaScript pour cette app (Header Custom Code Circle.so) :
     };
   }
   
-  function sendToIframe() {
-    const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
+  function sendToAllIframes() {
+    const iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
     const payload = buildPayload();
-    if (iframe && iframe.contentWindow && payload) {
-      iframe.contentWindow.postMessage(payload, '*');
+    if (payload) {
+      iframes.forEach(function(iframe) {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.postMessage(payload, '*');
+        }
+      });
     }
   }
   
-  // Écouter les demandes de l'iframe
   window.addEventListener('message', function(event) {
-    if (event.origin === IFRAME_ORIGIN && event.data?.type === 'CIRCLE_AUTH_REQUEST') {
-      sendToIframe();
+    if (ALLOWED_ORIGINS.test(event.origin) && event.data?.type === 'CIRCLE_AUTH_REQUEST') {
+      sendToAllIframes();
     }
   });
   
-  // Envoyer dès que circleUser est disponible
   let sent = false;
   const interval = setInterval(function() {
     if (window.circleUser && !sent) {
-      const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
-      if (iframe) {
-        sendToIframe();
-        sent = true;
-        clearInterval(interval);
-      }
+      sendToAllIframes();
+      sent = true;
+      clearInterval(interval);
     }
   }, 500);
   
@@ -197,9 +197,57 @@ Script JavaScript pour cette app (Header Custom Code Circle.so) :
 </script>
 ```
 
-**Points critiques Circle.so** :
+**Sécurité** : Les 4 couches de validation côté serveur restent actives :
+- Couche 1 : Vérification du Referer Circle.so
+- Couche 2 : Validation timestamp (60s max anti-replay)
+- Couche 3 : Vérification paywall en base de données
+- Couche 4 : Hash bcrypt du NIP
+
+---
+
+### Script 2 : Webhook Paiement (SPÉCIFIQUE par app - Paywall Custom Code)
+
+**Ce script doit être généré pour CHAQUE app.** Utiliser le générateur dans Dashboard Admin > onglet "Webhook".
+
+Le générateur crée automatiquement le script avec :
+- L'URL de l'app (ex: `https://mon-app.replit.app/webhooks/circle-payment`)
+- Le secret webhook (doit correspondre à la variable `WEBHOOK_SECRET`)
+
+**Exemple de script généré :**
+```html
+<script>
+const WEBHOOK_SECRET = 'votre-secret-ici';
+fetch('https://votre-app.replit.app/webhooks/circle-payment', {
+  method: 'POST',
+  headers: { 
+    'Content-Type': 'application/json',
+    'X-Webhook-Secret': WEBHOOK_SECRET
+  },
+  body: JSON.stringify({
+    event: 'payment_received',
+    user: { 
+      email: '{member_email}', 
+      timestamp: Math.floor(Date.now() / 1000) 
+    },
+    payment: {
+      paywall_display_name: '{paywall_display_name}',
+      amount_paid: '{amount_paid}',
+      coupon_code: '{coupon_code}'
+    }
+  })
+});
+</script>
+```
+
+**Où coller ce script** : Dans le Custom Code de chaque paywall Circle.so qui donne accès à l'app.
+
+---
+
+## Points Critiques Circle.so
+
 - Utilise **camelCase** : `publicUid`, `isAdmin`, `firstName`, `lastName`
 - `isAdmin` retourné comme STRING `"true"`/`"false"`, doit être converti en boolean
+- `window.circleUser` disponible après chargement complet de la page
 
 ## Sécurité
 
@@ -215,14 +263,24 @@ Script JavaScript pour cette app (Header Custom Code Circle.so) :
 users: id, email, public_uid, name, pin_hash, is_admin, created_at, last_login
 login_attempts: id, user_id, success, ip_address, timestamp
 app_config: id, require_circle_domain, require_circle_login, require_paywall, require_pin, 
-            paywall_purchase_url, paywall_info_url, paywall_title, paywall_message, updated_at
-paid_members: id, email (unique), public_uid, source, created_at
+            paywall_purchase_url, paywall_info_url, paywall_title, paywall_message, 
+            webhook_app_url, updated_at
+paid_members: id, email (unique), public_uid, source, payment_plan, amount_paid, 
+              coupon_used, payment_date, created_at
 ```
 
 ## Navigation
 
 - **Admins** : Accès `/dashboard` + `/user-home`, boutons navigation + configuration sécurité
 - **Utilisateurs** : `/user-home` uniquement, redirection auto si accès `/dashboard`
+
+## Dashboard Admin (5 onglets)
+
+1. **Accueil** : Infos session, bienvenue
+2. **Sécurité** : 4 couches ON/OFF
+3. **Paywall** : Titre, message, URLs
+4. **Membres** : Liste et gestion des membres payants
+5. **Webhook** : Générateur de script Circle.so
 
 ## Branding "Avancer Simplement"
 
