@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { Shield, ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
+import { LogIn, ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -57,13 +57,13 @@ export default function AdminLogin() {
         <CardHeader className="text-center space-y-4">
           <Logo size="lg" className="mx-auto" />
           <div className="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-primary/10">
-            <Shield className="h-6 w-6 text-primary" />
+            <LogIn className="h-6 w-6 text-primary" />
           </div>
           <CardTitle className="text-2xl font-semibold">
-            Connexion Admin
+            Connexion
           </CardTitle>
           <CardDescription>
-            Accédez au Dashboard de configuration
+            Accédez à votre espace membre
           </CardDescription>
         </CardHeader>
 
@@ -120,7 +120,7 @@ export default function AdminLogin() {
                 </>
               ) : (
                 <>
-                  <Shield className="h-4 w-4 mr-2" />
+                  <LogIn className="h-4 w-4 mr-2" />
                   Se connecter
                 </>
               )}

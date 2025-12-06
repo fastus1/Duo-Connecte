@@ -410,8 +410,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // POST /api/auth/admin-login - Admin login bypass (email + PIN, admin only)
-  // This allows admins to access the dashboard without being in Circle.so iframe
+  // POST /api/auth/admin-login - Direct login with email + PIN (bypass Circle.so)
+  // Security: Only allows login when Circle layers are disabled OR user is admin
   app.post('/api/auth/admin-login', pinRateLimiter, async (req: Request, res: Response) => {
     try {
       const { email, pin } = req.body;
@@ -420,6 +420,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!email || !pin) {
         return res.status(400).json({ error: 'Email et NIP requis' });
       }
+
+      // Get app configuration to check security layers
+      const appConfig = await storage.getAppConfig();
 
       // Get user by email
       const user = await storage.getUserByEmail(email);
@@ -432,8 +435,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Utilisateur introuvable' });
       }
 
-      // Check if user is admin
-      if (!user.isAdmin) {
+      // Security check: If Circle layers are enabled, only admins can use this bypass
+      // This prevents regular users from bypassing Circle.so authentication
+      const circleLayersEnabled = appConfig.requireCircleDomain || appConfig.requireCircleLogin;
+      if (circleLayersEnabled && !user.isAdmin) {
         await storage.logLoginAttempt({
           userId: user.id,
           success: false,

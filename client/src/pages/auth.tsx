@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, AlertCircle, Shield } from 'lucide-react';
+import { Loader2, AlertCircle, Shield, LogIn } from 'lucide-react';
 import { useCircleAuth } from '@/hooks/use-circle-auth';
 import { PinCreationForm } from '@/components/pin-creation-form';
 import { PinLoginForm } from '@/components/pin-login-form';
 import { Logo } from '@/components/logo';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getSessionToken } from '@/lib/auth';
 
-type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'authenticated' | 'error';
+type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'authenticated' | 'error' | 'public_landing';
 
 interface AppConfig {
   requireCircleDomain: boolean;
@@ -44,9 +46,17 @@ export default function AuthPage() {
     // Wait for config to load
     if (configLoading || !appConfig) return;
 
-    // If Circle login is NOT required, go directly to user-home (public mode)
-    if (!appConfig.requireCircleLogin) {
+    // Check if user already has a valid session
+    const existingToken = getSessionToken();
+    if (existingToken) {
+      // User is already logged in, redirect to user-home
       setLocation('/user-home');
+      return;
+    }
+
+    // If Circle login is NOT required and no session, show public landing page
+    if (!appConfig.requireCircleLogin) {
+      setAuthStep('public_landing');
       return;
     }
 
@@ -232,6 +242,38 @@ export default function AuthPage() {
             <p className="text-base text-muted-foreground">
               {devMode ? 'Initialisation du mode développement...' : 'Connexion en cours...'}
             </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Public landing page when all security layers are disabled
+  if (authStep === 'public_landing') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+        <Card className="w-full max-w-md shadow-lg" data-testid="card-public-landing">
+          <CardHeader className="text-center space-y-4">
+            <Logo size="lg" className="mx-auto" />
+            <CardTitle className="text-2xl font-semibold">
+              Bienvenue
+            </CardTitle>
+            <CardDescription>
+              Connectez-vous pour accéder à votre espace
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button
+              className="w-full h-12"
+              onClick={() => setLocation('/admin-login')}
+              data-testid="button-login"
+            >
+              <LogIn className="h-4 w-4 mr-2" />
+              Connexion
+            </Button>
           </CardContent>
         </Card>
       </div>
