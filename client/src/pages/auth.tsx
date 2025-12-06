@@ -210,7 +210,7 @@ export default function AuthPage() {
               variant="ghost"
               size="sm"
               className="w-full text-muted-foreground"
-              onClick={() => setLocation('/dashboard')}
+              onClick={() => setLocation('/admin-login')}
               data-testid="button-admin-access"
             >
               <Shield className="h-4 w-4 mr-2" />

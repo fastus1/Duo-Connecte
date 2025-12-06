@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import AuthPage from "@/pages/auth";
 import Dashboard from "@/pages/dashboard";
 import UserHome from "@/pages/user-home";
+import AdminLogin from "@/pages/admin-login";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
       <Route path="/" component={AuthPage} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/user-home" component={UserHome} />
+      <Route path="/admin-login" component={AdminLogin} />
       <Route component={NotFound} />
     </Switch>
   );

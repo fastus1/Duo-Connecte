@@ -410,6 +410,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // POST /api/auth/admin-login - Admin login bypass (email + PIN, admin only)
+  // This allows admins to access the dashboard without being in Circle.so iframe
+  app.post('/api/auth/admin-login', pinRateLimiter, async (req: Request, res: Response) => {
+    try {
+      const { email, pin } = req.body;
+
+      // Validate input
+      if (!email || !pin) {
+        return res.status(400).json({ error: 'Email et NIP requis' });
+      }
+
+      // Get user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        await storage.logLoginAttempt({
+          userId: 'unknown',
+          success: false,
+          ipAddress: req.ip || 'unknown',
+        });
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
+      }
+
+      // Check if user is admin
+      if (!user.isAdmin) {
+        await storage.logLoginAttempt({
+          userId: user.id,
+          success: false,
+          ipAddress: req.ip || 'unknown',
+        });
+        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      // Verify PIN
+      const isValidPin = await comparePin(pin, user.pinHash);
+      if (!isValidPin) {
+        await storage.logLoginAttempt({
+          userId: user.id,
+          success: false,
+          ipAddress: req.ip || 'unknown',
+        });
+        return res.status(401).json({ error: 'NIP incorrect' });
+      }
+
+      // Update last login
+      await storage.updateUserLastLogin(user.id);
+
+      // Log successful attempt
+      await storage.logLoginAttempt({
+        userId: user.id,
+        success: true,
+        ipAddress: req.ip || 'unknown',
+      });
+
+      // Generate session token
+      const sessionToken = generateSessionToken(user.id, user.email);
+
+      return res.json({
+        success: true,
+        session_token: sessionToken,
+        user_id: user.id,
+        name: user.name,
+        is_admin: user.isAdmin,
+      });
+
+    } catch (error) {
+      console.error('Error in /api/auth/admin-login:', error);
+      return res.status(500).json({ error: 'Erreur lors de la connexion admin' });
+    }
+  });
+
   // GET /api/auth/me - Get current user info (protected route example)
   app.get('/api/auth/me', requireAuth, async (req: Request, res: Response) => {
     try {
