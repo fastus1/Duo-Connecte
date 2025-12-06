@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, Home, Shield, LogOut } from 'lucide-react';
+import { Loader2, Shield, LogOut, Home } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DevModeIndicator } from '@/components/dev-mode-indicator';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken } from '@/lib/auth';
@@ -54,7 +53,6 @@ export default function UserHome() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <DevModeIndicator />
         <Card className="w-full max-w-md shadow-lg">
           <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -69,8 +67,6 @@ export default function UserHome() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DevModeIndicator />
-      
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">

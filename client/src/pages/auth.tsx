@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Shield } from 'lucide-react';
 import { useCircleAuth } from '@/hooks/use-circle-auth';
 import { PinCreationForm } from '@/components/pin-creation-form';
 import { PinLoginForm } from '@/components/pin-login-form';
@@ -205,6 +205,16 @@ export default function AuthPage() {
               <a href="https://communaute.avancersimplement.com/" target="_top">
                 Accéder à la plateforme
               </a>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-muted-foreground"
+              onClick={() => setLocation('/dashboard')}
+              data-testid="button-admin-access"
+            >
+              <Shield className="h-4 w-4 mr-2" />
+              Accès Admin
             </Button>
           </CardContent>
         </Card>
