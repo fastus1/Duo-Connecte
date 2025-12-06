@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, AlertCircle, Shield, LogIn } from 'lucide-react';
+import { Loader2, AlertCircle, Shield, LogIn, Lock, ExternalLink, Info } from 'lucide-react';
 import { useCircleAuth } from '@/hooks/use-circle-auth';
 import { PinCreationForm } from '@/components/pin-creation-form';
 import { PinLoginForm } from '@/components/pin-login-form';
@@ -12,12 +12,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSessionToken } from '@/lib/auth';
 
-type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'authenticated' | 'error' | 'public_landing';
+type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'authenticated' | 'error' | 'public_landing' | 'paywall_blocked';
 
 interface AppConfig {
   requireCircleDomain: boolean;
   requireCircleLogin: boolean;
+  requirePaywall: boolean;
   requirePin: boolean;
+  paywallPurchaseUrl: string;
+  paywallInfoUrl: string;
+  paywallTitle: string;
+  paywallMessage: string;
+}
+
+interface PaywallInfo {
+  paywallTitle: string;
+  paywallMessage: string;
+  paywallPurchaseUrl: string;
+  paywallInfoUrl: string;
 }
 
 export default function AuthPage() {
@@ -33,6 +45,7 @@ export default function AuthPage() {
     is_admin?: boolean;
     validationToken?: string;
   } | null>(null);
+  const [paywallInfo, setPaywallInfo] = useState<PaywallInfo | null>(null);
 
   // Fetch app security configuration
   const { data: appConfig, isLoading: configLoading } = useQuery<AppConfig>({
@@ -54,8 +67,8 @@ export default function AuthPage() {
       return;
     }
 
-    // Public mode: all 3 layers disabled - go directly to user-home (no login required)
-    const isPublicMode = !appConfig.requireCircleDomain && !appConfig.requireCircleLogin && !appConfig.requirePin;
+    // Public mode: all 4 layers disabled - go directly to user-home (no login required)
+    const isPublicMode = !appConfig.requireCircleDomain && !appConfig.requireCircleLogin && !appConfig.requirePaywall && !appConfig.requirePin;
     if (isPublicMode) {
       setLocation('/user-home');
       return;
@@ -105,6 +118,12 @@ export default function AuthPage() {
         }
         return data;
       });
+
+      // Check paywall (Couche 3) before continuing
+      const paywallPassed = await checkPaywallAccess(dataToValidate.email);
+      if (!paywallPassed) {
+        return; // User blocked by paywall
+      }
 
       // Auto-login: backend returns session token directly (PIN not required)
       if (result.status === 'auto_login' && result.session_token) {
@@ -192,6 +211,33 @@ export default function AuthPage() {
 
   const handleError = (message: string) => {
     setError(message);
+  };
+
+  // Check paywall access (Couche 3)
+  const checkPaywallAccess = async (email: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/auth/check-paywall', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const result = await response.json();
+
+      if (!result.hasAccess) {
+        setPaywallInfo({
+          paywallTitle: result.paywallTitle || 'Accès Réservé',
+          paywallMessage: result.paywallMessage || 'Cette application est réservée aux membres payants.',
+          paywallPurchaseUrl: result.paywallPurchaseUrl || '',
+          paywallInfoUrl: result.paywallInfoUrl || '',
+        });
+        setAuthStep('paywall_blocked');
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error('Paywall check error:', err);
+      return true; // En cas d'erreur, on laisse passer (fail-open pour UX)
+    }
   };
 
   // Show error message if Circle.so auth failed
@@ -309,6 +355,70 @@ export default function AuthPage() {
             >
               Réessayer
             </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Paywall blocked screen (Couche 3)
+  if (authStep === 'paywall_blocked' && paywallInfo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+        <Card className="w-full max-w-md shadow-lg" data-testid="card-paywall">
+          <CardHeader className="text-center space-y-4">
+            <div className="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-primary/10">
+              <Lock className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl font-semibold" data-testid="text-paywall-title">
+              {paywallInfo.paywallTitle}
+            </CardTitle>
+            <CardDescription className="text-base" data-testid="text-paywall-message">
+              {paywallInfo.paywallMessage}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {paywallInfo.paywallPurchaseUrl && (
+              <Button
+                asChild
+                className="w-full h-12"
+                data-testid="button-paywall-purchase"
+              >
+                <a href={paywallInfo.paywallPurchaseUrl} target="_top">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Acheter maintenant
+                </a>
+              </Button>
+            )}
+            {paywallInfo.paywallInfoUrl && (
+              <Button
+                asChild
+                variant="outline"
+                className="w-full h-12"
+                data-testid="button-paywall-info"
+              >
+                <a href={paywallInfo.paywallInfoUrl} target="_top">
+                  <Info className="h-4 w-4 mr-2" />
+                  Plus d'informations
+                </a>
+              </Button>
+            )}
+            <div className="pt-4 border-t">
+              <p className="text-sm text-muted-foreground text-center">
+                Vous avez déjà payé ? Rechargez la page après votre achat.
+              </p>
+              <Button
+                variant="ghost"
+                className="w-full mt-2"
+                onClick={() => window.location.reload()}
+                data-testid="button-paywall-reload"
+              >
+                Actualiser
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
