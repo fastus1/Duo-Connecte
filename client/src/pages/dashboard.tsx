@@ -102,6 +102,7 @@ export default function Dashboard() {
     paymentDate: string;
     paymentPlan: string | null;
     amountPaid: string | null;
+    couponUsed: string | null;
   }
 
   const [newMemberEmail, setNewMemberEmail] = useState('');
@@ -534,12 +535,15 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   paidMembersData?.members?.map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-3" data-testid={`row-member-${member.id}`}>
+                    <div key={member.id} className="flex items-center justify-between p-3 gap-2" data-testid={`row-member-${member.id}`}>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{member.email}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {member.paymentPlan || 'N/A'} • {new Date(member.paymentDate).toLocaleDateString('fr-FR')}
-                        </p>
+                        <div className="flex flex-wrap gap-x-2 text-xs text-muted-foreground">
+                          <span>{member.paymentPlan || 'Ajout manuel'}</span>
+                          {member.amountPaid && <span>• {member.amountPaid}</span>}
+                          {member.couponUsed && <span>• Code: {member.couponUsed}</span>}
+                          <span>• {new Date(member.paymentDate).toLocaleDateString('fr-FR')}</span>
+                        </div>
                       </div>
                       <Button
                         variant="ghost"
