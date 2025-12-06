@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, CheckCircle, Loader2, Home, Settings } from 'lucide-react';
+import { LogOut, Shield, Clock, Loader2, Home, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
@@ -155,52 +154,7 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card data-testid="card-security-status">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Statut de sécurité</CardTitle>
-                  <Badge variant="default" className="bg-success text-success-foreground">
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Actif
-                  </Badge>
-                </div>
-                <CardDescription>
-                  Authentification Defense in Depth
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success/10">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Couche 1: Circle.so</p>
-                    <p className="text-xs text-muted-foreground">Authentification membre validée</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success/10">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Couche 2: Validation PostMessage</p>
-                    <p className="text-xs text-muted-foreground">Données vérifiées et validées</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success/10">
-                    <CheckCircle className="h-4 w-4 text-success" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Couche 3: NIP Personnel</p>
-                    <p className="text-xs text-muted-foreground">Authentification réussie</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card data-testid="card-session-info">
+          <Card data-testid="card-session-info">
               <CardHeader>
                 <CardTitle className="text-lg">Informations de session</CardTitle>
                 <CardDescription>
@@ -227,8 +181,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
-          </div>
+          </Card>
 
           <Card data-testid="card-security-config">
             <CardHeader>
