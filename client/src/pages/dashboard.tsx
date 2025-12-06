@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2 } from 'lucide-react';
+import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2, Code, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -28,6 +28,7 @@ export default function Dashboard() {
     paywallInfoUrl: string;
     paywallTitle: string;
     paywallMessage: string;
+    webhookAppUrl: string;
   }
 
   const { data: configData, isLoading: configLoading } = useQuery<AppConfig>({
@@ -41,7 +42,13 @@ export default function Dashboard() {
   const [paywallInfoUrl, setPaywallInfoUrl] = useState('');
   const [paywallSettingsLoaded, setPaywallSettingsLoaded] = useState(false);
 
-  // Load paywall settings when config is fetched
+  // Local state for webhook script generator
+  const [webhookAppUrl, setWebhookAppUrl] = useState('');
+  const [webhookSecret, setWebhookSecret] = useState('');
+  const [webhookSettingsLoaded, setWebhookSettingsLoaded] = useState(false);
+  const [scriptCopied, setScriptCopied] = useState(false);
+
+  // Load paywall and webhook settings when config is fetched
   useEffect(() => {
     if (configData && !paywallSettingsLoaded) {
       setPaywallTitle(configData.paywallTitle || '');
@@ -50,7 +57,11 @@ export default function Dashboard() {
       setPaywallInfoUrl(configData.paywallInfoUrl || '');
       setPaywallSettingsLoaded(true);
     }
-  }, [configData, paywallSettingsLoaded]);
+    if (configData && !webhookSettingsLoaded) {
+      setWebhookAppUrl(configData.webhookAppUrl || '');
+      setWebhookSettingsLoaded(true);
+    }
+  }, [configData, paywallSettingsLoaded, webhookSettingsLoaded]);
 
   const updateConfigMutation = useMutation({
     mutationFn: async (config: Partial<AppConfig>) => {
@@ -559,9 +570,144 @@ export default function Dashboard() {
                 )}
               </div>
 
-              <p className="text-xs text-muted-foreground">
-                <strong>Secret Webhook :</strong> Configurez l'en-tête <code className="bg-muted px-1 rounded">X-Webhook-Secret</code> dans votre script Circle.so pour sécuriser les paiements automatiques.
-              </p>
+            </CardContent>
+          </Card>
+
+          {/* Webhook Script Generator Card */}
+          <Card data-testid="card-webhook-generator">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5 text-muted-foreground" />
+                <CardTitle className="text-lg">Générateur de Script Webhook</CardTitle>
+              </div>
+              <CardDescription>
+                Générez le script à coller dans le Custom Code de votre paywall Circle.so
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="webhook-app-url">URL de l'application</Label>
+                <Input
+                  id="webhook-app-url"
+                  placeholder="https://votre-app.replit.app"
+                  value={webhookAppUrl}
+                  onChange={(e) => setWebhookAppUrl(e.target.value)}
+                  data-testid="input-webhook-app-url"
+                />
+                <p className="text-xs text-muted-foreground">
+                  L'URL complète du webhook sera : {webhookAppUrl ? `${webhookAppUrl}/webhooks/circle-payment` : '...'}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="webhook-secret">Secret du webhook</Label>
+                <Input
+                  id="webhook-secret"
+                  placeholder="votre-secret-securise"
+                  value={webhookSecret}
+                  onChange={(e) => setWebhookSecret(e.target.value)}
+                  data-testid="input-webhook-secret"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Ce secret doit correspondre à la variable d'environnement <code className="bg-muted px-1 rounded">WEBHOOK_SECRET</code>
+                </p>
+              </div>
+
+              <Button
+                onClick={() => updateConfigMutation.mutate({ webhookAppUrl })}
+                disabled={updateConfigMutation.isPending || !webhookAppUrl.trim()}
+                variant="outline"
+                className="w-full"
+                data-testid="button-save-webhook-url"
+              >
+                {updateConfigMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : null}
+                Sauvegarder l'URL
+              </Button>
+
+              {webhookAppUrl && webhookSecret && (
+                <div className="space-y-2">
+                  <Label>Script à copier dans Circle.so</Label>
+                  <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all">
+{`<script>
+const WEBHOOK_SECRET = '${webhookSecret}';
+fetch('${webhookAppUrl}/webhooks/circle-payment', {
+  method: 'POST',
+  headers: { 
+    'Content-Type': 'application/json',
+    'X-Webhook-Secret': WEBHOOK_SECRET
+  },
+  body: JSON.stringify({
+    event: 'payment_received',
+    user: { 
+      email: '{member_email}', 
+      timestamp: Math.floor(Date.now() / 1000) 
+    },
+    payment: {
+      paywall_display_name: '{paywall_display_name}',
+      amount_paid: '{amount_paid}',
+      coupon_code: '{coupon_code}'
+    }
+  })
+});
+</script>`}
+                  </div>
+                  <Button
+                    onClick={() => {
+                      const script = `<script>
+const WEBHOOK_SECRET = '${webhookSecret}';
+fetch('${webhookAppUrl}/webhooks/circle-payment', {
+  method: 'POST',
+  headers: { 
+    'Content-Type': 'application/json',
+    'X-Webhook-Secret': WEBHOOK_SECRET
+  },
+  body: JSON.stringify({
+    event: 'payment_received',
+    user: { 
+      email: '{member_email}', 
+      timestamp: Math.floor(Date.now() / 1000) 
+    },
+    payment: {
+      paywall_display_name: '{paywall_display_name}',
+      amount_paid: '{amount_paid}',
+      coupon_code: '{coupon_code}'
+    }
+  })
+});
+</script>`;
+                      navigator.clipboard.writeText(script);
+                      setScriptCopied(true);
+                      setTimeout(() => setScriptCopied(false), 2000);
+                      toast({ title: 'Copié !', description: 'Le script a été copié dans le presse-papiers.' });
+                    }}
+                    className="w-full"
+                    data-testid="button-copy-script"
+                  >
+                    {scriptCopied ? (
+                      <>
+                        <Check className="h-4 w-4 mr-2" />
+                        Copié !
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copier le script
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {(!webhookAppUrl || !webhookSecret) && (
+                <Alert>
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    Remplissez l'URL de l'application et le secret pour générer le script.
+                  </AlertDescription>
+                </Alert>
+              )}
             </CardContent>
           </Card>
         </div>
