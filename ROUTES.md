@@ -1,6 +1,6 @@
-# Documentation des Routes Utilisateurs
+# Documentation des Routes
 
-Ce document explique le comportement de chaque page de l'application selon les différentes circonstances.
+Ce document explique le comportement de chaque page de l'application.
 
 ---
 
@@ -9,75 +9,57 @@ Ce document explique le comportement de chaque page de l'application selon les d
 | Route | Page | Accès |
 |-------|------|-------|
 | `/` | Authentification | Public |
+| `/admin-login` | Connexion Admin | Public |
 | `/dashboard` | Dashboard Admin | Admins uniquement |
 | `/user-home` | Espace Membre | Utilisateurs connectés |
 | `*` | Page 404 | Public |
 
 ---
 
+## Configuration de Sécurité (3 Couches)
+
+La sécurité est configurable via le **Dashboard Admin** :
+
+| Couche | Description | Effet si désactivée |
+|--------|-------------|---------------------|
+| Couche 1 | Exiger le domaine Circle.so | Mode développement (utilisateur mock) |
+| Couche 2 | Exiger la connexion Circle.so | Visiteurs non-connectés acceptés |
+| Couche 3 | Exiger le NIP personnel | Auto-login sans NIP |
+
+**Mode Public** : Les 3 couches désactivées = accès direct à `/user-home` sans authentification.
+
+---
+
 ## `/` - Page d'Authentification
 
-### Mode DEV
+### Comportement selon la configuration
+
+| Configuration | Résultat |
+|---------------|----------|
+| Mode Public (3 couches OFF) | Redirection automatique vers `/user-home` |
+| Couche 1 OFF | Utilisateur mock `dev@example.com` (admin) |
+| Couche 1 ON, hors Circle.so | Message "Accès restreint" + bouton "Accès Administrateur" |
+| Couche 1 ON, dans Circle.so | Réception des données via postMessage |
+| Nouvel utilisateur + Couche 3 ON | Formulaire de création de NIP |
+| Nouvel utilisateur + Couche 3 OFF | Création compte automatique |
+| Utilisateur existant + Couche 3 ON | Formulaire de connexion avec NIP |
+| Utilisateur existant + Couche 3 OFF | Auto-login |
+| Authentification réussie (Admin) | Redirection vers `/dashboard` |
+| Authentification réussie (User) | Redirection vers `/user-home` |
+
+---
+
+## `/admin-login` - Connexion Administrateur
+
+Permet aux administrateurs de se connecter **hors de Circle.so** avec leur email et NIP.
 
 | Circonstance | Résultat |
 |--------------|----------|
-| Ouverture de la page | Authentification automatique avec utilisateur mock (dev@example.com, Admin) |
-| Après authentification | Redirection vers `/dashboard` (car mock est admin) |
-
-### Mode PROD
-
-| Circonstance | Résultat |
-|--------------|----------|
-| Page ouverte hors Circle.so | Message "Accès restreint" après 5 secondes |
-| Page ouverte dans iframe Circle.so (utilisateur non connecté à Circle) | Message "Accès restreint" |
-| Page ouverte dans iframe Circle.so (utilisateur connecté) | Réception des données Circle.so via postMessage |
-| Données Circle.so reçues - Nouvel utilisateur | Formulaire de création de NIP (4-6 chiffres) |
-| Données Circle.so reçues - Utilisateur existant | Formulaire de connexion avec NIP |
-| NIP créé/validé avec succès (Admin) | Redirection vers `/dashboard` |
-| NIP créé/validé avec succès (Utilisateur normal) | Redirection vers `/user-home` |
-| Échec validation NIP (5 tentatives) | Blocage 15 minutes (rate limiting) |
-
-### Flux d'authentification complet
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         MODE DEV                                 │
-├─────────────────────────────────────────────────────────────────┤
-│  Ouverture page → Mock user → Validation → /dashboard           │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                         MODE PROD                                │
-├─────────────────────────────────────────────────────────────────┤
-│  Ouverture page                                                  │
-│       │                                                          │
-│       ▼                                                          │
-│  Attente message Circle.so (max 5 secondes)                     │
-│       │                                                          │
-│       ├── Pas de message → "Accès restreint"                    │
-│       │                                                          │
-│       └── Message reçu                                          │
-│               │                                                  │
-│               ▼                                                  │
-│          Validation backend (email, publicUid, timestamp)       │
-│               │                                                  │
-│               ├── Nouvel utilisateur → Création NIP             │
-│               │                              │                   │
-│               │                              ▼                   │
-│               │                    Sauvegarde NIP (bcrypt)      │
-│               │                              │                   │
-│               └── Utilisateur existant → Saisie NIP             │
-│                                              │                   │
-│                                              ▼                   │
-│                                    Validation NIP               │
-│                                              │                   │
-│                                              ├── Succès (Admin) │
-│                                              │      → /dashboard │
-│                                              │                   │
-│                                              └── Succès (User)  │
-│                                                   → /user-home  │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Email non trouvé | Erreur "Utilisateur introuvable" |
+| Utilisateur non-admin | Erreur "Accès réservé aux administrateurs" |
+| NIP incorrect | Erreur "NIP incorrect" |
+| 5 tentatives échouées | Blocage 15 minutes |
+| Succès | Redirection vers `/dashboard` |
 
 ---
 
@@ -89,15 +71,15 @@ Ce document explique le comportement de chaque page de l'application selon les d
 |--------------|----------|
 | Pas de token de session | Redirection vers `/` |
 | Token expiré (> 60 min) | Redirection vers `/` |
-| Token valide mais utilisateur non-admin | Redirection vers `/user-home` |
-| Token valide et utilisateur admin | Affichage du dashboard |
+| Utilisateur non-admin | Redirection vers `/user-home` |
+| Utilisateur admin | Affichage du dashboard |
 
-### Fonctionnalités disponibles
+### Fonctionnalités
 
-- Affichage du statut de sécurité (3 couches)
-- Informations de session (heure de connexion)
-- Bouton "Page d'accueil" → `/user-home`
-- Bouton "Déconnexion" → Suppression session + redirection `/`
+- **Configuration de sécurité** : Activer/désactiver les 3 couches
+- **Informations de session** : Heure de connexion, expiration
+- **Navigation** : Bouton "Page d'accueil" → `/user-home`
+- **Déconnexion** : Suppression session + redirection `/`
 
 ---
 
@@ -107,15 +89,16 @@ Ce document explique le comportement de chaque page de l'application selon les d
 
 | Circonstance | Résultat |
 |--------------|----------|
-| Pas de token de session | Redirection vers `/` |
-| Token expiré (> 60 min) | Redirection vers `/` |
-| Token valide (admin ou utilisateur) | Affichage de l'espace membre |
+| Mode Public | Accès libre (pas de session requise) |
+| Pas de token + pas Mode Public | Redirection vers `/` |
+| Token expiré | Redirection vers `/` |
+| Token valide | Affichage de l'espace membre |
 
-### Fonctionnalités disponibles
+### Fonctionnalités
 
-- Message de bienvenue personnalisé (prénom)
-- Bouton "Dashboard Admin" (visible uniquement pour les admins) → `/dashboard`
-- Bouton "Déconnexion" → Suppression session + redirection `/`
+- Message de bienvenue personnalisé
+- Bouton "Dashboard Admin" (admins uniquement)
+- Bouton "Déconnexion" ou "Admin" selon l'état
 
 ---
 
@@ -127,72 +110,40 @@ Ce document explique le comportement de chaque page de l'application selon les d
 |-----|-------------|
 | `session_token` | JWT de session (expire après 60 min) |
 | `user_id` | ID de l'utilisateur connecté |
+| `is_admin` | Statut admin |
 | `session_timestamp` | Timestamp de début de session |
 | `circle_user_data` | Cache des données Circle.so |
 | `circle_user_timestamp` | Timestamp du cache Circle.so |
-| `app_mode` | Mode actuel (`dev` ou `prod`) |
 
 ### Déconnexion
 
-La déconnexion (bouton ou expiration) :
-1. Supprime `session_token`
-2. Supprime `user_id`
-3. Supprime `session_timestamp`
-4. Redirige vers `/`
+La déconnexion supprime toutes les clés ci-dessus et redirige vers `/`.
 
 ---
 
-## Changement de Mode (DEV ↔ PROD)
-
-| Action | Résultat |
-|--------|----------|
-| DEV → PROD | Suppression de toutes les données de session + cache Circle.so + rechargement page |
-| PROD → DEV | Suppression de toutes les données de session + cache Circle.so + rechargement page |
-
----
-
-## Cas Particuliers
-
-### Refresh de page (F5) en mode PROD
-
-| Circonstance | Résultat |
-|--------------|----------|
-| Session valide | Données rechargées depuis `/api/auth/me` |
-| Session expirée | Redirection vers `/` |
-| Sur `/` avec cache Circle.so valide | Utilisation du cache, pas besoin de Ctrl+Shift+R |
-| Sur `/` sans cache Circle.so | Demande de données à Circle.so (handshake) |
-
-### Accès direct aux URLs
-
-| URL | Sans session | Avec session (user) | Avec session (admin) |
-|-----|--------------|---------------------|----------------------|
-| `/` | Page auth | Page auth | Page auth |
-| `/dashboard` | → `/` | → `/user-home` | Dashboard |
-| `/user-home` | → `/` | Espace membre | Espace membre + bouton admin |
-
----
-
-## Résumé des Redirections
+## Matrice de Redirection
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    MATRICE DE REDIRECTION                        │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  Non connecté:                                                   │
+│  Non connecté (Mode Normal):                                     │
 │    /dashboard → /                                                │
 │    /user-home → /                                                │
 │                                                                  │
+│  Non connecté (Mode Public):                                     │
+│    / → /user-home                                                │
+│    /dashboard → /                                                │
+│    /user-home → (reste)                                          │
+│                                                                  │
 │  Connecté (Utilisateur normal):                                  │
 │    /dashboard → /user-home                                       │
-│    /user-home → (reste sur /user-home)                          │
+│    /user-home → (reste)                                          │
 │                                                                  │
 │  Connecté (Admin):                                               │
-│    /dashboard → (reste sur /dashboard)                          │
-│    /user-home → (reste sur /user-home)                          │
-│                                                                  │
-│  Après déconnexion:                                              │
-│    Toute page → /                                                │
+│    /dashboard → (reste)                                          │
+│    /user-home → (reste)                                          │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
