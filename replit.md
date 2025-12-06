@@ -82,11 +82,23 @@ Met à jour la configuration (admin seulement).
 
 **Handshake bidirectionnel** : L'iframe peut demander les données à Circle.so à tout moment.
 
-Script JavaScript (Header Custom Code) :
-```javascript
+Script JavaScript pour cette app (Header Custom Code Circle.so) :
+```html
+<script>
+/************************************************************
+ * SCRIPT : AUTHENTIFICATION COMPLÈTE + THÈME
+ * 
+ * Cible   : web-template-base-ok.replit.app
+ * Données : Email, UID, nom, statut admin, timestamp, thème
+ * Fix     : File d'attente si circleUser pas encore chargé
+ ************************************************************/
 (function() {
   const IFRAME_ORIGIN = 'https://web-template-base-ok.replit.app';
-  let cachedUserData = null;
+  let pendingRequest = null;
+  
+  function getTheme() {
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  }
   
   function buildUserPayload() {
     if (!window.circleUser) return null;
@@ -100,36 +112,57 @@ Script JavaScript (Header Custom Code) :
         isAdmin: isAdmin,
         timestamp: Date.now()
       },
-      theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+      theme: getTheme()
     };
   }
   
   function sendAuthToIframe(iframe) {
     const payload = buildUserPayload();
     if (payload && iframe && iframe.contentWindow) {
-      cachedUserData = payload;
       iframe.contentWindow.postMessage(payload, IFRAME_ORIGIN);
+      return true;
+    }
+    return false;
+  }
+  
+  function processPendingRequest() {
+    if (!pendingRequest) return;
+    const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
+    if (sendAuthToIframe(iframe)) {
+      pendingRequest = null;
     }
   }
   
+  // Écouter les demandes de l'iframe
   window.addEventListener('message', function(event) {
     if (event.origin !== IFRAME_ORIGIN) return;
     if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
-      const iframe = document.querySelector('iframe[src*="replit.app"]');
-      sendAuthToIframe(iframe);
+      const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
+      if (!sendAuthToIframe(iframe)) {
+        // circleUser pas encore prêt, mettre en attente
+        pendingRequest = { timestamp: Date.now() };
+      }
     }
   });
   
+  // Attendre que circleUser soit disponible
   window.addEventListener('load', function() {
-    const iframe = document.querySelector('iframe[src*="replit.app"]');
     const checkUser = setInterval(function() {
-      if (window.circleUser && iframe) {
+      if (window.circleUser) {
         clearInterval(checkUser);
+        // Traiter requête en attente
+        processPendingRequest();
+        // Envoyer aussi au cas où l'iframe était prêt avant
+        const iframe = document.querySelector('iframe[src*="web-template-base-ok.replit.app"]');
         sendAuthToIframe(iframe);
       }
     }, 100);
+    
+    // Timeout après 10 secondes
+    setTimeout(function() { clearInterval(checkUser); }, 10000);
   });
 })();
+</script>
 ```
 
 **Points critiques Circle.so** :
