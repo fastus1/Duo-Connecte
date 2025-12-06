@@ -252,28 +252,6 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-
-          <Card data-testid="card-welcome">
-            <CardHeader>
-              <CardTitle>Bienvenue dans votre application sécurisée</CardTitle>
-              <CardDescription>
-                Cette template utilise un système d'authentification "Defense in Depth" à 3 couches
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="prose prose-sm dark:prose-invert max-w-none">
-              <p>
-                Votre application est maintenant protégée par un système de sécurité robuste qui combine :
-              </p>
-              <ul>
-                <li><strong>L'authentification Circle.so</strong> - Seuls les membres de votre communauté peuvent accéder</li>
-                <li><strong>La validation PostMessage</strong> - Les données sont vérifiées et validées côté serveur</li>
-                <li><strong>Le NIP personnel</strong> - Une couche d'authentification supplémentaire unique à chaque utilisateur</li>
-              </ul>
-              <p>
-                Vous pouvez maintenant personnaliser cette page et ajouter vos propres fonctionnalités !
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>
