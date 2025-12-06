@@ -26,8 +26,22 @@ export const appConfig = pgTable("app_config", {
   id: varchar("id").primaryKey().default("main"),
   requireCircleDomain: boolean("require_circle_domain").notNull().default(true),
   requireCircleLogin: boolean("require_circle_login").notNull().default(true),
+  requirePaywall: boolean("require_paywall").notNull().default(false),
   requirePin: boolean("require_pin").notNull().default(true),
+  paywallPurchaseUrl: text("paywall_purchase_url").default(""),
+  paywallInfoUrl: text("paywall_info_url").default(""),
+  paywallTitle: text("paywall_title").default("Accès Réservé"),
+  paywallMessage: text("paywall_message").default("Cette application est réservée aux membres ayant souscrit à l'offre."),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const paidMembers = pgTable("paid_members", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  paymentDate: timestamp("payment_date").defaultNow().notNull(),
+  paymentPlan: text("payment_plan"),
+  amountPaid: text("amount_paid"),
+  couponUsed: text("coupon_used"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -70,7 +84,31 @@ export const validatePinSchema = z.object({
 export const updateConfigSchema = z.object({
   requireCircleDomain: z.boolean().optional(),
   requireCircleLogin: z.boolean().optional(),
+  requirePaywall: z.boolean().optional(),
   requirePin: z.boolean().optional(),
+  paywallPurchaseUrl: z.string().optional(),
+  paywallInfoUrl: z.string().optional(),
+  paywallTitle: z.string().optional(),
+  paywallMessage: z.string().optional(),
+});
+
+export const insertPaidMemberSchema = createInsertSchema(paidMembers).omit({
+  id: true,
+  paymentDate: true,
+});
+
+export const paymentWebhookSchema = z.object({
+  event: z.literal('payment_received'),
+  user: z.object({
+    email: z.string().email(),
+    timestamp: z.number(),
+  }),
+  payment: z.object({
+    paywall_display_name: z.string().optional(),
+    amount_paid: z.string().optional(),
+    price_interval: z.string().optional(),
+    coupon_code: z.string().optional(),
+  }).optional(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -78,6 +116,8 @@ export type User = typeof users.$inferSelect;
 export type InsertLoginAttempt = z.infer<typeof insertLoginAttemptSchema>;
 export type LoginAttempt = typeof loginAttempts.$inferSelect;
 export type AppConfig = typeof appConfig.$inferSelect;
+export type InsertPaidMember = z.infer<typeof insertPaidMemberSchema>;
+export type PaidMember = typeof paidMembers.$inferSelect;
 
 export const circleUserDataSchema = z.object({
   type: z.literal('CIRCLE_USER_AUTH'),
