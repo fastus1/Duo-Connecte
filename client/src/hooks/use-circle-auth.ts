@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { circleUserDataSchema, type CircleUserData } from '@shared/schema';
 import { setThemeFromCircle } from '@/components/theme-provider';
@@ -18,7 +18,40 @@ interface AppConfig {
 const CIRCLE_ORIGIN = import.meta.env.VITE_CIRCLE_ORIGIN;
 const CIRCLE_USER_STORAGE_KEY = 'circle_user_data';
 const CIRCLE_USER_TIMESTAMP_KEY = 'circle_user_timestamp';
-const MAX_CACHE_AGE_MS = 60 * 60 * 1000; // 1 hour max cache
+const MAX_CACHE_AGE_MS = 60 * 60 * 1000;
+
+function getParentOrigin(): string | null {
+  try {
+    if (document.referrer) {
+      const url = new URL(document.referrer);
+      return url.origin;
+    }
+  } catch {
+    // Invalid referrer
+  }
+  return null;
+}
+
+function isValidCircleOrigin(origin: string): boolean {
+  const normalizedOrigin = origin.replace(/\/$/, '').toLowerCase();
+  
+  // Accept configured origin
+  if (CIRCLE_ORIGIN) {
+    const normalizedConfigured = CIRCLE_ORIGIN.replace(/\/$/, '').toLowerCase();
+    if (normalizedOrigin === normalizedConfigured) {
+      return true;
+    }
+  }
+  
+  // Accept common Circle.so domains
+  const allowedPatterns = [
+    /^https:\/\/[a-z0-9-]+\.circle\.so$/,
+    /^https:\/\/app\.circle\.so$/,
+    /^https:\/\/communaute\.avancersimplement\.com$/,
+  ];
+  
+  return allowedPatterns.some(pattern => pattern.test(normalizedOrigin));
+}
 
 function getCachedUserData(): CircleUserData['user'] | null {
   try {
@@ -65,15 +98,26 @@ export function useCircleAuth() {
     error: null,
   });
 
+  // Detect parent origin from referrer or use configured value
+  const parentOrigin = useMemo(() => {
+    const detected = getParentOrigin();
+    console.log(`[Circle Auth] Detected parent origin: ${detected}, configured: ${CIRCLE_ORIGIN}`);
+    return detected || CIRCLE_ORIGIN || null;
+  }, []);
+
   const requestAuthFromParent = useCallback(() => {
-    if (!CIRCLE_ORIGIN) return;
+    if (!parentOrigin) {
+      console.log('[Circle Auth] No parent origin available for postMessage');
+      return;
+    }
     
     try {
-      window.parent.postMessage({ type: 'CIRCLE_AUTH_REQUEST' }, CIRCLE_ORIGIN);
-    } catch {
-      // Silent fail - parent may not be available
+      console.log(`[Circle Auth] Sending CIRCLE_AUTH_REQUEST to ${parentOrigin}`);
+      window.parent.postMessage({ type: 'CIRCLE_AUTH_REQUEST' }, parentOrigin);
+    } catch (err) {
+      console.log('[Circle Auth] Failed to send postMessage:', err);
     }
-  }, []);
+  }, [parentOrigin]);
 
   useEffect(() => {
     // Wait for config to load
@@ -82,48 +126,45 @@ export function useCircleAuth() {
     const requireCircleDomain = configData?.requireCircleDomain ?? true;
     const requireCircleLogin = configData?.requireCircleLogin ?? true;
     
-    // Determine if we need Circle.so handshake
-    // We need it if either domain check OR login is required
+    // We need Circle handshake if domain OR login is required
     const needsCircleHandshake = requireCircleDomain || requireCircleLogin;
 
-    console.log(`[Circle Auth] Config loaded - requireCircleDomain: ${requireCircleDomain}, requireCircleLogin: ${requireCircleLogin}, needsCircleHandshake: ${needsCircleHandshake}`);
+    console.log(`[Circle Auth] Config - requireCircleDomain: ${requireCircleDomain}, requireCircleLogin: ${requireCircleLogin}, needsHandshake: ${needsCircleHandshake}`);
 
-    // Reset state when config changes
+    // Reset state
     setState({
       isLoading: needsCircleHandshake,
       userData: null,
       error: null,
     });
 
-    // If neither domain nor login is required, no handshake needed
     if (!needsCircleHandshake) {
-      console.log('[Circle Auth] No Circle handshake needed - both layers disabled');
+      console.log('[Circle Auth] No handshake needed - layers disabled');
       clearCircleUserCache();
       return;
     }
 
-    if (!CIRCLE_ORIGIN) {
-      console.log('[Circle Auth] VITE_CIRCLE_ORIGIN not configured');
+    if (!parentOrigin && !CIRCLE_ORIGIN) {
+      console.log('[Circle Auth] No Circle origin available');
       setState({
         isLoading: false,
         userData: null,
-        error: 'Configuration manquante: VITE_CIRCLE_ORIGIN non défini.',
+        error: 'Configuration manquante: origine Circle.so non détectée.',
       });
       return;
     }
 
-    console.log(`[Circle Auth] Starting Circle.so handshake with origin: ${CIRCLE_ORIGIN}`);
+    console.log(`[Circle Auth] Starting handshake, parent: ${parentOrigin}`);
 
-    // Check for cached user data first
+    // Check cache first
     const cachedUser = getCachedUserData();
     if (cachedUser) {
-      console.log('[Circle Auth] Found cached user data:', cachedUser.email);
+      console.log('[Circle Auth] Using cached user:', cachedUser.email);
       setState({
         isLoading: false,
         userData: cachedUser,
         error: null,
       });
-      // Still request fresh data in background
       requestAuthFromParent();
     }
 
@@ -133,27 +174,23 @@ export function useCircleAuth() {
     const RETRY_INTERVAL = 500;
 
     const handleMessage = (event: MessageEvent) => {
-      // Log all incoming messages for debugging
-      console.log(`[Circle Auth] Received message from origin: ${event.origin}, expected: ${CIRCLE_ORIGIN}`);
+      console.log(`[Circle Auth] Message from: ${event.origin}`);
       
-      // Check if origin matches (with flexible matching for trailing slashes)
-      const expectedOrigin = CIRCLE_ORIGIN.replace(/\/$/, '');
-      const actualOrigin = event.origin.replace(/\/$/, '');
-      
-      if (actualOrigin !== expectedOrigin) {
-        console.log(`[Circle Auth] Origin mismatch - ignoring message`);
+      // Validate origin - accept any valid Circle domain
+      if (!isValidCircleOrigin(event.origin)) {
+        console.log(`[Circle Auth] Origin ${event.origin} not recognized as Circle - ignoring`);
         return;
       }
 
+      console.log('[Circle Auth] Valid Circle origin, parsing data:', typeof event.data);
+
       try {
-        console.log('[Circle Auth] Parsing message data:', event.data);
         const data = circleUserDataSchema.parse(event.data);
         
         if (data.type === 'CIRCLE_USER_AUTH') {
           messageReceived = true;
-          console.log('[Circle Auth] Valid Circle user data received:', data.user.email);
+          console.log('[Circle Auth] Received user data:', data.user.email);
           
-          // Cache the user data for future refreshes
           setCachedUserData(data.user);
           
           if (data.theme) {
@@ -167,16 +204,14 @@ export function useCircleAuth() {
           });
         }
       } catch (err) {
-        console.log('[Circle Auth] Failed to parse message:', err);
-        // Invalid data format - ignore
+        console.log('[Circle Auth] Parse error:', err);
       }
     };
 
     window.addEventListener('message', handleMessage);
 
-    // Only start retry mechanism if no cached data
     if (!cachedUser) {
-      console.log('[Circle Auth] No cached data - starting retry mechanism');
+      console.log('[Circle Auth] Starting retry loop');
       requestAuthFromParent();
 
       const retryInterval = setInterval(() => {
@@ -190,7 +225,7 @@ export function useCircleAuth() {
         
         if (retryCount >= MAX_RETRIES) {
           clearInterval(retryInterval);
-          console.log('[Circle Auth] Max retries reached - no valid Circle message received');
+          console.log('[Circle Auth] Timeout - no Circle response');
           setState({
             isLoading: false,
             userData: null,
@@ -211,7 +246,7 @@ export function useCircleAuth() {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [configData?.requireCircleDomain, configData?.requireCircleLogin, configLoading, requestAuthFromParent]);
+  }, [configData?.requireCircleDomain, configData?.requireCircleLogin, configLoading, parentOrigin, requestAuthFromParent]);
 
   return state;
 }

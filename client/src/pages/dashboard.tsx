@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2, Code, Copy, Check } from 'lucide-react';
+import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2, Code, Copy, Check, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -457,7 +457,9 @@ export default function Dashboard() {
                         Couche 3 : Exiger le paiement (Paywall)
                       </Label>
                       <p className="text-xs text-muted-foreground">
-                        Si activé, seuls les membres payants peuvent accéder à l'app
+                        {!(configData?.requireCircleDomain && configData?.requireCircleLogin)
+                          ? "Requiert les Couches 1 et 2 (pour vérifier le courriel)"
+                          : "Si activé, seuls les membres payants peuvent accéder à l'app"}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -465,7 +467,18 @@ export default function Dashboard() {
                       <Switch
                         id="require-paywall"
                         checked={configData?.requirePaywall ?? false}
-                        onCheckedChange={(checked) => updateConfigMutation.mutate({ requirePaywall: checked })}
+                        onCheckedChange={(checked) => {
+                          // Layer 3 requires Layers 1 and 2
+                          if (checked && (!configData?.requireCircleDomain || !configData?.requireCircleLogin)) {
+                            updateConfigMutation.mutate({ 
+                              requireCircleDomain: true, 
+                              requireCircleLogin: true, 
+                              requirePaywall: true 
+                            });
+                          } else {
+                            updateConfigMutation.mutate({ requirePaywall: checked });
+                          }
+                        }}
                         disabled={updateConfigMutation.isPending || configLoading}
                         data-testid="switch-require-paywall"
                       />
@@ -653,6 +666,81 @@ export default function Dashboard() {
 
             {/* Tab: Webhook */}
             <TabsContent value="webhook" className="space-y-6">
+              <Card data-testid="card-auth-script-generator">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-muted-foreground" />
+                    <CardTitle className="text-lg">Script d'Authentification Circle.so</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Ce script doit être ajouté dans le Custom Code de chaque page Circle.so où l'app est intégrée
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Script à copier dans Circle.so (Settings &gt; Custom Code &gt; Footer)</Label>
+                    <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all">
+                      {`<script>
+(function() {
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+      var userData = {
+        type: 'CIRCLE_USER_AUTH',
+        user: {
+          publicUid: '{{member.public_uid}}',
+          email: '{{member.email}}',
+          name: '{{member.name}}',
+          isAdmin: false,
+          timestamp: Date.now()
+        }
+      };
+      event.source.postMessage(userData, event.origin);
+    }
+  });
+})();
+</script>`}
+                    </div>
+                    <Button
+                      onClick={() => {
+                        const authScript = `<script>
+(function() {
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+      var userData = {
+        type: 'CIRCLE_USER_AUTH',
+        user: {
+          publicUid: '{{member.public_uid}}',
+          email: '{{member.email}}',
+          name: '{{member.name}}',
+          isAdmin: false,
+          timestamp: Date.now()
+        }
+      };
+      event.source.postMessage(userData, event.origin);
+    }
+  });
+})();
+</script>`;
+                        navigator.clipboard.writeText(authScript);
+                        toast({ title: 'Copié !', description: 'Le script d\'authentification a été copié.' });
+                      }}
+                      className="w-full"
+                      data-testid="button-copy-auth-script"
+                    >
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copier le script d'authentification
+                    </Button>
+                  </div>
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                      Ce script utilise les variables Liquid de Circle.so pour récupérer les informations du membre connecté.
+                      Il doit être présent sur la page parente qui contient l'iframe de votre application.
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+
               <Card data-testid="card-webhook-generator">
                 <CardHeader>
                   <div className="flex items-center gap-2">
