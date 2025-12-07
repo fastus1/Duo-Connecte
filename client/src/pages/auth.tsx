@@ -55,49 +55,103 @@ export default function AuthPage() {
   // Dev mode is when Circle domain is NOT required
   const devMode = appConfig ? !appConfig.requireCircleDomain : false;
 
-  useEffect(() => {
-    // Wait for config to load
-    if (configLoading || !appConfig) return;
-
-    // Check if user already has a valid session
-    const existingToken = getSessionToken();
-    if (existingToken) {
-      // User is already logged in, redirect to user-home
+  // Helper functions defined before useEffect to avoid temporal dead zone errors
+  
+  const handleAuthSuccess = (sessionToken: string, userId: string, isAdmin?: boolean) => {
+    localStorage.setItem('session_token', sessionToken);
+    localStorage.setItem('user_id', userId);
+    localStorage.setItem('session_timestamp', Date.now().toString());
+    
+    // Route based on user role
+    if (isAdmin) {
+      setLocation('/dashboard');
+    } else {
       setLocation('/user-home');
-      return;
     }
+  };
 
-    // Public mode: all 4 layers disabled - go directly to user-home (no login required)
-    const isPublicMode = !appConfig.requireCircleDomain && !appConfig.requireCircleLogin && !appConfig.requirePaywall && !appConfig.requirePin;
-    if (isPublicMode) {
-      setLocation('/user-home');
-      return;
-    }
+  const handleError = (message: string) => {
+    setError(message);
+  };
 
-    // Dev mode: Circle domain not required but Circle login is required - use mock data
-    if (devMode) {
-      const mockUserData = {
-        publicUid: 'dev123',
-        email: 'dev@example.com',
-        name: 'Dev User',
-        isAdmin: true,
-        timestamp: Date.now(),
-      };
+  // Fetch paywall info directly (for paywall-only mode without Circle auth)
+  const fetchPaywallInfo = async () => {
+    try {
+      const response = await fetch('/api/config');
+      const config = await response.json();
       
-      validateCircleData(mockUserData);
-      return;
-    }
-
-    if (circleError) {
-      setError(circleError);
+      setPaywallInfo({
+        paywallTitle: config.paywallTitle || 'Accès Réservé',
+        paywallMessage: config.paywallMessage || 'Cette application est réservée aux membres payants.',
+        paywallPurchaseUrl: config.paywallPurchaseUrl || '',
+        paywallInfoUrl: config.paywallInfoUrl || '',
+      });
+      setAuthStep('paywall_blocked');
+    } catch (err) {
+      console.error('Error fetching paywall info:', err);
+      setError('Erreur lors du chargement de la configuration');
       setAuthStep('error');
-      return;
     }
+  };
 
-    if (userData) {
-      validateCircleData(userData);
+  // Check paywall access (Couche 3)
+  const checkPaywallAccess = async (email: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/auth/check-paywall', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const result = await response.json();
+
+      if (!result.hasAccess) {
+        setPaywallInfo({
+          paywallTitle: result.paywallTitle || 'Accès Réservé',
+          paywallMessage: result.paywallMessage || 'Cette application est réservée aux membres payants.',
+          paywallPurchaseUrl: result.paywallPurchaseUrl || '',
+          paywallInfoUrl: result.paywallInfoUrl || '',
+        });
+        setAuthStep('paywall_blocked');
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error('Paywall check error:', err);
+      return true; // En cas d'erreur, on laisse passer (fail-open pour UX)
     }
-  }, [userData, circleError, devMode, appConfig, configLoading]);
+  };
+
+  const createUserWithoutPin = async (
+    email: string,
+    publicUid: string,
+    name: string,
+    validationToken: string,
+    isAdmin: boolean
+  ) => {
+    try {
+      const result = await fetch('/api/auth/create-user-no-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          public_uid: publicUid,
+          name,
+          validation_token: validationToken,
+        }),
+      }).then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Erreur lors de la création du compte');
+        }
+        return data;
+      });
+
+      handleAuthSuccess(result.session_token, result.user_id, result.is_admin);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors de la création du compte');
+      setAuthStep('error');
+    }
+  };
 
   const validateCircleData = async (userDataToValidate?: typeof userData) => {
     const dataToValidate = userDataToValidate || userData;
@@ -164,81 +218,65 @@ export default function AuthPage() {
     }
   };
 
-  const handleAuthSuccess = (sessionToken: string, userId: string, isAdmin?: boolean) => {
-    localStorage.setItem('session_token', sessionToken);
-    localStorage.setItem('user_id', userId);
-    localStorage.setItem('session_timestamp', Date.now().toString());
-    
-    // Route based on user role
-    if (isAdmin) {
-      setLocation('/dashboard');
-    } else {
+  // Main authentication effect
+  useEffect(() => {
+    // Wait for config to load
+    if (configLoading || !appConfig) return;
+
+    // Check if user already has a valid session
+    const existingToken = getSessionToken();
+    if (existingToken) {
+      // User is already logged in, redirect to user-home
       setLocation('/user-home');
+      return;
     }
-  };
 
-  const createUserWithoutPin = async (
-    email: string,
-    publicUid: string,
-    name: string,
-    validationToken: string,
-    isAdmin: boolean
-  ) => {
-    try {
-      const result = await fetch('/api/auth/create-user-no-pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          public_uid: publicUid,
-          name,
-          validation_token: validationToken,
-        }),
-      }).then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || 'Erreur lors de la création du compte');
-        }
-        return data;
-      });
+    // Public mode: all 4 layers disabled - go directly to user-home (no login required)
+    const isPublicMode = !appConfig.requireCircleDomain && !appConfig.requireCircleLogin && !appConfig.requirePaywall && !appConfig.requirePin;
+    if (isPublicMode) {
+      setLocation('/user-home');
+      return;
+    }
 
-      handleAuthSuccess(result.session_token, result.user_id, result.is_admin);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la création du compte');
+    // Paywall-only mode: layers 1 and 2 disabled, but paywall enabled
+    // Show paywall directly without Circle validation (no way to identify user)
+    const isPaywallOnlyMode = !appConfig.requireCircleDomain && !appConfig.requireCircleLogin && appConfig.requirePaywall;
+    if (isPaywallOnlyMode) {
+      // Fetch paywall info and show paywall screen
+      fetchPaywallInfo();
+      return;
+    }
+
+    // Dev mode: Circle domain not required but Circle login is required - use mock data
+    if (devMode && appConfig.requireCircleLogin) {
+      const mockUserData = {
+        publicUid: 'dev123',
+        email: 'dev@example.com',
+        name: 'Dev User',
+        isAdmin: true,
+        timestamp: Date.now(),
+      };
+      
+      validateCircleData(mockUserData);
+      return;
+    }
+    
+    // Dev mode without Circle login - go directly to user-home
+    if (devMode && !appConfig.requireCircleLogin && !appConfig.requirePaywall) {
+      setLocation('/user-home');
+      return;
+    }
+
+    if (circleError) {
+      setError(circleError);
       setAuthStep('error');
+      return;
     }
-  };
 
-  const handleError = (message: string) => {
-    setError(message);
-  };
-
-  // Check paywall access (Couche 3)
-  const checkPaywallAccess = async (email: string): Promise<boolean> => {
-    try {
-      const response = await fetch('/api/auth/check-paywall', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const result = await response.json();
-
-      if (!result.hasAccess) {
-        setPaywallInfo({
-          paywallTitle: result.paywallTitle || 'Accès Réservé',
-          paywallMessage: result.paywallMessage || 'Cette application est réservée aux membres payants.',
-          paywallPurchaseUrl: result.paywallPurchaseUrl || '',
-          paywallInfoUrl: result.paywallInfoUrl || '',
-        });
-        setAuthStep('paywall_blocked');
-        return false;
-      }
-      return true;
-    } catch (err) {
-      console.error('Paywall check error:', err);
-      return true; // En cas d'erreur, on laisse passer (fail-open pour UX)
+    if (userData) {
+      validateCircleData(userData);
     }
-  };
+  }, [userData, circleError, devMode, appConfig, configLoading]);
 
   // Show error message if Circle.so auth failed
   if (circleError && !devMode) {
