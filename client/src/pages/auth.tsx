@@ -247,6 +247,16 @@ export default function AuthPage() {
       return;
     }
 
+    // Domain-only mode: only layer 1 enabled (requireCircleDomain = true)
+    // User is on Circle domain but no login required - let them through
+    const isDomainOnlyMode = appConfig.requireCircleDomain && !appConfig.requireCircleLogin && !appConfig.requirePaywall && !appConfig.requirePin;
+    if (isDomainOnlyMode) {
+      // User is on the Circle domain (otherwise they wouldn't reach this page via iframe)
+      // No login required, just let them access the app
+      setLocation('/user-home');
+      return;
+    }
+
     // Dev mode: Circle domain not required but Circle login is required - use mock data
     if (devMode && appConfig.requireCircleLogin) {
       const mockUserData = {
