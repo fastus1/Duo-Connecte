@@ -167,7 +167,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Existing user - if publicUid differs, update it (Circle.so may regenerate IDs)
       // We trust the email as the primary identifier
       if (existingUser.publicUid !== userData.publicUid) {
-        console.log(`[Auth] Updating publicUid for ${userData.email}: ${existingUser.publicUid} -> ${userData.publicUid}`);
         await storage.updateUserPublicUid(existingUser.id, userData.publicUid);
       }
 
