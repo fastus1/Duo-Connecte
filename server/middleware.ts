@@ -58,19 +58,27 @@ export function validateUserData(data: CircleUserData): ValidationResult {
     return { valid: false, error: 'Email invalide' };
   }
 
+  // publicUid is optional - Circle.so may not always provide it
+  // Generate a fallback from email if missing
   if (!data.publicUid || typeof data.publicUid !== 'string' || data.publicUid.trim().length === 0) {
-    return { valid: false, error: 'Identifiant Circle.so invalide' };
+    data.publicUid = `circle_${data.email.replace(/[^a-z0-9]/gi, '_')}`;
   }
 
-  // Accept any non-empty name (Circle.so may have users with single name)
+  // Accept any name, use default if empty
   if (!data.name || data.name.trim().length === 0) {
-    return { valid: false, error: 'Nom requis' };
+    data.name = 'Membre';
   }
 
+  // Timestamp validation - be lenient
+  if (!data.timestamp) {
+    data.timestamp = Date.now();
+  }
+  
   const now = Date.now();
   const timestampAge = now - data.timestamp;
-  if (!data.timestamp || timestampAge > 60000 || timestampAge < 0) {
-    return { valid: false, error: 'Token expiré ou invalide (max 60 secondes)' };
+  // Allow up to 5 minutes (300000ms) for clock skew
+  if (timestampAge > 300000 || timestampAge < -60000) {
+    return { valid: false, error: 'Token expiré ou invalide' };
   }
 
   return { valid: true };
