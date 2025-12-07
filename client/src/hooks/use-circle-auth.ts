@@ -57,7 +57,6 @@ function isValidCircleOrigin(origin: string): boolean {
   
   // In development, be more permissive
   if (import.meta.env.DEV) {
-    console.log('[Circle Auth] DEV mode - accepting origin:', normalizedOrigin);
     return true;
   }
   
@@ -112,17 +111,14 @@ export function useCircleAuth() {
   // Detect parent origin - use '*' as fallback to be permissive like the old app
   const parentOrigin = useMemo(() => {
     const detected = getParentOrigin();
-    const result = detected || CIRCLE_ORIGIN || '*';
-    console.log(`[Circle Auth] Parent origin: ${result} (detected: ${detected}, configured: ${CIRCLE_ORIGIN})`);
-    return result;
+    return detected || CIRCLE_ORIGIN || '*';
   }, []);
 
   const requestAuthFromParent = useCallback(() => {
     try {
-      console.log(`[Circle Auth] Sending CIRCLE_AUTH_REQUEST to ${parentOrigin}`);
       window.parent.postMessage({ type: 'CIRCLE_AUTH_REQUEST' }, parentOrigin);
-    } catch (err) {
-      console.log('[Circle Auth] Failed to send postMessage:', err);
+    } catch {
+      // Silent fail - parent may not be available
     }
   }, [parentOrigin]);
 
@@ -136,8 +132,6 @@ export function useCircleAuth() {
     // We need Circle handshake if domain OR login is required
     const needsCircleHandshake = requireCircleDomain || requireCircleLogin;
 
-    console.log(`[Circle Auth] Config - requireCircleDomain: ${requireCircleDomain}, requireCircleLogin: ${requireCircleLogin}, needsHandshake: ${needsCircleHandshake}`);
-
     // Reset state
     setState({
       isLoading: needsCircleHandshake,
@@ -146,17 +140,13 @@ export function useCircleAuth() {
     });
 
     if (!needsCircleHandshake) {
-      console.log('[Circle Auth] No handshake needed - layers disabled');
       clearCircleUserCache();
       return;
     }
 
-    console.log(`[Circle Auth] Starting handshake with parent: ${parentOrigin}`);
-
     // Check cache first
     const cachedUser = getCachedUserData();
     if (cachedUser) {
-      console.log('[Circle Auth] Using cached user:', cachedUser.email);
       setState({
         isLoading: false,
         userData: cachedUser,
@@ -172,9 +162,6 @@ export function useCircleAuth() {
     const RETRY_INTERVAL = 500;
 
     const handleMessage = (event: MessageEvent) => {
-      // Log all messages for debugging
-      console.log(`[Circle Auth] Message received from: ${event.origin}`, event.data?.type);
-      
       // Be permissive with origin validation - accept if it looks like Circle data
       const hasCircleData = event.data && event.data.type === 'CIRCLE_USER_AUTH';
       
@@ -182,21 +169,11 @@ export function useCircleAuth() {
         return;
       }
       
-      // Validate origin only in production and only if we have a configured origin
-      if (!import.meta.env.DEV && CIRCLE_ORIGIN && !isValidCircleOrigin(event.origin)) {
-        console.log(`[Circle Auth] Origin ${event.origin} not in allowed list - but accepting anyway for compatibility`);
-        // Don't return - accept the data anyway for backward compatibility
-      }
-
-      console.log('[Circle Auth] Processing Circle user data');
-
       try {
         const data = circleUserDataSchema.parse(event.data);
         
         if (data.type === 'CIRCLE_USER_AUTH') {
           messageReceived = true;
-          console.log('[Circle Auth] Valid user data received:', data.user.email);
-          
           setCachedUserData(data.user);
           
           if (data.theme) {
@@ -209,11 +186,9 @@ export function useCircleAuth() {
             error: null,
           });
         }
-      } catch (err) {
-        console.log('[Circle Auth] Parse error - data may be malformed:', err);
+      } catch {
         // Try to extract email directly as fallback
         if (event.data?.user?.email) {
-          console.log('[Circle Auth] Using fallback extraction for email:', event.data.user.email);
           const fallbackUser = {
             publicUid: event.data.user.publicUid || '',
             email: event.data.user.email,
@@ -235,7 +210,6 @@ export function useCircleAuth() {
     window.addEventListener('message', handleMessage);
 
     if (!cachedUser) {
-      console.log('[Circle Auth] Starting retry loop');
       requestAuthFromParent();
 
       const retryInterval = setInterval(() => {
@@ -245,11 +219,9 @@ export function useCircleAuth() {
         }
         
         retryCount++;
-        console.log(`[Circle Auth] Retry ${retryCount}/${MAX_RETRIES}`);
         
         if (retryCount >= MAX_RETRIES) {
           clearInterval(retryInterval);
-          console.log('[Circle Auth] Timeout - no Circle response received');
           setState({
             isLoading: false,
             userData: null,

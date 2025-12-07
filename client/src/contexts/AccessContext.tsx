@@ -100,7 +100,6 @@ export function AccessProvider({ children }: { children: ReactNode }) {
 
     // Si mode Circle.so uniquement et origine non validée
     if (circleOnlyModeRef.current && !originValidated && !window.__CIRCLE_ORIGIN_VALIDATED__) {
-      console.log('[Duo-Connecte] Mode Circle.so - en attente de validation d\'origine...');
       // L'accès sera refusé après le timeout si aucun message Circle.so valide n'est reçu
       setAccessStatus('loading');
       setIsInitialized(true);
@@ -157,11 +156,9 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       // Vérifier l'origine si le mode Circle uniquement est activé
       if (circleOnlyModeRef.current) {
         if (event.origin !== ALLOWED_ORIGIN) {
-          console.log('[Duo-Connecte] Message Circle rejeté - origine non autorisée:', event.origin);
           return;
         } else {
           // Origine valide - marquer comme validée
-          console.log('[Duo-Connecte] Origine Circle.so validée');
           setOriginValidated(true);
           window.__CIRCLE_ORIGIN_VALIDATED__ = true;
 
@@ -181,7 +178,6 @@ export function AccessProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        console.log('[Duo-Connecte] Email reçu de Circle.so:', email);
         lastProcessedEmailRef.current = email;
         setUserEmail(email);
         storeEmail(email);
@@ -199,12 +195,9 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   // Timeout pour rejeter l'accès si aucun message Circle.so valide n'est reçu
   useEffect(() => {
     if (settingsLoaded && circleOnlyMode && !originValidated && !window.__CIRCLE_ORIGIN_VALIDATED__) {
-      console.log('[Duo-Connecte] Mode Circle.so activé - démarrage du timeout de validation...');
-
       // Donner 3 secondes pour recevoir un message Circle.so valide
       originTimeoutRef.current = window.setTimeout(() => {
         if (!originValidated && !window.__CIRCLE_ORIGIN_VALIDATED__) {
-          console.log('[Duo-Connecte] Timeout - aucun message Circle.so valide reçu');
           setAccessStatus('origin_invalid');
         }
       }, 3000);
