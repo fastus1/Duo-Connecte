@@ -1,22 +1,23 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { 
-  validateUserData, 
-  generateSessionToken, 
-  hashPin, 
+import {
+  validateUserData,
+  generateSessionToken,
+  hashPin,
   comparePin,
   pinRateLimiter,
   requireAuth,
-  type CircleUserData 
+  type CircleUserData
 } from "./middleware";
 import { corsMiddleware } from "./app";
 import crypto from "crypto";
-import { 
-  validateCircleUserSchema, 
-  createPinSchema, 
-  validatePinSchema, 
-  updateConfigSchema 
+import {
+  validateCircleUserSchema,
+  createPinSchema,
+  validatePinSchema,
+  updateConfigSchema,
+  insertFeedbackSchema
 } from "@shared/schema";
 
 // Temporary cache for validated Circle.so data (5 minutes expiry)
@@ -41,19 +42,47 @@ setInterval(() => {
 }, 60 * 1000);
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
+
   // Apply CORS to API routes and webhooks (webhooks called from Circle.so client-side scripts)
   app.use('/api', corsMiddleware);
   app.use('/webhooks', corsMiddleware);
-  
+
+  // Feedback endpoint
+  app.post("/api/feedback", async (req, res) => {
+    try {
+      const validatedFeedback = insertFeedbackSchema.parse(req.body);
+      const feedback = await storage.createFeedback(validatedFeedback);
+      res.json(feedback);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  // Get all feedbacks - Admin only
+  app.get("/api/admin/feedbacks", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      const feedbacks = await storage.getAllFeedbacks();
+      res.json(feedbacks);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // GET /api/health - Health check endpoint for debugging
   app.get('/api/health', async (req: Request, res: Response) => {
     try {
       // Test database connection
       const testUser = await storage.getUserByEmail('test@nonexistent.com');
       const config = await storage.getAppConfig();
-      return res.json({ 
-        status: 'ok', 
+      return res.json({
+        status: 'ok',
         database: 'connected',
         config: {
           requireCircleDomain: config.requireCircleDomain,
@@ -65,14 +94,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      return res.status(500).json({ 
-        status: 'error', 
+      return res.status(500).json({
+        status: 'error',
         database: 'disconnected',
         error: errorMessage
       });
     }
   });
-  
+
   // POST /api/auth/validate - Validate Circle.so user data
   app.post('/api/auth/validate', async (req: Request, res: Response) => {
     try {
@@ -108,8 +137,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // New user - check if publicUid is already registered (shouldn't happen but safety check)
         const userByPublicUid = await storage.getUserByPublicUid(userData.publicUid);
         if (userByPublicUid) {
-          return res.status(403).json({ 
-            error: 'Cet identifiant Circle.so est déjà associé à un autre email' 
+          return res.status(403).json({
+            error: 'Cet identifiant Circle.so est déjà associé à un autre email'
           });
         }
 
@@ -137,8 +166,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Existing user - verify publicUid matches
       if (existingUser.publicUid !== userData.publicUid) {
-        return res.status(403).json({ 
-          error: 'Les données Circle.so ne correspondent pas au compte existant' 
+        return res.status(403).json({
+          error: 'Les données Circle.so ne correspondent pas au compte existant'
         });
       }
 
@@ -154,7 +183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ipAddress: req.ip || null,
         });
         const sessionToken = generateSessionToken(existingUser.id, existingUser.email);
-        
+
         return res.json({
           status: 'auto_login',
           user_id: existingUser.id,
@@ -176,7 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error in /api/auth/validate:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       console.error('Error details:', errorMessage);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Erreur serveur lors de la validation',
         details: process.env.DEV_MODE === 'true' ? errorMessage : undefined
       });
@@ -199,9 +228,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const paidMember = await storage.getPaidMemberByEmail(email.toLowerCase());
         if (!paidMember) {
           console.log(`[AUTH] Paywall block on create-pin for: ${email}`);
-          return res.status(403).json({ 
+          return res.status(403).json({
             error: 'Accès réservé aux membres payants',
-            paywall_blocked: true 
+            paywall_blocked: true
           });
         }
       }
@@ -209,24 +238,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // CRITICAL: Verify validation token to prevent unauthorized account creation
       const cachedData = validationCache.get(validation_token);
       if (!cachedData) {
-        return res.status(403).json({ 
-          error: 'Token de validation invalide ou expiré. Veuillez recommencer l\'authentification.' 
+        return res.status(403).json({
+          error: 'Token de validation invalide ou expiré. Veuillez recommencer l\'authentification.'
         });
       }
 
       // Verify the data matches the cached validation
       if (cachedData.email !== email || cachedData.publicUid !== public_uid) {
         validationCache.delete(validation_token); // Clean up invalid attempt
-        return res.status(403).json({ 
-          error: 'Les données ne correspondent pas à la validation Circle.so' 
+        return res.status(403).json({
+          error: 'Les données ne correspondent pas à la validation Circle.so'
         });
       }
 
       // Check if validation is still fresh (not expired)
       if (Date.now() - cachedData.timestamp > VALIDATION_EXPIRY_MS) {
         validationCache.delete(validation_token);
-        return res.status(403).json({ 
-          error: 'Token de validation expiré. Veuillez recommencer l\'authentification.' 
+        return res.status(403).json({
+          error: 'Token de validation expiré. Veuillez recommencer l\'authentification.'
         });
       }
 
@@ -235,16 +264,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Validate PIN format (4-6 digits)
       if (!/^\d{4,6}$/.test(pin)) {
-        return res.status(400).json({ 
-          error: 'Le NIP doit contenir 4 à 6 chiffres' 
+        return res.status(400).json({
+          error: 'Le NIP doit contenir 4 à 6 chiffres'
         });
       }
 
       // Double-check if user already exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
-        return res.status(400).json({ 
-          error: 'Un compte existe déjà pour cet email' 
+        return res.status(400).json({
+          error: 'Un compte existe déjà pour cet email'
         });
       }
 
@@ -302,9 +331,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const paidMember = await storage.getPaidMemberByEmail(email.toLowerCase());
         if (!paidMember) {
           console.log(`[AUTH] Paywall block on create-user-no-pin for: ${email}`);
-          return res.status(403).json({ 
+          return res.status(403).json({
             error: 'Accès réservé aux membres payants',
-            paywall_blocked: true 
+            paywall_blocked: true
           });
         }
       }
@@ -317,24 +346,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify validation token
       const cachedData = validationCache.get(validation_token);
       if (!cachedData) {
-        return res.status(403).json({ 
-          error: 'Token de validation invalide ou expiré. Veuillez recommencer l\'authentification.' 
+        return res.status(403).json({
+          error: 'Token de validation invalide ou expiré. Veuillez recommencer l\'authentification.'
         });
       }
 
       // Verify the data matches
       if (cachedData.email !== email || cachedData.publicUid !== public_uid) {
         validationCache.delete(validation_token);
-        return res.status(403).json({ 
-          error: 'Les données ne correspondent pas à la validation Circle.so' 
+        return res.status(403).json({
+          error: 'Les données ne correspondent pas à la validation Circle.so'
         });
       }
 
       // Check expiration
       if (Date.now() - cachedData.timestamp > VALIDATION_EXPIRY_MS) {
         validationCache.delete(validation_token);
-        return res.status(403).json({ 
-          error: 'Token de validation expiré. Veuillez recommencer l\'authentification.' 
+        return res.status(403).json({
+          error: 'Token de validation expiré. Veuillez recommencer l\'authentification.'
         });
       }
 
@@ -396,9 +425,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const paidMember = await storage.getPaidMemberByEmail(email.toLowerCase());
         if (!paidMember) {
           console.log(`[AUTH] Paywall block on validate-pin for: ${email}`);
-          return res.status(403).json({ 
+          return res.status(403).json({
             error: 'Accès réservé aux membres payants',
-            paywall_blocked: true 
+            paywall_blocked: true
           });
         }
       }
@@ -568,10 +597,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
         paywallInfoUrl: config.paywallInfoUrl,
         paywallTitle: config.paywallTitle,
         paywallMessage: config.paywallMessage,
+        environment: config.environment,
         isPublicMode,
       });
     } catch (error) {
       console.error('Error in GET /api/config:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // GET /api/admin/feedbacks - Get all feedbacks (admin only)
+  app.get('/api/admin/feedbacks', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      const feedbacks = await storage.getAllFeedbacks();
+      return res.json(feedbacks);
+    } catch (error) {
+      console.error('Error in /api/admin/feedbacks:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // POST /api/feedback - Submit feedback
+  app.post('/api/feedback', async (req: Request, res: Response) => {
+    try {
+      const feedbackData = insertFeedbackSchema.parse(req.body);
+      const feedback = await storage.createFeedback(feedbackData);
+      return res.json(feedback);
+    } catch (error) {
+      console.error('Error in /api/feedback:', error);
+      return res.status(400).json({ error: 'Données invalides' });
+    }
+  });
+
+  // GET /api/settings - Alias for /api/config to support migrated AccessContext
+  app.get('/api/settings', async (req: Request, res: Response) => {
+    try {
+      const config = await storage.getAppConfig();
+      return res.json({
+        environment: config.environment,
+        circleOnlyMode: config.requireCircleDomain, // Map requireCircleDomain to circleOnlyMode
+      });
+    } catch (error) {
+      console.error('Error in GET /api/settings:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // POST /api/check-access - Check access for migrated AccessContext
+  app.post('/api/check-access', async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      const config = await storage.getAppConfig();
+
+      // If in development mode, grant access (unless specific restrictions apply)
+      if (config.environment === 'development') {
+        return res.json({
+          hasAccess: true,
+          mode: 'development'
+        });
+      }
+
+      // In production, check requirements
+
+      // 1. Check Paywall if enabled
+      if (config.requirePaywall) {
+        if (!email) {
+          return res.json({ hasAccess: false, mode: 'production', reason: 'email_required_for_paywall' });
+        }
+        const paidMember = await storage.getPaidMemberByEmail(email);
+        if (!paidMember) {
+          return res.json({ hasAccess: false, mode: 'production', reason: 'paywall' });
+        }
+      }
+
+      // 2. Check Circle Domain if enabled (handled by client mostly, but we can validate email domain if needed)
+      // For now, we assume client validation for origin, and here we just check if email is present if login is required
+      if (config.requireCircleLogin && !email) {
+        return res.json({ hasAccess: false, mode: 'production', reason: 'login_required' });
+      }
+
+      // If all checks pass
+      return res.json({
+        hasAccess: true,
+        mode: 'production'
+      });
+
+    } catch (error) {
+      console.error('Error in POST /api/check-access:', error);
       return res.status(500).json({ error: 'Erreur serveur' });
     }
   });
@@ -586,38 +705,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
       }
 
-      const { 
-        requireCircleDomain, 
-        requireCircleLogin, 
+      const {
+        requireCircleDomain,
+        requireCircleLogin,
         requirePaywall,
         requirePin,
         paywallPurchaseUrl,
         paywallInfoUrl,
         paywallTitle,
         paywallMessage,
+        environment,
       } = req.body;
 
-      // Dependency check: Paywall requires Circle Login to be enabled
-      if (requirePaywall === true) {
-        const currentConfig = await storage.getAppConfig();
-        const circleLoginEnabled = requireCircleLogin !== undefined ? requireCircleLogin : currentConfig.requireCircleLogin;
-        if (!circleLoginEnabled) {
-          return res.status(400).json({ 
-            error: 'Le Paywall nécessite que la connexion Circle.so soit activée (pour obtenir l\'email de l\'utilisateur)' 
-          });
-        }
-      }
 
-      const updatedConfig = await storage.updateAppConfig({
-        requireCircleDomain: requireCircleDomain !== undefined ? requireCircleDomain : undefined,
-        requireCircleLogin: requireCircleLogin !== undefined ? requireCircleLogin : undefined,
-        requirePaywall: requirePaywall !== undefined ? requirePaywall : undefined,
-        requirePin: requirePin !== undefined ? requirePin : undefined,
-        paywallPurchaseUrl: paywallPurchaseUrl !== undefined ? paywallPurchaseUrl : undefined,
-        paywallInfoUrl: paywallInfoUrl !== undefined ? paywallInfoUrl : undefined,
-        paywallTitle: paywallTitle !== undefined ? paywallTitle : undefined,
-        paywallMessage: paywallMessage !== undefined ? paywallMessage : undefined,
-      });
+
+      const updateData: Partial<any> = {};
+
+      console.log('[PATCH /api/config] Received body:', req.body);
+
+      if (requireCircleDomain !== undefined) updateData.requireCircleDomain = requireCircleDomain;
+      if (requireCircleLogin !== undefined) updateData.requireCircleLogin = requireCircleLogin;
+      if (requirePaywall !== undefined) updateData.requirePaywall = requirePaywall;
+      if (requirePin !== undefined) updateData.requirePin = requirePin;
+      if (paywallPurchaseUrl !== undefined) updateData.paywallPurchaseUrl = paywallPurchaseUrl;
+      if (paywallInfoUrl !== undefined) updateData.paywallInfoUrl = paywallInfoUrl;
+      if (paywallTitle !== undefined) updateData.paywallTitle = paywallTitle;
+      if (paywallMessage !== undefined) updateData.paywallMessage = paywallMessage;
+      if (environment !== undefined) updateData.environment = environment;
+
+      console.log('[PATCH /api/config] Constructed updateData:', updateData);
+
+      const updatedConfig = await storage.updateAppConfig(updateData);
+
+      console.log('[PATCH /api/config] Updated config from storage:', updatedConfig);
 
       return res.json({
         success: true,
@@ -629,6 +749,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         paywallInfoUrl: updatedConfig.paywallInfoUrl,
         paywallTitle: updatedConfig.paywallTitle,
         paywallMessage: updatedConfig.paywallMessage,
+        environment: updatedConfig.environment,
       });
     } catch (error) {
       console.error('Error in PATCH /api/config:', error);
@@ -649,8 +770,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Paywall enabled - check if user has paid
       if (!email) {
-        return res.json({ 
-          hasAccess: false, 
+        return res.json({
+          hasAccess: false,
           paywallEnabled: true,
           paywallTitle: config.paywallTitle,
           paywallMessage: config.paywallMessage,
@@ -660,14 +781,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const paidMember = await storage.getPaidMemberByEmail(email);
-      
+
       if (paidMember) {
         return res.json({ hasAccess: true, paywallEnabled: true });
       }
 
       // User has not paid
-      return res.json({ 
-        hasAccess: false, 
+      return res.json({
+        hasAccess: false,
         paywallEnabled: true,
         paywallTitle: config.paywallTitle,
         paywallMessage: config.paywallMessage,
@@ -723,8 +844,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingMember = await storage.getPaidMemberByEmail(email);
       if (existingMember) {
         console.log(`[WEBHOOK] Member already registered: ${email}`);
-        return res.json({ 
-          success: true, 
+        return res.json({
+          success: true,
           message: 'Membre déjà enregistré',
           email,
         });
@@ -740,8 +861,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`[WEBHOOK] New paid member registered: ${email}, plan: ${payment?.paywall_display_name || 'N/A'}`);
 
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         message: 'Accès activé',
         email: newMember.email,
         paymentDate: newMember.paymentDate,
@@ -788,7 +909,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const normalizedEmail = email.toLowerCase().trim();
-      
+
       // Check if already exists
       const existing = await storage.getPaidMemberByEmail(normalizedEmail);
       if (existing) {

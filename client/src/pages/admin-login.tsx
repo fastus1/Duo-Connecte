@@ -39,7 +39,7 @@ export default function AdminLogin() {
       localStorage.setItem('is_admin', String(data.is_admin));
       localStorage.setItem('session_timestamp', String(Date.now()));
 
-      setLocation('/dashboard');
+      setLocation('/admin');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion');
     } finally {
@@ -75,7 +75,7 @@ export default function AdminLogin() {
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -108,7 +108,7 @@ export default function AdminLogin() {
             </div>
 
             <Button
-              type="submit"
+              onClick={(e) => handleSubmit(e)}
               className="w-full h-12"
               disabled={isLoading || !email || pin.length < 4}
               data-testid="button-submit"
@@ -125,7 +125,7 @@ export default function AdminLogin() {
                 </>
               )}
             </Button>
-          </form>
+          </div>
 
           <Button
             variant="ghost"

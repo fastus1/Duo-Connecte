@@ -16,6 +16,8 @@ import { getSessionToken, clearAuth } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
 
+import { AdminFeedbacks } from '@/components/admin/AdminFeedbacks';
+
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -32,9 +34,27 @@ export default function Dashboard() {
     webhookAppUrl: string;
   }
 
+  type Environment = 'development' | 'production';
+
+  interface SettingsData {
+    environment: Environment;
+    circleOnlyMode: boolean;
+  }
+
   const { data: configData, isLoading: configLoading } = useQuery<AppConfig>({
     queryKey: ['/api/config'],
   });
+
+  const { data: settingsData, isLoading: settingsLoading } = useQuery<SettingsData>({
+    queryKey: ['/api/settings'],
+    queryFn: async () => {
+      const response = await fetch("/api/settings");
+      if (!response.ok) throw new Error("Failed to fetch settings");
+      return response.json();
+    }
+  });
+
+  const environment = settingsData?.environment ?? 'development';
 
   // Local state for paywall settings
   const [paywallTitle, setPaywallTitle] = useState('');
@@ -93,6 +113,40 @@ export default function Dashboard() {
         title: 'Erreur',
         description: error.message || 'Impossible de mettre à jour la configuration.',
         variant: 'destructive',
+      });
+    },
+  });
+
+  const environmentMutation = useMutation({
+    mutationFn: async (newEnvironment: Environment) => {
+      const token = getSessionToken();
+      const response = await fetch("/api/admin/settings/environment", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ environment: newEnvironment }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Impossible de changer l'environnement");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+      toast({
+        title: "Environnement modifié",
+        description: `Mode ${data.environment === 'development' ? 'Développement' : 'Production'} activé`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Erreur",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
@@ -246,39 +300,7 @@ export default function Dashboard() {
   const sessionStart = sessionTimestamp ? new Date(parseInt(sessionTimestamp)) : null;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Logo size="md" />
-            <div>
-              <h1 className="text-xl font-semibold">Dashboard Admin</h1>
-              <p className="text-sm text-muted-foreground">Espace d'administration</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button 
-              variant="outline" 
-              onClick={() => setLocation('/user-home')}
-              data-testid="button-user-home"
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Page d'accueil
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              data-testid="button-logout"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Déconnexion
-            </Button>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background pb-12">
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           <div>
@@ -310,7 +332,16 @@ export default function Dashboard() {
                 <Code className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Webhook</span>
               </TabsTrigger>
+              <TabsTrigger value="feedbacks" className="flex-1 min-w-fit" data-testid="tab-feedbacks">
+                <Users className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Feedbacks</span>
+              </TabsTrigger>
             </TabsList>
+
+            {/* Tab: Feedbacks */}
+            <TabsContent value="feedbacks" className="space-y-6">
+              <AdminFeedbacks />
+            </TabsContent>
 
             {/* Tab: Accueil */}
             <TabsContent value="accueil" className="space-y-6">
@@ -419,14 +450,6 @@ export default function Dashboard() {
                       <p className="text-xs text-muted-foreground">
                         Si activé, seuls les membres payants peuvent accéder à l'app
                       </p>
-                      {configData?.requirePaywall && !configData?.requireCircleLogin && (
-                        <Alert variant="destructive" className="mt-2">
-                          <AlertTriangle className="h-4 w-4" />
-                          <AlertDescription>
-                            Le paywall nécessite que la Couche 2 (Connexion Circle.so) soit activée.
-                          </AlertDescription>
-                        </Alert>
-                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -434,7 +457,7 @@ export default function Dashboard() {
                         id="require-paywall"
                         checked={configData?.requirePaywall ?? false}
                         onCheckedChange={(checked) => updateConfigMutation.mutate({ requirePaywall: checked })}
-                        disabled={updateConfigMutation.isPending || configLoading || !configData?.requireCircleLogin}
+                        disabled={updateConfigMutation.isPending || configLoading}
                         data-testid="switch-require-paywall"
                       />
                     </div>
@@ -677,7 +700,7 @@ export default function Dashboard() {
                     <div className="space-y-2">
                       <Label>Script à copier dans Circle.so</Label>
                       <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all">
-{`<script>
+                        {`<script>
 const WEBHOOK_SECRET = '${webhookSecret}';
 fetch('${webhookAppUrl}/webhooks/circle-payment', {
   method: 'POST',

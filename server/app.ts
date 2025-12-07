@@ -36,24 +36,24 @@ const devMode = process.env.DEV_MODE === 'true';
 // REPLIT_DOMAINS contains the deployment domain in production
 const getAppOrigins = (): string[] => {
   const origins: string[] = [];
-  
+
   // Dev domain
   if (process.env.REPLIT_DEV_DOMAIN) {
     origins.push(`https://${process.env.REPLIT_DEV_DOMAIN}`);
   }
-  
+
   // Deployment URL
   if (process.env.REPLIT_DEPLOYMENT_URL) {
     origins.push(process.env.REPLIT_DEPLOYMENT_URL);
   }
-  
+
   // REPLIT_DOMAINS contains comma-separated list of domains
   if (process.env.REPLIT_DOMAINS) {
     process.env.REPLIT_DOMAINS.split(',').forEach(domain => {
       origins.push(`https://${domain.trim()}`);
     });
   }
-  
+
   return origins;
 };
 
@@ -61,22 +61,22 @@ export const corsMiddleware = cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     // In dev mode, allow all origins
     if (devMode) {
       return callback(null, true);
     }
-    
+
     // In production, allow Circle.so origin AND the app's own origins
     const allowedOrigins = [
       circleOrigin,
       ...getAppOrigins(),
     ].filter(Boolean);
-    
+
     if (allowedOrigins.some(allowed => origin.includes(allowed?.replace('https://', '') || ''))) {
       return callback(null, true);
     }
-    
+
     // Otherwise reject with proper CORS error
     return callback(null, false);
   },
@@ -134,8 +134,8 @@ export default async function runApp(
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    console.error('Global error handler caught:', err);
     res.status(status).json({ message });
-    throw err;
   });
 
   // importantly run the final setup after setting up all the other routes so

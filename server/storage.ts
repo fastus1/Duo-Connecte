@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, type PaidMember, type InsertPaidMember, users, loginAttempts, appConfig, paidMembers } from "@shared/schema";
+import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, type PaidMember, type InsertPaidMember, type Feedback, type InsertFeedback, users, loginAttempts, appConfig, paidMembers, feedbacks } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { eq, and, gt } from "drizzle-orm";
@@ -13,32 +13,38 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUserLastLogin(userId: string): Promise<void>;
   updateUserRole(userId: string, isAdmin: boolean): Promise<void>;
-  
+
   // Login attempt operations
   logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt>;
   getRecentLoginAttempts(userId: string, windowMs: number): Promise<LoginAttempt[]>;
-  
+
   // App config operations
   getAppConfig(): Promise<AppConfig>;
   updateAppConfig(config: Partial<Omit<AppConfig, 'id' | 'updatedAt'>>): Promise<AppConfig>;
-  
+
   // Paid members operations
   getPaidMemberByEmail(email: string): Promise<PaidMember | undefined>;
   createPaidMember(member: InsertPaidMember): Promise<PaidMember>;
   getAllPaidMembers(): Promise<PaidMember[]>;
   deletePaidMember(email: string): Promise<void>;
+
+  // Feedback operations
+  createFeedback(feedback: InsertFeedback): Promise<Feedback>;
+  getAllFeedbacks(): Promise<Feedback[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private loginAttempts: Map<string, LoginAttempt>;
   private paidMembersMap: Map<string, PaidMember>;
+  private feedbacks: Map<string, Feedback>;
   private configState: AppConfig;
 
   constructor() {
     this.users = new Map();
     this.loginAttempts = new Map();
     this.paidMembersMap = new Map();
+    this.feedbacks = new Map();
     this.configState = {
       id: "main",
       requireCircleDomain: true,
@@ -50,8 +56,20 @@ export class MemStorage implements IStorage {
       paywallTitle: "Accès Réservé",
       paywallMessage: "Cette application est réservée aux membres ayant souscrit à l'offre.",
       webhookAppUrl: "",
+      environment: "development", // Added environment here
       updatedAt: new Date(),
     };
+
+    // Seed admin user
+    this.createUser({
+      email: "fastusone@gmail.com",
+      pinHash: "$2b$10$FKDhHfgZhXVQWeeDzl1q0Oz9DYDoRkoG3bmQYfR2ERaWfnKSbMUy6",
+      isAdmin: true,
+      name: "Admin Fastus",
+      publicUid: "admin-fastus",
+    }).then(() => {
+      console.log("Admin user seeded: fastusone@gmail.com");
+    });
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -73,8 +91,8 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
     const now = new Date();
-    const user: User = { 
-      ...insertUser, 
+    const user: User = {
+      ...insertUser,
       id,
       isAdmin: insertUser.isAdmin ?? false,
       createdAt: now,
@@ -158,6 +176,26 @@ export class MemStorage implements IStorage {
   async deletePaidMember(email: string): Promise<void> {
     this.paidMembersMap.delete(email.toLowerCase());
   }
+
+
+
+
+  async createFeedback(insertFeedback: InsertFeedback): Promise<Feedback> {
+    const id = randomUUID();
+    const feedback: Feedback = {
+      id,
+      rating: insertFeedback.rating,
+      helpfulAspect: insertFeedback.helpfulAspect ?? null,
+      improvementSuggestion: insertFeedback.improvementSuggestion ?? null,
+      createdAt: new Date(),
+    };
+    this.feedbacks.set(id, feedback);
+    return feedback;
+  }
+
+  async getAllFeedbacks(): Promise<Feedback[]> {
+    return Array.from(this.feedbacks.values());
+  }
 }
 
 export class DbStorage implements IStorage {
@@ -228,9 +266,9 @@ export class DbStorage implements IStorage {
 
   async updateAppConfig(config: Partial<Omit<AppConfig, 'id' | 'updatedAt'>>): Promise<AppConfig> {
     const result = await this.db.update(appConfig)
-      .set({ 
+      .set({
         ...config,
-        updatedAt: new Date() 
+        updatedAt: new Date()
       })
       .where(eq(appConfig.id, "main"))
       .returning();
@@ -259,10 +297,29 @@ export class DbStorage implements IStorage {
   async deletePaidMember(email: string): Promise<void> {
     await this.db.delete(paidMembers).where(eq(paidMembers.email, email.toLowerCase()));
   }
+
+
+
+
+  async createFeedback(insertFeedback: InsertFeedback): Promise<Feedback> {
+    const [feedback] = await this.db
+      .insert(feedbacks)
+      .values({
+        rating: insertFeedback.rating,
+        helpfulAspect: insertFeedback.helpfulAspect ?? null,
+        improvementSuggestion: insertFeedback.improvementSuggestion ?? null,
+      })
+      .returning();
+    return feedback;
+  }
+
+  async getAllFeedbacks(): Promise<Feedback[]> {
+    return await this.db.select().from(feedbacks).orderBy(feedbacks.createdAt);
+  }
 }
 
 // Use database storage if DATABASE_URL is set, otherwise use memory storage
 const databaseUrl = process.env.DATABASE_URL;
-export const storage = databaseUrl && databaseUrl !== 'memory' 
+export const storage = databaseUrl && databaseUrl !== 'memory'
   ? new DbStorage(databaseUrl)
   : new MemStorage();
