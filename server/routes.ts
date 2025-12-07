@@ -763,13 +763,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { email } = req.body;
       const config = await storage.getAppConfig();
 
+      console.log(`[PAYWALL CHECK] Email: "${email}", requirePaywall: ${config.requirePaywall}`);
+
       // If paywall is disabled, grant access
       if (!config.requirePaywall) {
+        console.log(`[PAYWALL CHECK] Paywall disabled - granting access`);
         return res.json({ hasAccess: true, paywallEnabled: false });
       }
 
       // Paywall enabled - check if user has paid
       if (!email) {
+        console.log(`[PAYWALL CHECK] No email provided - blocking access`);
         return res.json({
           hasAccess: false,
           paywallEnabled: true,
@@ -780,9 +784,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const paidMember = await storage.getPaidMemberByEmail(email);
+      const normalizedEmail = email.toLowerCase().trim();
+      const paidMember = await storage.getPaidMemberByEmail(normalizedEmail);
+      console.log(`[PAYWALL CHECK] Checking: "${normalizedEmail}", found: ${paidMember ? 'YES - ' + paidMember.email : 'NO'}`);
 
       if (paidMember) {
+        console.log(`[PAYWALL CHECK] Access GRANTED for ${normalizedEmail}`);
         return res.json({ hasAccess: true, paywallEnabled: true });
       }
 
