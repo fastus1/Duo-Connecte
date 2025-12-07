@@ -3,7 +3,8 @@ import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-in-production';
+// Use SESSION_SECRET in production (Cloud Run), fallback to JWT_SECRET for backwards compatibility
+const SESSION_SECRET = process.env.SESSION_SECRET || process.env.JWT_SECRET || 'development-secret-change-in-production';
 const BCRYPT_ROUNDS = 10;
 
 export interface JWTPayload {
@@ -14,14 +15,14 @@ export interface JWTPayload {
 export function generateSessionToken(userId: string, email: string): string {
   return jwt.sign(
     { userId, email } as JWTPayload,
-    JWT_SECRET,
+    SESSION_SECRET,
     { expiresIn: '60m' }
   );
 }
 
 export function verifySessionToken(token: string): JWTPayload | null {
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as JWTPayload;
+    const payload = jwt.verify(token, SESSION_SECRET) as JWTPayload;
     return payload;
   } catch (error) {
     return null;
