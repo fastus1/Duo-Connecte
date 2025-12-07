@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, AlertCircle, Shield, LogIn, Lock, ExternalLink, Info } from 'lucide-react';
@@ -46,6 +46,7 @@ export default function AuthPage() {
     validationToken?: string;
   } | null>(null);
   const [paywallInfo, setPaywallInfo] = useState<PaywallInfo | null>(null);
+  const lastValidatedEmailRef = useRef<string | null>(null);
 
   // Fetch app security configuration
   const { data: appConfig, isLoading: configLoading } = useQuery<AppConfig>({
@@ -281,6 +282,11 @@ export default function AuthPage() {
     }
 
     if (userData) {
+      // Prevent duplicate validation calls when Circle.so sends multiple messages
+      if (lastValidatedEmailRef.current === userData.email) {
+        return;
+      }
+      lastValidatedEmailRef.current = userData.email;
       validateCircleData(userData);
     }
   }, [userData, circleError, devMode, appConfig, configLoading]);
