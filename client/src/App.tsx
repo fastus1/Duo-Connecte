@@ -245,18 +245,9 @@ function SessionRouter() {
   // Sync URL with current step (but don't redirect if on admin or template pages)
   useEffect(() => {
     // Skip redirection if user is on admin or template pages
-    if (location === '/admin' || location === '/admin-login' || location === '/') {
+    if (location === '/admin' || location === '/admin-login' || location === '/' || location === '/user-home') {
       return;
     }
-
-    // Redirect /user-home to /welcome
-    if (location === '/user-home') {
-      setLocation('/welcome');
-      return;
-    }
-
-    // Also skip if we are on the welcome page and step is 0 (to avoid loop if path is different)
-    // But schema says id 0 is /welcome.
 
     const currentPage = flow.pages[session.currentStep];
     if (currentPage && location !== currentPage.path) {
@@ -274,6 +265,7 @@ function SessionRouter() {
         <Switch>
           {/* Auth & Public Routes */}
           <Route path="/" component={AuthPage} />
+          <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
           <Route path="/admin-login" component={AdminLogin} />
 
           {/* Protected Routes */}
