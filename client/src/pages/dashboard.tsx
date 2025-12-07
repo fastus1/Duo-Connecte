@@ -274,13 +274,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (userData && !userData.isAdmin) {
-      setLocation('/user-home');
+      setLocation('/welcome');
     }
   }, [userData, setLocation]);
 
   const handleLogout = () => {
     clearAuth();
-    setLocation('/');
+    window.location.href = '/';
   };
 
   if (isLoading) {

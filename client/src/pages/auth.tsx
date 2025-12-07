@@ -62,12 +62,9 @@ export default function AuthPage() {
     localStorage.setItem('user_id', userId);
     localStorage.setItem('session_timestamp', Date.now().toString());
     
-    // Route based on user role
-    if (isAdmin) {
-      setLocation('/dashboard');
-    } else {
-      setLocation('/user-home');
-    }
+    // Route based on user role - all users go to welcome page
+    // Admins can access dashboard from the header
+    setLocation('/welcome');
   };
 
   const handleError = (message: string) => {
@@ -226,15 +223,15 @@ export default function AuthPage() {
     // Check if user already has a valid session
     const existingToken = getSessionToken();
     if (existingToken) {
-      // User is already logged in, redirect to user-home
-      setLocation('/user-home');
+      // User is already logged in, redirect to welcome
+      setLocation('/welcome');
       return;
     }
 
-    // Public mode: all 4 layers disabled - go directly to user-home (no login required)
+    // Public mode: all 4 layers disabled - go directly to welcome (no login required)
     const isPublicMode = !appConfig.requireCircleDomain && !appConfig.requireCircleLogin && !appConfig.requirePaywall && !appConfig.requirePin;
     if (isPublicMode) {
-      setLocation('/user-home');
+      setLocation('/welcome');
       return;
     }
 
@@ -253,7 +250,7 @@ export default function AuthPage() {
     if (isDomainOnlyMode) {
       // User is on the Circle domain (otherwise they wouldn't reach this page via iframe)
       // No login required, just let them access the app
-      setLocation('/user-home');
+      setLocation('/welcome');
       return;
     }
 
@@ -271,9 +268,9 @@ export default function AuthPage() {
       return;
     }
     
-    // Dev mode without Circle login - go directly to user-home
+    // Dev mode without Circle login - go directly to welcome
     if (devMode && !appConfig.requireCircleLogin && !appConfig.requirePaywall) {
-      setLocation('/user-home');
+      setLocation('/welcome');
       return;
     }
 
