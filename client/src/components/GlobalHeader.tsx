@@ -31,7 +31,8 @@ export function GlobalHeader() {
 
     const handleLogout = () => {
         clearAuth();
-        setLocation('/');
+        // Force page reload to restart Circle.so authentication flow
+        window.location.href = '/';
     };
 
     // Determine title and subtitle based on location
