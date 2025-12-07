@@ -435,7 +435,7 @@ export default function AuthPage() {
                 className="w-full h-12"
                 data-testid="button-paywall-purchase"
               >
-                <a href={paywallInfo.paywallPurchaseUrl} target="_top">
+                <a href={paywallInfo.paywallPurchaseUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4 mr-2" />
                   Acheter maintenant
                 </a>
@@ -448,7 +448,7 @@ export default function AuthPage() {
                 className="w-full h-12"
                 data-testid="button-paywall-info"
               >
-                <a href={paywallInfo.paywallInfoUrl} target="_top">
+                <a href={paywallInfo.paywallInfoUrl} target="_blank" rel="noopener noreferrer">
                   <Info className="h-4 w-4 mr-2" />
                   Plus d'informations
                 </a>
