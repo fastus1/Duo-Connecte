@@ -80,20 +80,30 @@ export function useCircleAuth() {
     if (configLoading) return;
     
     const requireCircleDomain = configData?.requireCircleDomain ?? true;
+    const requireCircleLogin = configData?.requireCircleLogin ?? true;
+    
+    // Determine if we need Circle.so handshake
+    // We need it if either domain check OR login is required
+    const needsCircleHandshake = requireCircleDomain || requireCircleLogin;
+
+    console.log(`[Circle Auth] Config loaded - requireCircleDomain: ${requireCircleDomain}, requireCircleLogin: ${requireCircleLogin}, needsCircleHandshake: ${needsCircleHandshake}`);
 
     // Reset state when config changes
     setState({
-      isLoading: requireCircleDomain,
+      isLoading: needsCircleHandshake,
       userData: null,
       error: null,
     });
 
-    if (!requireCircleDomain) {
+    // If neither domain nor login is required, no handshake needed
+    if (!needsCircleHandshake) {
+      console.log('[Circle Auth] No Circle handshake needed - both layers disabled');
       clearCircleUserCache();
       return;
     }
 
     if (!CIRCLE_ORIGIN) {
+      console.log('[Circle Auth] VITE_CIRCLE_ORIGIN not configured');
       setState({
         isLoading: false,
         userData: null,
@@ -102,9 +112,12 @@ export function useCircleAuth() {
       return;
     }
 
+    console.log(`[Circle Auth] Starting Circle.so handshake with origin: ${CIRCLE_ORIGIN}`);
+
     // Check for cached user data first
     const cachedUser = getCachedUserData();
     if (cachedUser) {
+      console.log('[Circle Auth] Found cached user data:', cachedUser.email);
       setState({
         isLoading: false,
         userData: cachedUser,
@@ -120,15 +133,25 @@ export function useCircleAuth() {
     const RETRY_INTERVAL = 500;
 
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== CIRCLE_ORIGIN) {
+      // Log all incoming messages for debugging
+      console.log(`[Circle Auth] Received message from origin: ${event.origin}, expected: ${CIRCLE_ORIGIN}`);
+      
+      // Check if origin matches (with flexible matching for trailing slashes)
+      const expectedOrigin = CIRCLE_ORIGIN.replace(/\/$/, '');
+      const actualOrigin = event.origin.replace(/\/$/, '');
+      
+      if (actualOrigin !== expectedOrigin) {
+        console.log(`[Circle Auth] Origin mismatch - ignoring message`);
         return;
       }
 
       try {
+        console.log('[Circle Auth] Parsing message data:', event.data);
         const data = circleUserDataSchema.parse(event.data);
         
         if (data.type === 'CIRCLE_USER_AUTH') {
           messageReceived = true;
+          console.log('[Circle Auth] Valid Circle user data received:', data.user.email);
           
           // Cache the user data for future refreshes
           setCachedUserData(data.user);
@@ -143,7 +166,8 @@ export function useCircleAuth() {
             error: null,
           });
         }
-      } catch {
+      } catch (err) {
+        console.log('[Circle Auth] Failed to parse message:', err);
         // Invalid data format - ignore
       }
     };
@@ -152,6 +176,7 @@ export function useCircleAuth() {
 
     // Only start retry mechanism if no cached data
     if (!cachedUser) {
+      console.log('[Circle Auth] No cached data - starting retry mechanism');
       requestAuthFromParent();
 
       const retryInterval = setInterval(() => {
@@ -161,9 +186,11 @@ export function useCircleAuth() {
         }
         
         retryCount++;
+        console.log(`[Circle Auth] Retry ${retryCount}/${MAX_RETRIES}`);
         
         if (retryCount >= MAX_RETRIES) {
           clearInterval(retryInterval);
+          console.log('[Circle Auth] Max retries reached - no valid Circle message received');
           setState({
             isLoading: false,
             userData: null,
@@ -184,7 +211,7 @@ export function useCircleAuth() {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [configData?.requireCircleDomain, configLoading, requestAuthFromParent]);
+  }, [configData?.requireCircleDomain, configData?.requireCircleLogin, configLoading, requestAuthFromParent]);
 
   return state;
 }
