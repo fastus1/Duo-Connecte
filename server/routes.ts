@@ -164,11 +164,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Existing user - verify publicUid matches
+      // Existing user - if publicUid differs, update it (Circle.so may regenerate IDs)
+      // We trust the email as the primary identifier
       if (existingUser.publicUid !== userData.publicUid) {
-        return res.status(403).json({
-          error: 'Les données Circle.so ne correspondent pas au compte existant'
-        });
+        console.log(`[Auth] Updating publicUid for ${userData.email}: ${existingUser.publicUid} -> ${userData.publicUid}`);
+        await storage.updateUserPublicUid(existingUser.id, userData.publicUid);
       }
 
       // CRITICAL: Sync admin status from Circle.so on every login
