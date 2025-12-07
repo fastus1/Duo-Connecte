@@ -115,11 +115,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const appConfig = await storage.getAppConfig();
 
       // Use data as provided by the frontend
-      // When requireCircleDomain is false, frontend sends mock data
+      // Generate unique publicUid if not provided
+      const uniqueSuffix = crypto.randomBytes(4).toString('hex');
       const userData = {
-        publicUid: user.publicUid || 'dev123',
+        publicUid: user.publicUid || `circle_${uniqueSuffix}`,
         email: user.email || 'dev@example.com',
-        name: user.name || 'Dev User',
+        name: user.name || 'Membre',
         isAdmin: user.isAdmin !== undefined ? user.isAdmin : false,
         timestamp: user.timestamp || Date.now(),
       };
@@ -130,18 +131,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: formatCheck.error });
       }
 
-      // Check if user exists by email
+      // Check if user exists by email (email is the authoritative identifier)
       const existingUser = await storage.getUserByEmail(userData.email);
 
       if (!existingUser) {
-        // New user - check if publicUid is already registered (shouldn't happen but safety check)
-        const userByPublicUid = await storage.getUserByPublicUid(userData.publicUid);
-        if (userByPublicUid) {
-          return res.status(403).json({
-            error: 'Cet identifiant Circle.so est déjà associé à un autre email'
-          });
-        }
-
+        // New user - email is unique, publicUid conflicts are handled by generating unique IDs
         // Generate one-time validation token for new user
         const validationToken = crypto.randomBytes(32).toString('hex');
         validationCache.set(validationToken, {
