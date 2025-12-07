@@ -673,69 +673,165 @@ export default function Dashboard() {
                     <CardTitle className="text-lg">Script d'Authentification Circle.so</CardTitle>
                   </div>
                   <CardDescription>
-                    Ce script doit être ajouté dans le Custom Code de chaque page Circle.so où l'app est intégrée
+                    Script COMPLET à coller dans Circle.so (Settings &gt; Custom Code &gt; Footer)
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Script à copier dans Circle.so (Settings &gt; Custom Code &gt; Footer)</Label>
-                    <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all">
+                    <Label>Script complet (définit circleUser + répond aux demandes d'auth)</Label>
+                    <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all max-h-64 overflow-y-auto">
                       {`<script>
+// PARTIE 1 : Définir window.circleUser avec les données Liquid
+window.circleUser = {
+  publicUid: '{{member.public_uid}}',
+  email: '{{member.email}}',
+  name: '{{member.name}}',
+  isAdmin: {{member.admin}}
+};
+
+// PARTIE 2 : Répondre aux demandes d'authentification des iframes
 (function() {
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
-      var userData = {
-        type: 'CIRCLE_USER_AUTH',
-        user: {
-          publicUid: '{{member.public_uid}}',
-          email: '{{member.email}}',
-          name: '{{member.name}}',
-          isAdmin: false,
-          timestamp: Date.now()
+  var ALLOWED_ORIGINS = /\\.replit\\.app$/;
+  
+  function getTheme() {
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  }
+  
+  function buildPayload() {
+    if (!window.circleUser || !window.circleUser.email) return null;
+    return {
+      type: 'CIRCLE_USER_AUTH',
+      user: {
+        publicUid: window.circleUser.publicUid || '',
+        email: window.circleUser.email,
+        name: window.circleUser.name || 'Membre',
+        isAdmin: window.circleUser.isAdmin === true || window.circleUser.isAdmin === 'true',
+        timestamp: Date.now()
+      },
+      theme: getTheme()
+    };
+  }
+  
+  function sendToAllIframes() {
+    var iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
+    var payload = buildPayload();
+    if (payload) {
+      iframes.forEach(function(iframe) {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.postMessage(payload, '*');
         }
-      };
-      event.source.postMessage(userData, event.origin);
+      });
+    }
+  }
+  
+  // Écouter les demandes d'auth des iframes
+  window.addEventListener('message', function(event) {
+    if (ALLOWED_ORIGINS.test(event.origin) && event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+      var payload = buildPayload();
+      if (payload && event.source) {
+        event.source.postMessage(payload, event.origin);
+      }
     }
   });
+  
+  // Envoyer automatiquement les données au chargement
+  var sent = false;
+  var interval = setInterval(function() {
+    if (window.circleUser && window.circleUser.email && !sent) {
+      sendToAllIframes();
+      sent = true;
+      clearInterval(interval);
+    }
+  }, 500);
+  
+  setTimeout(function() { clearInterval(interval); }, 30000);
 })();
 </script>`}
                     </div>
                     <Button
                       onClick={() => {
                         const authScript = `<script>
+// PARTIE 1 : Définir window.circleUser avec les données Liquid
+window.circleUser = {
+  publicUid: '{{member.public_uid}}',
+  email: '{{member.email}}',
+  name: '{{member.name}}',
+  isAdmin: {{member.admin}}
+};
+
+// PARTIE 2 : Répondre aux demandes d'authentification des iframes
 (function() {
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
-      var userData = {
-        type: 'CIRCLE_USER_AUTH',
-        user: {
-          publicUid: '{{member.public_uid}}',
-          email: '{{member.email}}',
-          name: '{{member.name}}',
-          isAdmin: false,
-          timestamp: Date.now()
+  var ALLOWED_ORIGINS = /\\.replit\\.app$/;
+  
+  function getTheme() {
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  }
+  
+  function buildPayload() {
+    if (!window.circleUser || !window.circleUser.email) return null;
+    return {
+      type: 'CIRCLE_USER_AUTH',
+      user: {
+        publicUid: window.circleUser.publicUid || '',
+        email: window.circleUser.email,
+        name: window.circleUser.name || 'Membre',
+        isAdmin: window.circleUser.isAdmin === true || window.circleUser.isAdmin === 'true',
+        timestamp: Date.now()
+      },
+      theme: getTheme()
+    };
+  }
+  
+  function sendToAllIframes() {
+    var iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
+    var payload = buildPayload();
+    if (payload) {
+      iframes.forEach(function(iframe) {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.postMessage(payload, '*');
         }
-      };
-      event.source.postMessage(userData, event.origin);
+      });
+    }
+  }
+  
+  // Écouter les demandes d'auth des iframes
+  window.addEventListener('message', function(event) {
+    if (ALLOWED_ORIGINS.test(event.origin) && event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+      var payload = buildPayload();
+      if (payload && event.source) {
+        event.source.postMessage(payload, event.origin);
+      }
     }
   });
+  
+  // Envoyer automatiquement les données au chargement
+  var sent = false;
+  var interval = setInterval(function() {
+    if (window.circleUser && window.circleUser.email && !sent) {
+      sendToAllIframes();
+      sent = true;
+      clearInterval(interval);
+    }
+  }, 500);
+  
+  setTimeout(function() { clearInterval(interval); }, 30000);
 })();
 </script>`;
                         navigator.clipboard.writeText(authScript);
-                        toast({ title: 'Copié !', description: 'Le script d\'authentification a été copié.' });
+                        toast({ title: 'Copié !', description: 'Le script d\'authentification complet a été copié.' });
                       }}
                       className="w-full"
                       data-testid="button-copy-auth-script"
                     >
                       <Copy className="h-4 w-4 mr-2" />
-                      Copier le script d'authentification
+                      Copier le script complet
                     </Button>
                   </div>
                   <Alert>
                     <Info className="h-4 w-4" />
                     <AlertDescription>
-                      Ce script utilise les variables Liquid de Circle.so pour récupérer les informations du membre connecté.
-                      Il doit être présent sur la page parente qui contient l'iframe de votre application.
+                      <strong>Important :</strong> Ce script définit <code>window.circleUser</code> avec les variables Liquid de Circle.so, 
+                      puis répond aux demandes d'authentification de l'app. Remplacez votre ancien script par celui-ci.
                     </AlertDescription>
                   </Alert>
                 </CardContent>
