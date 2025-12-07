@@ -126,12 +126,12 @@ export type PaidMember = typeof paidMembers.$inferSelect;
 export const circleUserDataSchema = z.object({
   type: z.literal('CIRCLE_USER_AUTH'),
   user: z.object({
-    publicUid: z.string().min(1),
+    publicUid: z.string().optional().default(''),
     email: z.string().email(),
-    name: z.string().min(1),
+    name: z.string().optional().default('Membre'),
     firstName: z.string().optional(),
     lastName: z.string().optional(),
-    isAdmin: z.boolean().optional().default(false),
+    isAdmin: z.union([z.boolean(), z.string()]).optional().default(false),
     timestamp: z.number(),
   }),
   theme: z.enum(['light', 'dark']).optional(),
