@@ -428,7 +428,9 @@ export default function Dashboard() {
                         Couche 2 : Exiger la connexion Circle.so
                       </Label>
                       <p className="text-xs text-muted-foreground">
-                        Si désactivé, les visiteurs non-connectés peuvent voir l'app
+                        {!(configData?.requireCircleDomain) 
+                          ? "Requiert la Couche 1 (Circle.so envoie les infos utilisateur)"
+                          : "Si désactivé, les visiteurs non-connectés peuvent voir l'app"}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -436,7 +438,14 @@ export default function Dashboard() {
                       <Switch
                         id="require-circle-login"
                         checked={configData?.requireCircleLogin ?? true}
-                        onCheckedChange={(checked) => updateConfigMutation.mutate({ requireCircleLogin: checked })}
+                        onCheckedChange={(checked) => {
+                          // Layer 2 requires Layer 1 - auto-enable it
+                          if (checked && !configData?.requireCircleDomain) {
+                            updateConfigMutation.mutate({ requireCircleDomain: true, requireCircleLogin: true });
+                          } else {
+                            updateConfigMutation.mutate({ requireCircleLogin: checked });
+                          }
+                        }}
                         disabled={updateConfigMutation.isPending || configLoading}
                         data-testid="switch-require-circle-login"
                       />
