@@ -260,8 +260,16 @@ export class DbStorage implements IStorage {
     if (result[0]) {
       return result[0];
     }
-    const newConfig = await this.db.insert(appConfig).values({ id: "main" }).returning();
-    return newConfig[0];
+    try {
+      const newConfig = await this.db.insert(appConfig).values({ id: "main" }).returning();
+      return newConfig[0];
+    } catch (error: any) {
+      if (error.code === '23505') {
+        const retry = await this.db.select().from(appConfig).where(eq(appConfig.id, "main")).limit(1);
+        if (retry[0]) return retry[0];
+      }
+      throw error;
+    }
   }
 
   async updateAppConfig(config: Partial<Omit<AppConfig, 'id' | 'updatedAt'>>): Promise<AppConfig> {
