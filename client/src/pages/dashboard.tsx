@@ -696,10 +696,9 @@ export default function Dashboard() {
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <Shield className="h-5 w-5 text-muted-foreground" />
-                    <CardTitle className="text-lg">Script d'Authentification Circle.so</CardTitle>
+                    <CardTitle className="text-lg">Code Snippet Circle - Script d'Authentification</CardTitle>
                   </div>
                   <CardDescription>
-                    Script COMPLET à coller dans Circle.so (Settings &gt; Custom Code &gt; Footer)
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
