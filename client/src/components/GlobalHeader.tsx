@@ -31,9 +31,15 @@ export function GlobalHeader() {
 
     const handleLogout = () => {
         clearAuth();
-        // Force page reload to restart Circle.so authentication flow
         window.location.href = '/';
     };
+
+    // Non-admin users: no header at all (except on admin pages)
+    const isAdminPage = location === '/admin' || location === '/admin-login';
+    
+    if (!isAdmin && !isAdminPage) {
+        return null;
+    }
 
     // Determine title and subtitle based on location
     let title = "Espace Membre";
