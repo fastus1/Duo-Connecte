@@ -847,25 +847,39 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
                     <Label>Script complet (définit circleUser + répond aux demandes d'auth)</Label>
                     <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all max-h-64 overflow-y-auto">
                       {`<script>
-// Script d'authentification Circle.so -> Replit Apps
+// Script d'authentification Circle.so -> Replit Apps v2
 // À placer dans: Settings → Custom Code → Header
 (function() {
-  // PARTIE 1 : Récupérer les données Liquid de façon sécurisée
+  // Récupérer les données Liquid
   var rawPublicUid = '{{member.public_uid}}';
   var rawEmail = '{{member.email}}';
   var rawName = '{{member.name}}';
   var rawAdmin = '{{member.admin}}';
   
-  // Définir circleUser avec valeurs par défaut
-  window.circleUser = {
-    publicUid: rawPublicUid || '',
-    email: rawEmail || '',
-    name: rawName || 'Membre',
-    isAdmin: rawAdmin === 'true' || rawAdmin === '1' || rawAdmin === true
-  };
-
-  // PARTIE 2 : Répondre aux demandes d'authentification des iframes
-  var ALLOWED_ORIGINS = /\\.replit\\.app$/;
+  // Vérifier que Liquid a bien remplacé les variables
+  function isValidLiquid(val) {
+    return val && val.indexOf('{{') === -1 && val.indexOf('}}') === -1;
+  }
+  
+  // Valider format email
+  function isValidEmail(email) {
+    return email && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+  }
+  
+  var email = isValidLiquid(rawEmail) ? rawEmail.trim() : '';
+  var publicUid = isValidLiquid(rawPublicUid) ? rawPublicUid.trim() : '';
+  var name = isValidLiquid(rawName) ? rawName.trim() : 'Membre';
+  var isAdmin = rawAdmin === 'true' || rawAdmin === '1';
+  
+  // Ne définir circleUser que si email valide
+  if (isValidEmail(email)) {
+    window.circleUser = {
+      publicUid: publicUid,
+      email: email,
+      name: name || 'Membre',
+      isAdmin: isAdmin
+    };
+  }
   
   function getTheme() {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
@@ -900,50 +914,60 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
   
   // Écouter les demandes d'auth des iframes
   window.addEventListener('message', function(event) {
-    if (ALLOWED_ORIGINS.test(event.origin) && event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
       var payload = buildPayload();
       if (payload && event.source) {
-        event.source.postMessage(payload, event.origin);
+        event.source.postMessage(payload, '*');
       }
     }
   });
   
-  // Envoyer automatiquement les données au chargement
-  var sent = false;
-  var interval = setInterval(function() {
-    if (window.circleUser && window.circleUser.email && !sent) {
-      sendToAllIframes();
-      sent = true;
-      clearInterval(interval);
-    }
-  }, 500);
-  
-  setTimeout(function() { clearInterval(interval); }, 30000);
+  // Envoyer au chargement et régulièrement
+  if (window.circleUser && window.circleUser.email) {
+    setTimeout(sendToAllIframes, 100);
+    setTimeout(sendToAllIframes, 500);
+    setTimeout(sendToAllIframes, 1000);
+    setTimeout(sendToAllIframes, 2000);
+  }
 })();
 </script>`}
                     </div>
                     <Button
                       onClick={async () => {
                         const authScript = `<script>
-// Script d'authentification Circle.so -> Replit Apps
+// Script d'authentification Circle.so -> Replit Apps v2
 // À placer dans: Settings → Custom Code → Header
 (function() {
-  // PARTIE 1 : Récupérer les données Liquid de façon sécurisée
+  // Récupérer les données Liquid
   var rawPublicUid = '{{member.public_uid}}';
   var rawEmail = '{{member.email}}';
   var rawName = '{{member.name}}';
   var rawAdmin = '{{member.admin}}';
   
-  // Définir circleUser avec valeurs par défaut
-  window.circleUser = {
-    publicUid: rawPublicUid || '',
-    email: rawEmail || '',
-    name: rawName || 'Membre',
-    isAdmin: rawAdmin === 'true' || rawAdmin === '1' || rawAdmin === true
-  };
-
-  // PARTIE 2 : Répondre aux demandes d'authentification des iframes
-  var ALLOWED_ORIGINS = /\\.replit\\.app$/;
+  // Vérifier que Liquid a bien remplacé les variables
+  function isValidLiquid(val) {
+    return val && val.indexOf('{{') === -1 && val.indexOf('}}') === -1;
+  }
+  
+  // Valider format email
+  function isValidEmail(email) {
+    return email && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+  }
+  
+  var email = isValidLiquid(rawEmail) ? rawEmail.trim() : '';
+  var publicUid = isValidLiquid(rawPublicUid) ? rawPublicUid.trim() : '';
+  var name = isValidLiquid(rawName) ? rawName.trim() : 'Membre';
+  var isAdmin = rawAdmin === 'true' || rawAdmin === '1';
+  
+  // Ne définir circleUser que si email valide
+  if (isValidEmail(email)) {
+    window.circleUser = {
+      publicUid: publicUid,
+      email: email,
+      name: name || 'Membre',
+      isAdmin: isAdmin
+    };
+  }
   
   function getTheme() {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
@@ -978,25 +1002,21 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
   
   // Écouter les demandes d'auth des iframes
   window.addEventListener('message', function(event) {
-    if (ALLOWED_ORIGINS.test(event.origin) && event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
       var payload = buildPayload();
       if (payload && event.source) {
-        event.source.postMessage(payload, event.origin);
+        event.source.postMessage(payload, '*');
       }
     }
   });
   
-  // Envoyer automatiquement les données au chargement
-  var sent = false;
-  var interval = setInterval(function() {
-    if (window.circleUser && window.circleUser.email && !sent) {
-      sendToAllIframes();
-      sent = true;
-      clearInterval(interval);
-    }
-  }, 500);
-  
-  setTimeout(function() { clearInterval(interval); }, 30000);
+  // Envoyer au chargement et régulièrement
+  if (window.circleUser && window.circleUser.email) {
+    setTimeout(sendToAllIframes, 100);
+    setTimeout(sendToAllIframes, 500);
+    setTimeout(sendToAllIframes, 1000);
+    setTimeout(sendToAllIframes, 2000);
+  }
 })();
 </script>`;
                         const success = await copyToClipboard(authScript);
