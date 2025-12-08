@@ -169,11 +169,13 @@ export const feedbacks = pgTable("feedbacks", {
   rating: integer("rating").notNull(), // 1-5
   helpfulAspect: text("helpful_aspect"),
   improvementSuggestion: text("improvement_suggestion"),
+  archived: boolean("archived").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const insertFeedbackSchema = createInsertSchema(feedbacks).omit({
   id: true,
+  archived: true,
   createdAt: true,
 });
 

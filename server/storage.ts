@@ -32,6 +32,10 @@ export interface IStorage {
   // Feedback operations
   createFeedback(feedback: InsertFeedback): Promise<Feedback>;
   getAllFeedbacks(): Promise<Feedback[]>;
+  getArchivedFeedbacks(): Promise<Feedback[]>;
+  archiveFeedback(id: string): Promise<void>;
+  unarchiveFeedback(id: string): Promise<void>;
+  deleteFeedback(id: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -196,6 +200,7 @@ export class MemStorage implements IStorage {
       rating: insertFeedback.rating,
       helpfulAspect: insertFeedback.helpfulAspect ?? null,
       improvementSuggestion: insertFeedback.improvementSuggestion ?? null,
+      archived: false,
       createdAt: new Date(),
     };
     this.feedbacks.set(id, feedback);
@@ -203,7 +208,31 @@ export class MemStorage implements IStorage {
   }
 
   async getAllFeedbacks(): Promise<Feedback[]> {
-    return Array.from(this.feedbacks.values());
+    return Array.from(this.feedbacks.values()).filter(f => !f.archived);
+  }
+
+  async getArchivedFeedbacks(): Promise<Feedback[]> {
+    return Array.from(this.feedbacks.values()).filter(f => f.archived);
+  }
+
+  async archiveFeedback(id: string): Promise<void> {
+    const feedback = this.feedbacks.get(id);
+    if (feedback) {
+      feedback.archived = true;
+      this.feedbacks.set(id, feedback);
+    }
+  }
+
+  async unarchiveFeedback(id: string): Promise<void> {
+    const feedback = this.feedbacks.get(id);
+    if (feedback) {
+      feedback.archived = false;
+      this.feedbacks.set(id, feedback);
+    }
+  }
+
+  async deleteFeedback(id: string): Promise<void> {
+    this.feedbacks.delete(id);
   }
 }
 
@@ -337,7 +366,31 @@ export class DbStorage implements IStorage {
   }
 
   async getAllFeedbacks(): Promise<Feedback[]> {
-    return await this.db.select().from(feedbacks).orderBy(feedbacks.createdAt);
+    return await this.db.select().from(feedbacks)
+      .where(eq(feedbacks.archived, false))
+      .orderBy(feedbacks.createdAt);
+  }
+
+  async getArchivedFeedbacks(): Promise<Feedback[]> {
+    return await this.db.select().from(feedbacks)
+      .where(eq(feedbacks.archived, true))
+      .orderBy(feedbacks.createdAt);
+  }
+
+  async archiveFeedback(id: string): Promise<void> {
+    await this.db.update(feedbacks)
+      .set({ archived: true })
+      .where(eq(feedbacks.id, id));
+  }
+
+  async unarchiveFeedback(id: string): Promise<void> {
+    await this.db.update(feedbacks)
+      .set({ archived: false })
+      .where(eq(feedbacks.id, id));
+  }
+
+  async deleteFeedback(id: string): Promise<void> {
+    await this.db.delete(feedbacks).where(eq(feedbacks.id, id));
   }
 }
 
