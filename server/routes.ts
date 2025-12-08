@@ -493,6 +493,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get user by email
       const user = await storage.getUserByEmail(email);
+      console.log('[ADMIN-LOGIN] User lookup result:', { 
+        email, 
+        found: !!user, 
+        userId: user?.id,
+        isAdmin: user?.isAdmin,
+        isAdminType: typeof user?.isAdmin
+      });
+      
       if (!user) {
         await storage.logLoginAttempt({
           userId: null,
