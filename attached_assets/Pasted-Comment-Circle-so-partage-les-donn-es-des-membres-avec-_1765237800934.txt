@@ -1,0 +1,57 @@
+Comment Circle.so partage les données des membres avec un iframe
+Contexte d'intégration
+Circle.so permet d'ajouter du code JavaScript personnalisé via Settings → Code Snippets. Ce code s'exécute sur toutes les pages de ta communauté Circle et a accès à un objet global appelé window.circleUser.​
+
+Objet window.circleUser
+Circle expose automatiquement les informations du membre connecté via window.circleUser. Cet objet contient :​
+
+email - Adresse courriel du membre
+
+name - Nom complet
+
+publicUid - Identifiant public unique
+
+Statut d'authentification (l'objet existe seulement si membre connecté)
+
+Possiblement d'autres propriétés (rôle, avatar, etc.)
+
+Communication avec ton iframe Replit
+Dans le code snippet Circle.so, tu dois utiliser l'API postMessage pour envoyer les données de window.circleUser vers ton iframe Replit:​
+
+javascript
+// Code dans Circle.so (code snippet)
+if (window.circleUser) {
+  const iframe = document.querySelector('iframe#ton-iframe-id');
+  const userData = {
+    email: window.circleUser.email,
+    name: window.circleUser.name,
+    publicUid: window.circleUser.publicUid
+  };
+  iframe.contentWindow.postMessage(userData, 'https://ton-app.replit.app');
+}
+Dans ton app Replit (côté iframe), tu reçois les données avec un listener:​
+
+javascript
+// Code dans ton app Replit
+window.addEventListener('message', (event) => {
+  // Valide l'origine pour sécurité
+  if (event.origin === 'https://ton-domaine.circle.so') {
+    const userData = event.data;
+    console.log(userData.email, userData.name, userData.publicUid);
+    // Utilise ces données dans ton app
+  }
+});
+Flux de données
+Circle charge ta page avec le code snippet
+
+window.circleUser est automatiquement disponible
+
+Ton script extrait les données de window.circleUser
+
+postMessage() envoie les données à ton iframe Replit
+
+Ton app Replit reçoit via addEventListener('message')
+
+Tu utilises ces données pour personnaliser l'expérience
+
+Important : Toujours valider event.origin pour la sécurité.
