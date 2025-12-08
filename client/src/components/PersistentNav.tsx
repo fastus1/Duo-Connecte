@@ -1,18 +1,16 @@
-import { ArrowLeft, Lock, Home } from 'lucide-react';
+import { ArrowLeft, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Link } from 'wouter';
 
 interface PersistentNavProps {
   showBack?: boolean;
-  rightButton?: 'admin' | 'home';
   onBack?: () => void;
   canGoBack?: boolean;
 }
 
 export function PersistentNav({ 
   showBack = true, 
-  rightButton = 'admin',
   onBack,
   canGoBack = false
 }: PersistentNavProps) {
@@ -35,31 +33,17 @@ export function PersistentNav({
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          {rightButton === 'admin' ? (
-            <Link href="/admin">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 text-muted-foreground hover:text-foreground"
-                data-testid="button-admin"
-              >
-                <Lock className="h-4 w-4" />
-                <span className="sr-only">Admin</span>
-              </Button>
-            </Link>
-          ) : (
-            <Link href="/">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 text-muted-foreground hover:text-foreground"
-                data-testid="button-home"
-              >
-                <Home className="h-4 w-4" />
-                <span className="sr-only">Accueil</span>
-              </Button>
-            </Link>
-          )}
+          <Link href="/welcome">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground"
+              data-testid="button-home"
+            >
+              <Home className="h-4 w-4" />
+              <span className="sr-only">Accueil</span>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
