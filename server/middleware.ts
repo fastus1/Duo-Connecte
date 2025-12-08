@@ -53,9 +53,14 @@ export interface ValidationResult {
 }
 
 export function validateUserData(data: CircleUserData): ValidationResult {
+  // Check if email is provided
+  if (!data.email || typeof data.email !== 'string' || data.email.trim().length === 0) {
+    return { valid: false, error: 'Email non reçu de Circle.so. Veuillez actualiser la page.' };
+  }
+  
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(data.email)) {
-    return { valid: false, error: 'Email invalide' };
+    return { valid: false, error: 'Format d\'email invalide. Veuillez actualiser la page.' };
   }
 
   // publicUid is optional - Circle.so may not always provide it

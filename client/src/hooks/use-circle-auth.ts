@@ -18,7 +18,7 @@ interface AppConfig {
 const CIRCLE_ORIGIN = import.meta.env.VITE_CIRCLE_ORIGIN;
 const CIRCLE_USER_STORAGE_KEY = 'circle_user_data';
 const CIRCLE_USER_TIMESTAMP_KEY = 'circle_user_timestamp';
-const MAX_CACHE_AGE_MS = 60 * 60 * 1000;
+const MAX_CACHE_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 jours de cache
 
 function getParentOrigin(): string | null {
   try {
