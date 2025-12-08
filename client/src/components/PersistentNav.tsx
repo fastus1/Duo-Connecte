@@ -37,7 +37,7 @@ export function PersistentNav({
   });
 
   const isAdmin = userData?.isAdmin || false;
-  const isOnAuthPage = location === '/auth';
+  const isOnAuthPage = location === '/admin-login';
   const isOnAdminPage = location === '/admin';
 
   return (
@@ -71,7 +71,7 @@ export function PersistentNav({
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setLocation('/auth')}
+              onClick={() => setLocation('/admin-login')}
               data-testid="button-nav-login"
             >
               <Lock className="w-4 h-4" />
