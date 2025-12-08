@@ -102,6 +102,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GET /api/debug/admin-check - Check if admin user exists (for debugging production)
+  app.get('/api/debug/admin-check', async (req: Request, res: Response) => {
+    try {
+      const email = req.query.email as string;
+      if (!email) {
+        return res.status(400).json({ error: 'Email parameter required' });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      return res.json({
+        exists: !!user,
+        isAdmin: user?.isAdmin ?? null,
+        hasPin: !!user?.pinHash,
+        userId: user?.id ?? null,
+        environment: process.env.NODE_ENV || 'unknown',
+        devMode: process.env.DEV_MODE === 'true',
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({ error: errorMessage });
+    }
+  });
+
   // POST /api/auth/validate - Validate Circle.so user data
   app.post('/api/auth/validate', async (req: Request, res: Response) => {
     try {
