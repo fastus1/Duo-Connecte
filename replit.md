@@ -8,6 +8,7 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-08** : **CORRECTION MAJEURE** - Script Circle.so v3 : utilise `window.circleUser` (fourni par Circle.so) au lieu de variables Liquid qui ne fonctionnent pas dans le JS
 - **2025-12-08** : Header retiré pour les utilisateurs non-admin, sélecteur de thème en bas, bouton maison supprimé
 - **2025-12-08** : Correction du statut admin en production (endpoint /api/debug/fix-admin)
 - **2025-12-08** : Ajout de JWT_SECRET en production pour les tokens de session
@@ -204,13 +205,39 @@ Accessible via `/admin` (nécessite authentification admin)
 4. **Webhook** : Générateur de script Circle.so
 5. **Feedbacks** : Consultation des retours utilisateurs
 
-## Scripts Circle.so
+## Intégration Circle.so - IMPORTANT
 
-### Script 1 : Authentification (Header Custom Code - UNIVERSEL)
+### Comment Circle.so partage les données
 
-Script universel pour toutes les apps Replit dans le Header Custom Code de Circle.so.
+Circle.so expose automatiquement un objet JavaScript `window.circleUser` pour les membres connectés :
 
-### Script 2 : Webhook Paiement (Paywall Custom Code - SPÉCIFIQUE)
+```javascript
+window.circleUser = {
+  email: "membre@example.com",    // Email du membre
+  name: "Nom Complet",            // Nom du membre
+  publicUid: "abc123xyz",         // Identifiant public unique
+  is_admin: true                  // Booléen - statut admin
+}
+```
+
+**ATTENTION - NE JAMAIS FAIRE :**
+- ❌ Utiliser des variables Liquid (`{{member.email}}`) dans le JavaScript
+- ❌ Placer le script dans "Head Code Snippets"
+- ❌ Essayer de définir `window.circleUser` manuellement
+
+**TOUJOURS FAIRE :**
+- ✅ Utiliser `window.circleUser` directement (fourni par Circle.so)
+- ✅ Placer le script dans **Settings → Code Snippets → JavaScript**
+- ✅ Attendre que `window.circleUser` soit disponible avant d'envoyer
+
+### Script d'Authentification (Code Snippets → JavaScript)
+
+Le script dans le Dashboard Admin envoie les données de `window.circleUser` vers les iframes Replit via `postMessage`. Il :
+1. Attend que `window.circleUser` soit disponible
+2. Envoie les données à toutes les iframes `.replit.app`
+3. Répond aux demandes `CIRCLE_AUTH_REQUEST`
+
+### Script Webhook Paiement (Paywall Custom Code)
 
 Généré via Dashboard Admin pour chaque app, à placer dans le Custom Code de chaque paywall.
 
