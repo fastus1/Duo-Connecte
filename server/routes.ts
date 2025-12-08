@@ -75,6 +75,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get archived feedbacks - Admin only
+  app.get("/api/admin/feedbacks/archived", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      const feedbacks = await storage.getArchivedFeedbacks();
+      res.json(feedbacks);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Archive feedback - Admin only
+  app.patch("/api/admin/feedbacks/:id/archive", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      await storage.archiveFeedback(req.params.id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Unarchive feedback - Admin only
+  app.patch("/api/admin/feedbacks/:id/unarchive", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      await storage.unarchiveFeedback(req.params.id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Delete feedback - Admin only
+  app.delete("/api/admin/feedbacks/:id", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      await storage.deleteFeedback(req.params.id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // GET /api/health - Health check endpoint for debugging
   app.get('/api/health', async (req: Request, res: Response) => {
     try {
@@ -663,36 +731,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in GET /api/config:', error);
       return res.status(500).json({ error: 'Erreur serveur' });
-    }
-  });
-
-  // GET /api/admin/feedbacks - Get all feedbacks (admin only)
-  app.get('/api/admin/feedbacks', requireAuth, async (req: Request, res: Response) => {
-    try {
-      const { userId } = (req as any).user;
-      const user = await storage.getUser(userId);
-
-      if (!user || !user.isAdmin) {
-        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
-      }
-
-      const feedbacks = await storage.getAllFeedbacks();
-      return res.json(feedbacks);
-    } catch (error) {
-      console.error('Error in /api/admin/feedbacks:', error);
-      return res.status(500).json({ error: 'Erreur serveur' });
-    }
-  });
-
-  // POST /api/feedback - Submit feedback
-  app.post('/api/feedback', async (req: Request, res: Response) => {
-    try {
-      const feedbackData = insertFeedbackSchema.parse(req.body);
-      const feedback = await storage.createFeedback(feedbackData);
-      return res.json(feedback);
-    } catch (error) {
-      console.error('Error in /api/feedback:', error);
-      return res.status(400).json({ error: 'Données invalides' });
     }
   });
 

@@ -1,13 +1,27 @@
-import { useEffect } from 'react';
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Star, Download } from "lucide-react";
+import { Star, Download, Archive, ArchiveRestore, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import type { Feedback } from "@shared/schema";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function AdminFeedbacks() {
     const { toast } = useToast();
+    const queryClient = useQueryClient();
+    const [showArchived, setShowArchived] = useState(false);
 
     const getAuthHeader = () => {
         const token = localStorage.getItem('session_token');
@@ -18,9 +32,10 @@ export function AdminFeedbacks() {
     };
 
     const { data: feedbacks, isLoading, error } = useQuery<Feedback[]>({
-        queryKey: ["/api/admin/feedbacks"],
+        queryKey: ["/api/admin/feedbacks", showArchived ? "archived" : "active"],
         queryFn: async () => {
-            const response = await fetch("/api/admin/feedbacks", {
+            const endpoint = showArchived ? "/api/admin/feedbacks/archived" : "/api/admin/feedbacks";
+            const response = await fetch(endpoint, {
                 headers: getAuthHeader(),
             });
 
@@ -29,6 +44,81 @@ export function AdminFeedbacks() {
             }
 
             return response.json();
+        },
+    });
+
+    const archiveMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const response = await fetch(`/api/admin/feedbacks/${id}/archive`, {
+                method: 'PATCH',
+                headers: getAuthHeader(),
+            });
+            if (!response.ok) throw new Error("Erreur lors de l'archivage");
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/admin/feedbacks"] });
+            toast({
+                title: "Feedback archivé",
+                description: "Le feedback a été déplacé dans les archives",
+            });
+        },
+        onError: () => {
+            toast({
+                title: "Erreur",
+                description: "Impossible d'archiver le feedback",
+                variant: "destructive",
+            });
+        },
+    });
+
+    const unarchiveMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const response = await fetch(`/api/admin/feedbacks/${id}/unarchive`, {
+                method: 'PATCH',
+                headers: getAuthHeader(),
+            });
+            if (!response.ok) throw new Error("Erreur lors de la restauration");
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/admin/feedbacks"] });
+            toast({
+                title: "Feedback restauré",
+                description: "Le feedback a été restauré",
+            });
+        },
+        onError: () => {
+            toast({
+                title: "Erreur",
+                description: "Impossible de restaurer le feedback",
+                variant: "destructive",
+            });
+        },
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const response = await fetch(`/api/admin/feedbacks/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeader(),
+            });
+            if (!response.ok) throw new Error("Erreur lors de la suppression");
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["/api/admin/feedbacks"] });
+            toast({
+                title: "Feedback supprimé",
+                description: "Le feedback a été supprimé définitivement",
+            });
+        },
+        onError: () => {
+            toast({
+                title: "Erreur",
+                description: "Impossible de supprimer le feedback",
+                variant: "destructive",
+            });
         },
     });
 
@@ -90,7 +180,7 @@ export function AdminFeedbacks() {
         const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        const filename = `feedbacks-duo-connecte-${new Date().toISOString().split('T')[0]}.md`;
+        const filename = `feedbacks-duo-connecte-${showArchived ? 'archives-' : ''}${new Date().toISOString().split('T')[0]}.md`;
 
         link.href = url;
         link.download = filename;
@@ -109,20 +199,41 @@ export function AdminFeedbacks() {
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h2 className="text-xl font-semibold">Feedbacks des utilisateurs</h2>
+                    <h2 className="text-xl font-semibold">
+                        {showArchived ? "Feedbacks archivés" : "Feedbacks des utilisateurs"}
+                    </h2>
                     <p className="text-muted-foreground">
-                        {feedbacks?.length || 0} feedback(s) enregistré(s)
+                        {feedbacks?.length || 0} feedback(s) {showArchived ? "archivé(s)" : "actif(s)"}
                     </p>
                 </div>
-                <Button
-                    variant="default"
-                    onClick={handleDownloadMarkdown}
-                    disabled={!feedbacks || feedbacks.length === 0}
-                    data-testid="button-download-markdown"
-                >
-                    <Download className="h-4 w-4 mr-2" />
-                    Télécharger Markdown
-                </Button>
+                <div className="flex items-center gap-2 flex-wrap">
+                    <Button
+                        variant={showArchived ? "default" : "outline"}
+                        onClick={() => setShowArchived(!showArchived)}
+                        data-testid="button-toggle-archived"
+                    >
+                        {showArchived ? (
+                            <>
+                                <ArchiveRestore className="h-4 w-4 mr-2" />
+                                Voir les actifs
+                            </>
+                        ) : (
+                            <>
+                                <Archive className="h-4 w-4 mr-2" />
+                                Voir les archives
+                            </>
+                        )}
+                    </Button>
+                    <Button
+                        variant="default"
+                        onClick={handleDownloadMarkdown}
+                        disabled={!feedbacks || feedbacks.length === 0}
+                        data-testid="button-download-markdown"
+                    >
+                        <Download className="h-4 w-4 mr-2" />
+                        Télécharger Markdown
+                    </Button>
+                </div>
             </div>
 
             {isLoading && (
@@ -134,7 +245,9 @@ export function AdminFeedbacks() {
             {feedbacks && feedbacks.length === 0 && (
                 <Card>
                     <CardContent className="py-12 text-center">
-                        <p className="text-muted-foreground">Aucun feedback pour le moment</p>
+                        <p className="text-muted-foreground">
+                            {showArchived ? "Aucun feedback archivé" : "Aucun feedback pour le moment"}
+                        </p>
                     </CardContent>
                 </Card>
             )}
@@ -143,7 +256,7 @@ export function AdminFeedbacks() {
                 {feedbacks?.map((feedback) => (
                     <Card key={feedback.id} data-testid={`card-feedback-${feedback.id}`}>
                         <CardHeader>
-                            <div className="flex items-start justify-between">
+                            <div className="flex items-start justify-between gap-4">
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
                                         {[1, 2, 3, 4, 5].map((star) => (
@@ -165,6 +278,59 @@ export function AdminFeedbacks() {
                                             timeStyle: "short",
                                         })}
                                     </p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    {showArchived ? (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => unarchiveMutation.mutate(feedback.id)}
+                                            disabled={unarchiveMutation.isPending}
+                                            data-testid={`button-unarchive-${feedback.id}`}
+                                        >
+                                            <ArchiveRestore className="h-4 w-4 mr-1" />
+                                            Restaurer
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => archiveMutation.mutate(feedback.id)}
+                                            disabled={archiveMutation.isPending}
+                                            data-testid={`button-archive-${feedback.id}`}
+                                        >
+                                            <Archive className="h-4 w-4 mr-1" />
+                                            Archiver
+                                        </Button>
+                                    )}
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                data-testid={`button-delete-${feedback.id}`}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Supprimer ce feedback ?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Cette action est irréversible. Le feedback sera définitivement supprimé.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={() => deleteMutation.mutate(feedback.id)}
+                                                    data-testid={`button-confirm-delete-${feedback.id}`}
+                                                >
+                                                    Supprimer
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </div>
                             </div>
                         </CardHeader>
