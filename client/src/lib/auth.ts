@@ -22,9 +22,8 @@ export function clearAuth(): void {
   localStorage.removeItem('user_id');
   localStorage.removeItem('is_admin');
   localStorage.removeItem('session_timestamp');
-  // Also clear Circle.so cache to force fresh data on next login
-  localStorage.removeItem('circle_user_data');
-  localStorage.removeItem('circle_user_timestamp');
+  // Keep Circle.so cache - user identity from Circle.so is still valid
+  // We only clear the app session token, not the Circle.so identity
 }
 
 export function getSessionToken(): string | null {
