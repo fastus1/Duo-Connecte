@@ -1,0 +1,67 @@
+<script>
+// PARTIE 1 : Définir window.circleUser avec les données Liquid
+window.circleUser = {
+  publicUid: '{{member.public_uid}}',
+  email: '{{member.email}}',
+  name: '{{member.name}}',
+  isAdmin: '{{member.admin}}'
+};
+
+// PARTIE 2 : Répondre aux demandes d'authentification des iframes
+(function() {
+  var ALLOWED_ORIGINS = /\.replit\.app$/;
+  
+  function getTheme() {
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  }
+  
+  function buildPayload() {
+    if (!window.circleUser || !window.circleUser.email) return null;
+    return {
+      type: 'CIRCLE_USER_AUTH',
+      user: {
+        publicUid: window.circleUser.publicUid || '',
+        email: window.circleUser.email,
+        name: window.circleUser.name || 'Membre',
+        isAdmin: window.circleUser.isAdmin === true || window.circleUser.isAdmin === 'true',
+        timestamp: Date.now()
+      },
+      theme: getTheme()
+    };
+  }
+  
+  function sendToAllIframes() {
+    var iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
+    var payload = buildPayload();
+    if (payload) {
+      iframes.forEach(function(iframe) {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.postMessage(payload, '*');
+        }
+      });
+    }
+  }
+  
+  // Écouter les demandes d'auth des iframes
+  window.addEventListener('message', function(event) {
+    if (ALLOWED_ORIGINS.test(event.origin) && event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+      var payload = buildPayload();
+      if (payload && event.source) {
+        event.source.postMessage(payload, event.origin);
+      }
+    }
+  });
+  
+  // Envoyer automatiquement les données au chargement
+  var sent = false;
+  var interval = setInterval(function() {
+    if (window.circleUser && window.circleUser.email && !sent) {
+      sendToAllIframes();
+      sent = true;
+      clearInterval(interval);
+    }
+  }, 500);
+  
+  setTimeout(function() { clearInterval(interval); }, 30000);
+})();
+</script>
