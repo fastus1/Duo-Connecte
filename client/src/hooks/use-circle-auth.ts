@@ -158,8 +158,8 @@ export function useCircleAuth() {
 
     let messageReceived = false;
     let retryCount = 0;
-    const MAX_RETRIES = 10;
-    const RETRY_INTERVAL = 500;
+    const MAX_RETRIES = 20;
+    const RETRY_INTERVAL = 300;
 
     const handleMessage = (event: MessageEvent) => {
       // Be permissive with origin validation - accept if it looks like Circle data
