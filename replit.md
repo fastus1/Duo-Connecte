@@ -6,6 +6,12 @@ Application de guidance pour la communication authentique et la régulation émo
 
 **Marque** : "Avancer Simplement"
 
+## Changements Récents
+
+- **2025-12-08** : Header retiré pour les utilisateurs non-admin, sélecteur de thème en bas, bouton maison supprimé
+- **2025-12-08** : Correction du statut admin en production (endpoint /api/debug/fix-admin)
+- **2025-12-08** : Ajout de JWT_SECRET en production pour les tokens de session
+
 ## Fonctionnalités Principales
 
 ### Deux Modes de Parcours
