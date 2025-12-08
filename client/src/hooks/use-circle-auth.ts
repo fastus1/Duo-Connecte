@@ -188,10 +188,22 @@ export function useCircleAuth() {
         }
       } catch {
         // Try to extract email directly as fallback
-        if (event.data?.user?.email) {
+        const rawEmail = event.data?.user?.email;
+        if (rawEmail && typeof rawEmail === 'string' && rawEmail.length > 0) {
+          // Check if Liquid template was not replaced
+          if (rawEmail.includes('{{') || rawEmail.includes('}}') || rawEmail.includes('member.')) {
+            console.warn('[Circle Auth] Liquid template not replaced:', rawEmail);
+            setState({
+              isLoading: false,
+              userData: null,
+              error: 'Données Circle.so non chargées. Veuillez vous reconnecter à votre communauté.',
+            });
+            return;
+          }
+          
           const fallbackUser = {
             publicUid: event.data.user.publicUid || '',
-            email: event.data.user.email,
+            email: rawEmail,
             name: event.data.user.name || 'Membre',
             isAdmin: event.data.user.isAdmin === true || event.data.user.isAdmin === 'true',
             timestamp: Date.now(),

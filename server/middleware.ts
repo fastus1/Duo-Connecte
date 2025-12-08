@@ -58,17 +58,24 @@ export function validateUserData(data: CircleUserData): ValidationResult {
   // Check if email is provided
   if (!data.email || typeof data.email !== 'string' || data.email.trim().length === 0) {
     console.log('[VALIDATE] Email missing or empty:', data.email);
-    return { valid: false, error: 'Email non reçu de Circle.so. Veuillez actualiser la page.' };
+    return { valid: false, error: 'Email non reçu de Circle.so. Veuillez actualiser la page dans Circle.so.' };
   }
   
   // Normalize email
   const email = data.email.trim().toLowerCase();
+  
+  // Check if Liquid template was not replaced (Circle.so issue)
+  if (email.includes('{{') || email.includes('}}') || email.includes('member.')) {
+    console.log('[VALIDATE] Liquid template not replaced:', email);
+    return { valid: false, error: 'Données Circle.so non chargées. Veuillez vous reconnecter à Circle.so.' };
+  }
+  
   data.email = email;
   
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     console.log('[VALIDATE] Email regex failed for:', email);
-    return { valid: false, error: 'Format d\'email invalide. Veuillez actualiser la page.' };
+    return { valid: false, error: 'Format d\'email invalide. Veuillez vous reconnecter à Circle.so.' };
   }
 
   // publicUid is optional - Circle.so may not always provide it
