@@ -72,3 +72,6 @@ VITE_CIRCLE_ORIGIN = "https://communaute.avancersimplement.com"
 
 [userenv.shared]
 WEBHOOK_SECRET = "3c3d6c737b2e7c8ec644581d9c2547753309e8ca1ec15dc9b88eb72867c2b443"
+
+[agent]
+expertMode = true
