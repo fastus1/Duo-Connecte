@@ -125,6 +125,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // POST /api/debug/fix-admin - One-time fix to set admin status (secured with secret)
+  app.post('/api/debug/fix-admin', async (req: Request, res: Response) => {
+    try {
+      const { email, secret } = req.body;
+      
+      // Security: require the webhook secret to use this endpoint
+      const webhookSecret = process.env.WEBHOOK_SECRET;
+      if (!secret || secret !== webhookSecret) {
+        return res.status(401).json({ error: 'Invalid secret' });
+      }
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Update user to be admin
+      await storage.updateUserRole(user.id, true);
+      
+      return res.json({
+        success: true,
+        message: `User ${email} is now admin`,
+        userId: user.id,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({ error: errorMessage });
+    }
+  });
+
   // POST /api/auth/validate - Validate Circle.so user data
   app.post('/api/auth/validate', async (req: Request, res: Response) => {
     try {
