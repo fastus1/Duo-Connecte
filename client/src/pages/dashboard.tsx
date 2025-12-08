@@ -18,6 +18,32 @@ import { queryClient } from '@/lib/queryClient';
 
 import { AdminFeedbacks } from '@/components/admin/AdminFeedbacks';
 
+// Helper function to copy text with fallback
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } else {
+      // Fallback for insecure contexts or when clipboard API is not available
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const success = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return success;
+    }
+  } catch (err) {
+    console.error('Failed to copy:', err);
+    return false;
+  }
+}
+
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -749,7 +775,7 @@ window.circleUser = {
 </script>`}
                     </div>
                     <Button
-                      onClick={() => {
+                      onClick={async () => {
                         const authScript = `<script>
 // PARTIE 1 : Définir window.circleUser avec les données Liquid
 window.circleUser = {
@@ -817,8 +843,12 @@ window.circleUser = {
   setTimeout(function() { clearInterval(interval); }, 30000);
 })();
 </script>`;
-                        navigator.clipboard.writeText(authScript);
-                        toast({ title: 'Copié !', description: 'Le script d\'authentification complet a été copié.' });
+                        const success = await copyToClipboard(authScript);
+                        if (success) {
+                          toast({ title: 'Copié !', description: 'Le script d\'authentification complet a été copié.' });
+                        } else {
+                          toast({ title: 'Erreur', description: 'Impossible de copier. Sélectionnez manuellement le texte.', variant: 'destructive' });
+                        }
                       }}
                       className="w-full"
                       data-testid="button-copy-auth-script"
@@ -917,7 +947,7 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
 </script>`}
                       </div>
                       <Button
-                        onClick={() => {
+                        onClick={async () => {
                           const script = `<script>
 const WEBHOOK_SECRET = '${webhookSecret}';
 fetch('${webhookAppUrl}/webhooks/circle-payment', {
@@ -940,10 +970,14 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
   })
 });
 </script>`;
-                          navigator.clipboard.writeText(script);
-                          setScriptCopied(true);
-                          setTimeout(() => setScriptCopied(false), 2000);
-                          toast({ title: 'Copié !', description: 'Le script a été copié dans le presse-papiers.' });
+                          const success = await copyToClipboard(script);
+                          if (success) {
+                            setScriptCopied(true);
+                            setTimeout(() => setScriptCopied(false), 2000);
+                            toast({ title: 'Copié !', description: 'Le script a été copié dans le presse-papiers.' });
+                          } else {
+                            toast({ title: 'Erreur', description: 'Impossible de copier. Sélectionnez manuellement le texte.', variant: 'destructive' });
+                          }
                         }}
                         className="w-full"
                         data-testid="button-copy-script"
