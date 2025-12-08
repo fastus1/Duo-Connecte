@@ -501,7 +501,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Security check: Only admins can use this endpoint
-      console.log('Admin login check:', { email, isAdmin: user.isAdmin, userId: user.id });
       if (!user.isAdmin) {
         await storage.logLoginAttempt({
           userId: user.id,
