@@ -5,6 +5,7 @@ type AccessStatus = 'loading' | 'granted' | 'denied' | 'origin_invalid';
 interface AccessContextType {
   accessStatus: AccessStatus;
   userEmail: string | null;
+  circleIsAdmin: boolean;
   appEnvironment: 'development' | 'production';
   circleOnlyMode: boolean;
   checkAccess: () => Promise<void>;
@@ -20,6 +21,7 @@ interface CircleUserMessage {
   user?: {
     email?: string;
     name?: string;
+    isAdmin?: boolean;
   };
 }
 
@@ -55,6 +57,7 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   const [userEmail, setUserEmail] = useState<string | null>(() => {
     return window.__CIRCLE_USER_EMAIL__ ?? getStoredEmail();
   });
+  const [circleIsAdmin, setCircleIsAdmin] = useState<boolean>(false);
   const [appEnvironment, setAppEnvironment] = useState<'development' | 'production'>('development');
   const [circleOnlyMode, setCircleOnlyMode] = useState<boolean>(false);
   const [originValidated, setOriginValidated] = useState<boolean>(() => {
@@ -182,6 +185,11 @@ export function AccessProvider({ children }: { children: ReactNode }) {
         setUserEmail(email);
         storeEmail(email);
         window.__CIRCLE_USER_EMAIL__ = email;
+        
+        // Stocker le statut admin de Circle.so
+        if (data.user.isAdmin === true) {
+          setCircleIsAdmin(true);
+        }
       }
 
       // Forcer une re-vérification immédiate
@@ -224,6 +232,7 @@ export function AccessProvider({ children }: { children: ReactNode }) {
     <AccessContext.Provider value={{
       accessStatus,
       userEmail,
+      circleIsAdmin,
       appEnvironment,
       circleOnlyMode,
       checkAccess,

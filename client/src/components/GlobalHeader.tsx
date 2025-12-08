@@ -5,11 +5,13 @@ import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken, clearAuth } from '@/lib/auth';
 import { useQuery } from '@tanstack/react-query';
+import { useAccess } from '@/contexts/AccessContext';
 
 export function GlobalHeader() {
     const [location, setLocation] = useLocation();
     const sessionToken = getSessionToken();
     const isLoggedIn = !!sessionToken;
+    const { circleIsAdmin } = useAccess();
 
     const { data: userData } = useQuery({
         queryKey: ['/api/auth/me'],
@@ -27,7 +29,8 @@ export function GlobalHeader() {
         retry: false,
     });
 
-    const isAdmin = userData?.isAdmin || false;
+    // Admin si connecté avec JWT ET admin, OU si Circle.so dit admin
+    const isAdmin = userData?.isAdmin || circleIsAdmin;
 
     const handleLogout = () => {
         clearAuth();
