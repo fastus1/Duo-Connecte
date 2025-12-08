@@ -852,7 +852,7 @@ window.circleUser = {
   publicUid: '{{member.public_uid}}',
   email: '{{member.email}}',
   name: '{{member.name}}',
-  isAdmin: '{{member.admin}}'
+  isAdmin: {{member.admin}}
 };
 
 // PARTIE 2 : Répondre aux demandes d'authentification des iframes
@@ -922,7 +922,7 @@ window.circleUser = {
   publicUid: '{{member.public_uid}}',
   email: '{{member.email}}',
   name: '{{member.name}}',
-  isAdmin: '{{member.admin}}'
+  isAdmin: {{member.admin}}
 };
 
 // PARTIE 2 : Répondre aux demandes d'authentification des iframes
