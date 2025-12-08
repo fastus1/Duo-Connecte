@@ -856,13 +856,6 @@ window.circleUser = {
                       Copier le script complet
                     </Button>
                   </div>
-                  <Alert>
-                    <Info className="h-4 w-4" />
-                    <AlertDescription>
-                      <strong>Important :</strong> Ce script définit <code>window.circleUser</code> avec les variables Liquid de Circle.so, 
-                      puis répond aux demandes d'authentification de l'app. Remplacez votre ancien script par celui-ci.
-                    </AlertDescription>
-                  </Alert>
                 </CardContent>
               </Card>
 
