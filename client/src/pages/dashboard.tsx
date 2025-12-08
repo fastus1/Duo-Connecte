@@ -847,16 +847,24 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
                     <Label>Script complet (définit circleUser + répond aux demandes d'auth)</Label>
                     <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all max-h-64 overflow-y-auto">
                       {`<script>
-// PARTIE 1 : Définir window.circleUser avec les données Liquid
-window.circleUser = {
-  publicUid: '{{member.public_uid}}',
-  email: '{{member.email}}',
-  name: '{{member.name}}',
-  isAdmin: {{member.admin}}
-};
-
-// PARTIE 2 : Répondre aux demandes d'authentification des iframes
+// Script d'authentification Circle.so -> Replit Apps
+// À placer dans: Settings → Custom Code → Header
 (function() {
+  // PARTIE 1 : Récupérer les données Liquid de façon sécurisée
+  var rawPublicUid = '{{member.public_uid}}';
+  var rawEmail = '{{member.email}}';
+  var rawName = '{{member.name}}';
+  var rawAdmin = '{{member.admin}}';
+  
+  // Définir circleUser avec valeurs par défaut
+  window.circleUser = {
+    publicUid: rawPublicUid || '',
+    email: rawEmail || '',
+    name: rawName || 'Membre',
+    isAdmin: rawAdmin === 'true' || rawAdmin === '1' || rawAdmin === true
+  };
+
+  // PARTIE 2 : Répondre aux demandes d'authentification des iframes
   var ALLOWED_ORIGINS = /\\.replit\\.app$/;
   
   function getTheme() {
@@ -871,7 +879,7 @@ window.circleUser = {
         publicUid: window.circleUser.publicUid || '',
         email: window.circleUser.email,
         name: window.circleUser.name || 'Membre',
-        isAdmin: window.circleUser.isAdmin === true || window.circleUser.isAdmin === 'true',
+        isAdmin: window.circleUser.isAdmin === true,
         timestamp: Date.now()
       },
       theme: getTheme()
@@ -917,16 +925,24 @@ window.circleUser = {
                     <Button
                       onClick={async () => {
                         const authScript = `<script>
-// PARTIE 1 : Définir window.circleUser avec les données Liquid
-window.circleUser = {
-  publicUid: '{{member.public_uid}}',
-  email: '{{member.email}}',
-  name: '{{member.name}}',
-  isAdmin: {{member.admin}}
-};
-
-// PARTIE 2 : Répondre aux demandes d'authentification des iframes
+// Script d'authentification Circle.so -> Replit Apps
+// À placer dans: Settings → Custom Code → Header
 (function() {
+  // PARTIE 1 : Récupérer les données Liquid de façon sécurisée
+  var rawPublicUid = '{{member.public_uid}}';
+  var rawEmail = '{{member.email}}';
+  var rawName = '{{member.name}}';
+  var rawAdmin = '{{member.admin}}';
+  
+  // Définir circleUser avec valeurs par défaut
+  window.circleUser = {
+    publicUid: rawPublicUid || '',
+    email: rawEmail || '',
+    name: rawName || 'Membre',
+    isAdmin: rawAdmin === 'true' || rawAdmin === '1' || rawAdmin === true
+  };
+
+  // PARTIE 2 : Répondre aux demandes d'authentification des iframes
   var ALLOWED_ORIGINS = /\\.replit\\.app$/;
   
   function getTheme() {
@@ -941,7 +957,7 @@ window.circleUser = {
         publicUid: window.circleUser.publicUid || '',
         email: window.circleUser.email,
         name: window.circleUser.name || 'Membre',
-        isAdmin: window.circleUser.isAdmin === true || window.circleUser.isAdmin === 'true',
+        isAdmin: window.circleUser.isAdmin === true,
         timestamp: Date.now()
       },
       theme: getTheme()
