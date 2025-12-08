@@ -164,8 +164,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.updateUserPublicUid(existingUser.id, userData.publicUid);
       }
 
-      // CRITICAL: Sync admin status from Circle.so on every login
-      await storage.updateUserRole(existingUser.id, userData.isAdmin || false);
+      // Admin status: PRESERVE existing admin status from database
+      // Only upgrade to admin if Circle.so explicitly says isAdmin=true
+      // Never downgrade an existing admin (admins are set via database or dashboard)
+      const finalIsAdmin = existingUser.isAdmin || userData.isAdmin || false;
 
       // If PIN is NOT required, auto-login the user
       if (!appConfig.requirePin) {
@@ -180,7 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json({
           status: 'auto_login',
           user_id: existingUser.id,
-          is_admin: userData.isAdmin || false,
+          is_admin: finalIsAdmin,
           session_token: sessionToken,
           requires_pin: false,
         });
@@ -190,7 +192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.json({
         status: 'existing_user',
         user_id: existingUser.id,
-        is_admin: userData.isAdmin || false,
+        is_admin: finalIsAdmin,
         requires_pin: true,
       });
 
