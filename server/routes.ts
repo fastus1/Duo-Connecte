@@ -155,30 +155,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const ticket = await storage.createSupportTicket(validatedTicket);
       
       // Trigger Zapier webhook if configured
-      const config = await storage.getAppConfig();
-      if (config.webhookAppUrl) {
+      const zapierWebhookUrl = process.env.ZAPIER_WEBHOOK_URL;
+      if (zapierWebhookUrl) {
         try {
-          // Get the base URL and construct the Zapier webhook URL
-          const zapierWebhookUrl = process.env.ZAPIER_WEBHOOK_URL;
-          if (zapierWebhookUrl) {
-            await fetch(zapierWebhookUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                event: 'new_support_ticket',
-                ticket: {
-                  id: ticket.id,
-                  name: ticket.name,
-                  email: ticket.email,
-                  subject: ticket.subject,
-                  description: ticket.description,
-                  createdAt: ticket.createdAt,
-                }
-              }),
-            });
-          }
+          console.log('[ZAPIER] Sending webhook to:', zapierWebhookUrl);
+          const response = await fetch(zapierWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event: 'new_support_ticket',
+              name: ticket.name,
+              email: ticket.email,
+              subject: ticket.subject,
+              message: ticket.description,
+              createdAt: ticket.createdAt,
+            }),
+          });
+          console.log('[ZAPIER] Webhook response:', response.status);
         } catch (webhookError) {
-          console.error('Failed to send Zapier webhook:', webhookError);
+          console.error('[ZAPIER] Failed to send webhook:', webhookError);
         }
       }
       
