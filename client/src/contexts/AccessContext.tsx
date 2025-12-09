@@ -8,6 +8,7 @@ interface AccessContextType {
   circleIsAdmin: boolean;
   appEnvironment: 'development' | 'production';
   circleOnlyMode: boolean;
+  isBootstrapped: boolean;
   checkAccess: () => Promise<void>;
   refreshEnvironment: () => Promise<'development' | 'production'>;
   forceRecheck: () => void;
@@ -228,6 +229,9 @@ export function AccessProvider({ children }: { children: ReactNode }) {
     checkAccess();
   }, [checkAccess, recheckTrigger, originValidated]);
 
+  // isBootstrapped est true quand l'état d'accès est déterminé (pas loading)
+  const isBootstrapped = accessStatus !== 'loading';
+
   return (
     <AccessContext.Provider value={{
       accessStatus,
@@ -235,6 +239,7 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       circleIsAdmin,
       appEnvironment,
       circleOnlyMode,
+      isBootstrapped,
       checkAccess,
       refreshEnvironment,
       forceRecheck,

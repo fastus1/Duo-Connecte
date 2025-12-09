@@ -275,16 +275,43 @@ function SessionRouter() {
   );
 }
 
+// DEBUG - Compteur de renders
+let appRenderCount = 0;
+function dbg(msg: string, data?: unknown) {
+  appRenderCount++;
+  const t = performance.now().toFixed(0);
+  console.log(`%c[${t}ms] #${appRenderCount} ${msg}`, 'color: #FF0000; font-weight: bold; font-size: 12px', data || '');
+}
+
+function BootstrapGate({ children }: { children: React.ReactNode }) {
+  const { isBootstrapped, accessStatus } = useAccess();
+  
+  dbg('BootstrapGate', { isBootstrapped, accessStatus });
+  
+  // Ne rien afficher tant que l'accès n'est pas déterminé
+  if (!isBootstrapped) {
+    dbg('→ BLOCKED: waiting for bootstrap');
+    return null;
+  }
+  
+  dbg('→ RENDER: bootstrapped');
+  return <>{children}</>;
+}
+
 function App() {
+  dbg('App render');
+  
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system">
         <TooltipProvider>
           <AccessProvider>
-            <SessionProvider>
-              <Toaster />
-              <SessionRouter />
-            </SessionProvider>
+            <BootstrapGate>
+              <SessionProvider>
+                <Toaster />
+                <SessionRouter />
+              </SessionProvider>
+            </BootstrapGate>
           </AccessProvider>
         </TooltipProvider>
       </ThemeProvider>
