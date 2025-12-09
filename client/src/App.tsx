@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
@@ -11,8 +11,10 @@ import { soloFlow, duoFlow, getFlow } from '@shared/schema';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { AdminPreviewSidebar } from '@/components/AdminPreviewSidebar';
 import { getSessionToken } from '@/lib/auth';
-import { Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import DemoLoadingScreen from '@/pages/DemoLoadingScreen';
+import DemoPaywallScreen from '@/pages/DemoPaywallScreen';
 
 // Template Pages
 import AuthPage from "@/pages/auth";
@@ -272,10 +274,37 @@ function SessionRouter() {
   // Get current flow configuration
   const flow = getFlow(session.appType);
 
+  // All preview pages for navigation
+  const allPreviewPages = useMemo(() => [
+    '/_demo/loading',
+    '/_demo/paywall',
+    '/',
+    '/admin-login',
+    '/admin',
+    ...soloFlow.pages.map(p => p.path),
+    ...duoFlow.pages.map(p => p.path),
+  ], []);
+
+  const currentPageIndex = allPreviewPages.indexOf(location);
+  const canGoPrev = currentPageIndex > 0;
+  const canGoNext = currentPageIndex < allPreviewPages.length - 1 && currentPageIndex >= 0;
+
+  const goToPrevPage = () => {
+    if (canGoPrev) {
+      setLocation(allPreviewPages[currentPageIndex - 1]);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (canGoNext) {
+      setLocation(allPreviewPages[currentPageIndex + 1]);
+    }
+  };
+
   // Sync URL with current step (but don't redirect if on admin or template pages or in preview mode)
   useEffect(() => {
     // Skip redirection if in preview mode or on admin/template pages
-    if (previewMode || location === '/admin' || location === '/admin-login' || location === '/' || location === '/user-home') {
+    if (previewMode || location === '/admin' || location === '/admin-login' || location === '/' || location === '/user-home' || location.startsWith('/_demo')) {
       return;
     }
 
@@ -295,10 +324,33 @@ function SessionRouter() {
         <div className="flex h-screen w-full">
           <AdminPreviewSidebar />
           <SidebarInset className="flex flex-col flex-1 overflow-hidden">
-            <header className="flex items-center justify-between p-2 border-b bg-card sticky top-0 z-50">
+            <header className="flex items-center justify-between p-2 border-b bg-card sticky top-0 z-50 gap-2">
               <div className="flex items-center gap-2">
                 <SidebarTrigger data-testid="button-sidebar-toggle" />
-                <span className="text-sm font-medium">Mode Prévisualisation</span>
+                <span className="text-sm font-medium hidden sm:inline">Prévisualisation</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={goToPrevPage}
+                  disabled={!canGoPrev}
+                  data-testid="button-prev-page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-xs text-muted-foreground min-w-[60px] text-center">
+                  {currentPageIndex >= 0 ? `${currentPageIndex + 1}/${allPreviewPages.length}` : '-'}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={goToNextPage}
+                  disabled={!canGoNext}
+                  data-testid="button-next-page"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
               <Button
                 variant="outline"
@@ -306,12 +358,15 @@ function SessionRouter() {
                 onClick={() => setPreviewMode(false)}
                 data-testid="button-exit-preview"
               >
-                Quitter la prévisualisation
+                <span className="hidden sm:inline">Quitter</span>
+                <span className="sm:hidden">X</span>
               </Button>
             </header>
             <main className="flex-1 overflow-auto">
               <AccessGate isAdmin={isAdmin}>
                 <Switch>
+                  <Route path="/_demo/loading" component={DemoLoadingScreen} />
+                  <Route path="/_demo/paywall" component={DemoPaywallScreen} />
                   <Route path="/" component={AuthPage} />
                   <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
                   <Route path="/admin-login" component={AdminLogin} />
