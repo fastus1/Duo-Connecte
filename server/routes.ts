@@ -299,88 +299,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
         year: 'numeric'
       });
       
+      const ticketId = ticket.id.slice(0, 8).toUpperCase();
+      
       await resend.emails.send({
         from: 'Avancer Simplement <support@avancersimplement.com>',
         to: ticket.email,
         subject: `Re: ${ticket.subject}`,
         html: `
           <!DOCTYPE html>
-          <html>
+          <html lang="fr">
           <head>
-            <meta charset="utf-8">
+            <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Réponse à votre demande de support</title>
+            <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
           </head>
-          <body style="margin: 0; padding: 0; background-color: #f4f7fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f7fa; padding: 40px 20px;">
-              <tr>
-                <td align="center">
-                  <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
-                    
-                    <!-- Header avec accent -->
-                    <tr>
-                      <td style="background: linear-gradient(135deg, #074491 0%, #0a5dc2 100%); padding: 32px 40px;">
-                        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: -0.5px;">
-                          Avancer Simplement
-                        </h1>
-                        <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">
-                          Votre accompagnement personnalisé
-                        </p>
-                      </td>
-                    </tr>
-                    
-                    <!-- Corps du message -->
-                    <tr>
-                      <td style="padding: 40px;">
-                        <p style="margin: 0 0 24px 0; color: #1a1a2e; font-size: 18px; line-height: 1.5;">
-                          Bonjour <strong>${ticket.name}</strong>,
-                        </p>
-                        
-                        <div style="background: #f8fafc; border-radius: 12px; padding: 24px; margin: 0 0 24px 0;">
-                          <p style="margin: 0; color: #374151; font-size: 16px; line-height: 1.7; white-space: pre-wrap;">${message}</p>
-                        </div>
-                        
-                        <p style="margin: 24px 0 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
-                          Cordialement,<br>
-                          <strong style="color: #1a1a2e;">L'équipe Avancer Simplement</strong>
-                        </p>
-                      </td>
-                    </tr>
-                    
-                    <!-- Référence du ticket -->
-                    <tr>
-                      <td style="padding: 0 40px 32px 40px;">
-                        <table width="100%" cellpadding="0" cellspacing="0" style="background: #f0f4f8; border-radius: 8px; padding: 16px;">
-                          <tr>
-                            <td style="padding: 16px;">
-                              <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                Référence de votre demande
-                              </p>
-                              <p style="margin: 0; color: #374151; font-size: 14px; font-weight: 500;">
-                                ${ticket.subject}
-                              </p>
-                              <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 12px;">
-                                Ticket du ${ticketDate}
-                              </p>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                    
-                    <!-- Footer -->
-                    <tr>
-                      <td style="background: #f8fafc; padding: 24px 40px; border-top: 1px solid #e5e7eb;">
-                        <p style="margin: 0; color: #9ca3af; font-size: 12px; text-align: center;">
-                          Avancer Simplement - Duo Connecte<br>
-                          <span style="color: #6b7280;">Cet email a été envoyé en réponse à votre demande de support.</span>
-                        </p>
-                      </td>
-                    </tr>
-                    
-                  </table>
-                </td>
-              </tr>
-            </table>
+          <body style="margin: 0; padding: 0; background-color: #f0f3f5; font-family: 'Inter', Arial, sans-serif;">
+            <center>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr>
+                  <td align="center" style="padding: 40px 0;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px; border-collapse: collapse; background-color: #FFFFFF; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);">
+                      
+                      <!-- Header avec logo -->
+                      <tr>
+                        <td align="left" style="padding: 24px 30px; background-color: #FFFFFF; border-bottom: 1px solid #E4E7EB;">
+                          <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 22px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; letter-spacing: 0.5px;">
+                            AVANCER SIMPLEMENT
+                          </h1>
+                          <p style="margin: 4px 0 0 0; font-size: 12px; color: #6b7280; font-weight: 500;">
+                            Duo-Connecte
+                          </p>
+                        </td>
+                      </tr>
+                      
+                      <!-- Contenu principal -->
+                      <tr>
+                        <td style="padding: 40px 30px 30px 30px; color: #000000;">
+                          <h2 style="margin: 0; font-size: 18px; line-height: 26px; color: #074491; font-weight: 600;">
+                            Nous avons répondu à votre demande
+                          </h2>
+                          <p style="margin: 20px 0 0 0; font-size: 16px; line-height: 24px; color: #333333;">
+                            Bonjour ${ticket.name},
+                          </p>
+                          <p style="margin: 16px 0 0 0; font-size: 16px; line-height: 24px; color: #333333;">
+                            Merci d'avoir contacté notre équipe. Voici notre réponse :
+                          </p>
+                          
+                          <!-- Référence du ticket -->
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 24px; border-collapse: collapse;">
+                            <tr>
+                              <td style="padding: 12px 16px; background-color: #F0F3F5; border-radius: 6px;">
+                                <p style="margin: 0; font-size: 13px; line-height: 20px; color: #6b7280;">
+                                  <strong style="color: #374151;">Ticket #${ticketId}</strong> &nbsp;|&nbsp; ${ticket.subject}
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+
+                          <!-- Message de réponse -->
+                          <div style="margin-top: 24px; padding-left: 16px; border-left: 3px solid #074491;">
+                            <p style="margin: 0; font-size: 16px; line-height: 26px; color: #333333; white-space: pre-wrap;">${message}</p>
+                          </div>
+
+                          <p style="margin: 32px 0 0 0; font-size: 16px; line-height: 24px; color: #333333;">
+                            Si vous avez d'autres questions, vous pouvez simplement répondre à cet email.
+                          </p>
+                        </td>
+                      </tr>
+
+                      <!-- Footer -->
+                      <tr>
+                        <td align="center" style="padding: 24px 30px 32px 30px; font-size: 14px; line-height: 20px; color: #545861;">
+                          <hr style="border: 0; border-top: 1px solid #E4E7EB; width: 100%; margin-bottom: 20px;">
+                          <p style="margin: 0; font-weight: 500;">
+                            Cordialement,<br>
+                            <span style="color: #074491;">L'équipe Avancer Simplement</span>
+                          </p>
+                          <p style="margin: 20px 0 0 0; font-size: 12px; color: #9ca3af;">
+                            Cet email a été envoyé en réponse à votre demande du ${ticketDate}.
+                          </p>
+                        </td>
+                      </tr>
+                      
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </center>
           </body>
           </html>
         `
