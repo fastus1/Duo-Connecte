@@ -144,11 +144,11 @@ export class MemStorage implements IStorage {
 
   async deleteUser(userId: string): Promise<void> {
     this.users.delete(userId);
-    for (const [id, attempt] of this.loginAttempts.entries()) {
+    Array.from(this.loginAttempts.entries()).forEach(([id, attempt]) => {
       if (attempt.userId === userId) {
         this.loginAttempts.delete(id);
       }
-    }
+    });
   }
 
   async logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt> {

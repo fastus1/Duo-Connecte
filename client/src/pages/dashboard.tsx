@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2, Code, Copy, Check, Info } from 'lucide-react';
+import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2, Code, Copy, Check, Info, MoreVertical, UserX, Ban } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -10,6 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken, clearAuth } from '@/lib/auth';
@@ -253,7 +260,29 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/paid-members'] });
-      toast({ title: 'Membre supprimé', description: 'L\'accès a été révoqué.' });
+      toast({ title: 'Accès révoqué', description: 'L\'accès payant a été retiré. L\'utilisateur existe toujours.' });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const deleteUserCompleteMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const token = getSessionToken();
+      const response = await fetch(`/api/admin/delete-user/${encodeURIComponent(email)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Erreur lors de la suppression');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/paid-members'] });
+      toast({ title: 'Utilisateur supprimé', description: 'L\'utilisateur et toutes ses données ont été supprimés.' });
     },
     onError: (error: Error) => {
       toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
@@ -673,15 +702,36 @@ export default function Dashboard() {
                               <span>• {new Date(member.paymentDate).toLocaleDateString('fr-FR')}</span>
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteMemberMutation.mutate(member.email)}
-                            disabled={deleteMemberMutation.isPending}
-                            data-testid={`button-delete-member-${member.id}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                disabled={deleteMemberMutation.isPending || deleteUserCompleteMutation.isPending}
+                                data-testid={`button-member-actions-${member.id}`}
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => deleteMemberMutation.mutate(member.email)}
+                                data-testid={`button-revoke-access-${member.id}`}
+                              >
+                                <Ban className="h-4 w-4 mr-2" />
+                                Retirer l'accès payant
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => deleteUserCompleteMutation.mutate(member.email)}
+                                className="text-destructive focus:text-destructive"
+                                data-testid={`button-delete-user-${member.id}`}
+                              >
+                                <UserX className="h-4 w-4 mr-2" />
+                                Supprimer complètement
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       ))
                     )}
