@@ -154,28 +154,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedTicket = insertSupportTicketSchema.parse(req.body);
       const ticket = await storage.createSupportTicket(validatedTicket);
       
-      // Trigger Zapier webhook if configured
-      const zapierWebhookUrl = process.env.ZAPIER_WEBHOOK_URL;
-      if (zapierWebhookUrl) {
-        try {
-          console.log('[ZAPIER] Sending webhook to:', zapierWebhookUrl);
-          const response = await fetch(zapierWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              event: 'new_support_ticket',
-              name: ticket.name,
-              email: ticket.email,
-              subject: ticket.subject,
-              message: ticket.description,
-              createdAt: ticket.createdAt,
-            }),
-          });
-          console.log('[ZAPIER] Webhook response:', response.status);
-        } catch (webhookError) {
-          console.error('[ZAPIER] Failed to send webhook:', webhookError);
-        }
-      }
+      // TODO: Add Resend email notification here
       
       res.json({ success: true, ticketId: ticket.id });
     } catch (error: any) {

@@ -8,7 +8,7 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
-- **2025-12-09** : Système de support avec tickets, FAQ et intégration Zapier webhook
+- **2025-12-09** : Système de support avec tickets, FAQ (Resend pour emails à configurer)
 - **2025-12-09** : Mode Prévisualisation Admin - Barre latérale pour naviguer vers toutes les pages (Solo, Duo, Inversion, pages spéciales)
 - **2025-12-09** : Gestion membres améliorée - Deux options de suppression : "Retirer l'accès payant" ou "Supprimer complètement" (utilisateur + données)
 - **2025-12-09** : Correction bug NIP Layer 4 - Les utilisateurs créés sans NIP peuvent maintenant en créer un quand la couche 4 est activée
@@ -165,7 +165,7 @@ support_tickets: id (uuid), name, email, subject, message, status (new/in_progre
 | SESSION_SECRET | Secret pour JWT (générer unique par app) |
 | VITE_CIRCLE_ORIGIN | Origine Circle.so (ex: https://communaute.avancersimplement.circle.so) |
 | WEBHOOK_SECRET | Secret pour sécuriser le webhook |
-| ZAPIER_WEBHOOK_URL | URL du webhook Zapier pour les notifications de tickets |
+| RESEND_API_KEY | Clé API Resend pour l'envoi d'emails |
 
 ## Gestion de Session
 
