@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -285,16 +285,29 @@ function dbg(msg: string, data?: unknown) {
 
 function BootstrapGate({ children }: { children: React.ReactNode }) {
   const { isBootstrapped, accessStatus } = useAccess();
+  const [showContent, setShowContent] = useState(false);
   
-  dbg('BootstrapGate', { isBootstrapped, accessStatus });
+  dbg('BootstrapGate', { isBootstrapped, accessStatus, showContent });
   
-  // Ne rien afficher tant que l'accès n'est pas déterminé
-  if (!isBootstrapped) {
-    dbg('→ BLOCKED: waiting for bootstrap');
-    return null;
+  // Quand bootstrapped, attendre un frame avant d'afficher le contenu
+  useEffect(() => {
+    if (isBootstrapped && !showContent) {
+      // Attendre que le thème soit appliqué avant de montrer le contenu
+      requestAnimationFrame(() => {
+        setShowContent(true);
+      });
+    }
+  }, [isBootstrapped, showContent]);
+  
+  // Afficher un écran de chargement stable pendant le bootstrap
+  if (!showContent) {
+    dbg('→ LOADING: stable screen');
+    return (
+      <div className="min-h-screen bg-background" />
+    );
   }
   
-  dbg('→ RENDER: bootstrapped');
+  dbg('→ RENDER: content');
   return <>{children}</>;
 }
 
