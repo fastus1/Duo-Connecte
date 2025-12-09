@@ -183,10 +183,13 @@ export default function AuthPage() {
         return;
       }
 
+      // Use name from result if available (for missing_pin case), otherwise from dataToValidate
+      const userName = result.name || dataToValidate.name;
+      
       setValidatedData({
         public_uid: result.user_id,
-        email: dataToValidate.email,
-        name: dataToValidate.name,
+        email: result.email || dataToValidate.email,
+        name: userName,
         is_admin: result.is_admin || false,
         validationToken: result.validation_token,
       });
@@ -196,7 +199,7 @@ export default function AuthPage() {
         await createUserWithoutPin(
           dataToValidate.email,
           result.user_id,
-          dataToValidate.name,
+          userName,
           result.validation_token,
           result.is_admin
         );
