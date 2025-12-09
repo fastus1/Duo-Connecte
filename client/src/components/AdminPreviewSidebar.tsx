@@ -230,9 +230,9 @@ export function AdminPreviewSidebar() {
                 </CollapsibleSection>
             </SidebarContent>
 
-            <SidebarFooter className="border-t p-3">
+            <SidebarFooter className="border-t p-3 bg-sidebar">
                 <p className="text-xs text-muted-foreground text-center">
-                    Utilisez cette barre pour vérifier le design de chaque page
+                    Naviguez pour vérifier le design
                 </p>
             </SidebarFooter>
         </Sidebar>
