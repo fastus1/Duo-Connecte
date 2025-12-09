@@ -525,18 +525,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
-        return res.status(400).json({ error: 'Un compte existe déjà pour cet email' });
+        // User exists - just log them in (PIN not required)
+        await storage.updateUserLastLogin(existingUser.id);
+        await storage.logLoginAttempt({
+          userId: existingUser.id,
+          success: true,
+          ipAddress: req.ip || null,
+        });
+        const sessionToken = generateSessionToken(existingUser.id, existingUser.email);
+        return res.json({
+          success: true,
+          session_token: sessionToken,
+          user_id: existingUser.id,
+          is_admin: existingUser.isAdmin,
+        });
       }
 
-      // Create user with random PIN (user will never need it)
-      const randomPin = crypto.randomBytes(6).toString('hex');
-      const pinHash = await hashPin(randomPin);
-
+      // Create user WITHOUT pinHash (they can create one later if layer 4 is enabled)
       const user = await storage.createUser({
         email,
         publicUid: public_uid,
         name,
-        pinHash,
+        pinHash: null,
         isAdmin: cachedData.isAdmin,
       });
 
@@ -595,6 +605,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ipAddress: req.ip || null,
         });
         return res.status(404).json({ error: 'Utilisateur introuvable' });
+      }
+
+      // Check if user has a PIN
+      if (!user.pinHash) {
+        return res.status(400).json({ error: 'Aucun NIP configuré pour ce compte. Veuillez en créer un.' });
       }
 
       // Compare PIN
@@ -676,6 +691,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ipAddress: req.ip || null,
         });
         return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      // Check if user has a PIN
+      if (!user.pinHash) {
+        return res.status(400).json({ error: 'Aucun NIP configuré pour ce compte admin.' });
       }
 
       // Verify PIN
@@ -1088,6 +1108,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error) {
       console.error('Error in DELETE /api/admin/paid-members:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
+  // POST /api/admin/reset-user-pin - Reset a user's PIN (admin only)
+  app.post('/api/admin/reset-user-pin', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { userId } = (req as any).user;
+      const adminUser = await storage.getUser(userId);
+
+      if (!adminUser || !adminUser.isAdmin) {
+        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      const { email } = req.body;
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ error: 'Email requis' });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+      const targetUser = await storage.getUserByEmail(normalizedEmail);
+
+      if (!targetUser) {
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
+      }
+
+      // Reset the PIN to null
+      await storage.updateUserPin(targetUser.id, null);
+
+      // Audit log
+      console.log(`[ADMIN] PIN reset for user: ${normalizedEmail} by admin: ${adminUser.email} at ${new Date().toISOString()}`);
+
+      return res.json({ 
+        success: true, 
+        message: `NIP réinitialisé pour ${normalizedEmail}. L'utilisateur devra en créer un nouveau.` 
+      });
+
+    } catch (error) {
+      console.error('Error in POST /api/admin/reset-user-pin:', error);
       return res.status(500).json({ error: 'Erreur serveur' });
     }
   });

@@ -14,7 +14,7 @@ export interface IStorage {
   updateUserLastLogin(userId: string): Promise<void>;
   updateUserRole(userId: string, isAdmin: boolean): Promise<void>;
   updateUserPublicUid(userId: string, publicUid: string): Promise<void>;
-  updateUserPin(userId: string, pinHash: string): Promise<void>;
+  updateUserPin(userId: string, pinHash: string | null): Promise<void>;
 
   // Login attempt operations
   logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt>;
@@ -100,6 +100,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      pinHash: insertUser.pinHash ?? null,
       isAdmin: insertUser.isAdmin ?? false,
       createdAt: now,
       lastLogin: null,
@@ -132,7 +133,7 @@ export class MemStorage implements IStorage {
     }
   }
 
-  async updateUserPin(userId: string, pinHash: string): Promise<void> {
+  async updateUserPin(userId: string, pinHash: string | null): Promise<void> {
     const user = this.users.get(userId);
     if (user) {
       user.pinHash = pinHash;
@@ -292,7 +293,7 @@ export class DbStorage implements IStorage {
       .where(eq(users.id, userId));
   }
 
-  async updateUserPin(userId: string, pinHash: string): Promise<void> {
+  async updateUserPin(userId: string, pinHash: string | null): Promise<void> {
     await this.db.update(users)
       .set({ pinHash })
       .where(eq(users.id, userId));

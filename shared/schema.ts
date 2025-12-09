@@ -8,7 +8,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   publicUid: text("public_uid").notNull().unique(),
   name: text("name").notNull(),
-  pinHash: text("pin_hash").notNull(),
+  pinHash: text("pin_hash"),
   isAdmin: boolean("is_admin").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   lastLogin: timestamp("last_login"),
@@ -52,6 +52,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
   name: true,
   pinHash: true,
   isAdmin: true,
+}).extend({
+  pinHash: z.string().nullable().optional(),
 });
 
 export const insertLoginAttemptSchema = createInsertSchema(loginAttempts).pick({
