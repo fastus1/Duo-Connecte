@@ -1112,6 +1112,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // DELETE /api/admin/delete-user/:email - Delete user and all their data (admin only)
+  app.delete('/api/admin/delete-user/:email', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { userId } = (req as any).user;
+      const adminUser = await storage.getUser(userId);
+
+      if (!adminUser || !adminUser.isAdmin) {
+        return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+      }
+
+      const { email } = req.params;
+      const normalizedEmail = email.toLowerCase().trim();
+      
+      // Prevent deleting yourself
+      if (normalizedEmail === adminUser.email?.toLowerCase()) {
+        return res.status(400).json({ error: 'Vous ne pouvez pas supprimer votre propre compte' });
+      }
+
+      const targetUser = await storage.getUserByEmail(normalizedEmail);
+
+      if (!targetUser) {
+        return res.status(404).json({ error: 'Utilisateur introuvable' });
+      }
+
+      // Also delete from paid members if exists
+      await storage.deletePaidMember(normalizedEmail);
+      
+      // Delete the user and all their data
+      await storage.deleteUser(targetUser.id);
+
+      console.log(`[ADMIN] User completely deleted: ${normalizedEmail} by admin: ${adminUser.email} at ${new Date().toISOString()}`);
+
+      return res.json({ 
+        success: true, 
+        message: `Utilisateur ${normalizedEmail} et toutes ses données ont été supprimés.` 
+      });
+
+    } catch (error) {
+      console.error('Error in DELETE /api/admin/delete-user:', error);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  });
+
   // POST /api/admin/reset-user-pin - Reset a user's PIN (admin only)
   app.post('/api/admin/reset-user-pin', requireAuth, async (req: Request, res: Response) => {
     try {
