@@ -20,6 +20,7 @@ import {
   insertFeedbackSchema,
   insertSupportTicketSchema
 } from "@shared/schema";
+import { Resend } from 'resend';
 
 // Temporary cache for validated Circle.so data (5 minutes expiry)
 interface ValidationCache {
@@ -154,7 +155,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedTicket = insertSupportTicketSchema.parse(req.body);
       const ticket = await storage.createSupportTicket(validatedTicket);
       
-      // TODO: Add Resend email notification here
+      // Send email notification to admin via Resend
+      if (process.env.RESEND_API_KEY) {
+        try {
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          const createdDate = new Date(ticket.createdAt).toLocaleString('fr-CA', { 
+            timeZone: 'America/Montreal',
+            dateStyle: 'long',
+            timeStyle: 'short'
+          });
+          
+          await resend.emails.send({
+            from: 'Duo Connecte <onboarding@resend.dev>',
+            to: 'support@avancersimplement.com',
+            subject: `[Nouveau Ticket] ${ticket.subject}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #074491;">Nouveau ticket de support</h2>
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <p><strong>De :</strong> ${ticket.name} (${ticket.email})</p>
+                  <p><strong>Sujet :</strong> ${ticket.subject}</p>
+                  <p><strong>Date :</strong> ${createdDate}</p>
+                </div>
+                <div style="background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+                  <h3 style="margin-top: 0;">Message :</h3>
+                  <p style="white-space: pre-wrap;">${ticket.description}</p>
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                  <a href="https://duo-connecte--fastusone.replit.app/admin" 
+                     style="background: #074491; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                    Voir et répondre au ticket
+                  </a>
+                </div>
+                <p style="color: #666; font-size: 12px; margin-top: 20px; text-align: center;">
+                  ID du ticket : ${ticket.id}
+                </p>
+              </div>
+            `
+          });
+          console.log('[RESEND] Notification email sent for ticket:', ticket.id);
+        } catch (emailError) {
+          console.error('[RESEND] Failed to send notification:', emailError);
+        }
+      }
       
       res.json({ success: true, ticketId: ticket.id });
     } catch (error: any) {
