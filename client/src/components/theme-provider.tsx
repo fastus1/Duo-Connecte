@@ -13,6 +13,15 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 // Custom event for Circle.so theme sync
 const CIRCLE_THEME_EVENT = 'circle-theme-change';
 
+// DEBUG
+const DEBUG_MODE = true;
+function debugLog(message: string, data?: unknown) {
+  if (DEBUG_MODE) {
+    const time = performance.now().toFixed(0);
+    console.log(`%c[${time}ms] ThemeProvider: ${message}`, 'color: #4CAF50; font-weight: bold', data || '');
+  }
+}
+
 interface ThemeProviderProps {
   children: ReactNode;
   defaultTheme?: Theme;
@@ -21,10 +30,13 @@ interface ThemeProviderProps {
 export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
     const stored = localStorage.getItem('theme') as Theme;
+    debugLog('Initial state', { stored, defaultTheme, using: stored || defaultTheme });
     return stored || defaultTheme;
   });
 
   const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
+  
+  debugLog('Render', { theme, actualTheme });
 
   // Listen for Circle.so theme changes via internal custom event
   // This event is dispatched by setThemeFromCircle after Zod validation in useCircleAuth
@@ -57,6 +69,7 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
     const root = document.documentElement;
     
     const applyTheme = (isDark: boolean) => {
+      debugLog('applyTheme called', { isDark, currentClass: root.className });
       if (isDark) {
         root.classList.add('dark');
         setActualTheme('dark');
@@ -64,16 +77,19 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
         root.classList.remove('dark');
         setActualTheme('light');
       }
+      debugLog('applyTheme done', { newClass: root.className });
     };
 
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      debugLog('System theme, using matchMedia', { matches: mediaQuery.matches });
       applyTheme(mediaQuery.matches);
       
       const handler = (e: MediaQueryListEvent) => applyTheme(e.matches);
       mediaQuery.addEventListener('change', handler);
       return () => mediaQuery.removeEventListener('change', handler);
     } else {
+      debugLog('Explicit theme', { theme });
       applyTheme(theme === 'dark');
     }
   }, [theme]);
