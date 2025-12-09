@@ -203,7 +203,8 @@ export default function AuthPage() {
         return;
       }
 
-      if (result.status === 'new_user') {
+      if (result.status === 'new_user' || result.status === 'missing_pin') {
+        // Both new users and existing users without PIN need to create one
         setAuthStep('new_user');
       } else if (result.status === 'existing_user') {
         setAuthStep('existing_user');

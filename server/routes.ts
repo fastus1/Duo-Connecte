@@ -313,7 +313,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Existing member - needs to enter PIN
+      // Check if existing user has a PIN
+      if (!existingUser.pinHash) {
+        // Existing user WITHOUT PIN - needs to create one
+        // Generate validation token for PIN creation
+        const validationToken = crypto.randomBytes(32).toString('hex');
+        validationCache.set(validationToken, {
+          email: userData.email,
+          publicUid: userData.publicUid,
+          name: existingUser.name || userData.name || 'Membre',
+          isAdmin: finalIsAdmin,
+          timestamp: Date.now(),
+        });
+
+        return res.json({
+          status: 'missing_pin',
+          user_id: existingUser.id,
+          email: userData.email,
+          name: existingUser.name || userData.name,
+          is_admin: finalIsAdmin,
+          validation_token: validationToken,
+          requires_pin: true,
+        });
+      }
+
+      // Existing member with PIN - needs to enter PIN
       return res.json({
         status: 'existing_user',
         user_id: existingUser.id,
@@ -389,25 +413,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Double-check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({
-          error: 'Un compte existe déjà pour cet email'
-        });
-      }
-
       // Hash the PIN
       const pinHash = await hashPin(pin);
 
-      // Create user with isAdmin from validation cache
-      const user = await storage.createUser({
-        email,
-        publicUid: public_uid,
-        name,
-        pinHash,
-        isAdmin: cachedData.isAdmin,
-      });
+      // Check if user already exists (may be updating PIN for existing user without one)
+      const existingUser = await storage.getUserByEmail(email);
+      let user;
+      
+      if (existingUser) {
+        // Existing user without PIN - update their PIN
+        if (existingUser.pinHash) {
+          return res.status(400).json({
+            error: 'Un NIP existe déjà pour ce compte. Utilisez la connexion normale.'
+          });
+        }
+        // Update existing user with new PIN
+        await storage.updateUserPin(existingUser.id, pinHash);
+        user = { ...existingUser, pinHash, isAdmin: cachedData.isAdmin };
+      } else {
+        // Create new user with PIN
+        user = await storage.createUser({
+          email,
+          publicUid: public_uid,
+          name,
+          pinHash,
+          isAdmin: cachedData.isAdmin,
+        });
+      }
 
       // Update last login
       await storage.updateUserLastLogin(user.id);
