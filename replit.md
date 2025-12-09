@@ -8,6 +8,7 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-09** : Système de support avec tickets, FAQ et intégration Zapier webhook
 - **2025-12-09** : Mode Prévisualisation Admin - Barre latérale pour naviguer vers toutes les pages (Solo, Duo, Inversion, pages spéciales)
 - **2025-12-09** : Gestion membres améliorée - Deux options de suppression : "Retirer l'accès payant" ou "Supprimer complètement" (utilisateur + données)
 - **2025-12-09** : Correction bug NIP Layer 4 - Les utilisateurs créés sans NIP peuvent maintenant en créer un quand la couche 4 est activée
@@ -120,6 +121,8 @@ app_config: id, require_circle_domain, require_circle_login, require_paywall, re
 paid_members: id, email (unique), payment_date, payment_plan, amount_paid, coupon_used
 
 feedbacks: id, rating (1-5), helpful_aspect, improvement_suggestion, created_at
+
+support_tickets: id (uuid), name, email, subject, message, status (new/in_progress/resolved), created_at, updated_at, resolved_at
 ```
 
 ## API Endpoints
@@ -148,6 +151,12 @@ feedbacks: id, rating (1-5), helpful_aspect, improvement_suggestion, created_at
 - `POST /api/feedback` - Soumet un feedback anonyme
 - `GET /api/admin/feedbacks` - Liste tous les feedbacks (admin)
 
+### Support Tickets
+- `POST /api/support/tickets` - Crée un ticket (public)
+- `GET /api/admin/support/tickets` - Liste tous les tickets (admin)
+- `PATCH /api/admin/support/tickets/:id` - Met à jour le statut (admin)
+- `DELETE /api/admin/support/tickets/:id` - Supprime un ticket (admin)
+
 ## Variables d'Environnement
 
 | Variable | Description |
@@ -156,6 +165,7 @@ feedbacks: id, rating (1-5), helpful_aspect, improvement_suggestion, created_at
 | SESSION_SECRET | Secret pour JWT (générer unique par app) |
 | VITE_CIRCLE_ORIGIN | Origine Circle.so (ex: https://communaute.avancersimplement.circle.so) |
 | WEBHOOK_SECRET | Secret pour sécuriser le webhook |
+| ZAPIER_WEBHOOK_URL | URL du webhook Zapier pour les notifications de tickets |
 
 ## Gestion de Session
 
@@ -208,6 +218,7 @@ Accessible via `/admin` (nécessite authentification admin)
 3. **Membres** : Liste et gestion des membres payants
 4. **Webhook** : Générateur de script Circle.so
 5. **Feedbacks** : Consultation des retours utilisateurs
+6. **Support** : Gestion des tickets d'aide avec filtrage par statut
 
 ## Intégration Circle.so - IMPORTANT
 
