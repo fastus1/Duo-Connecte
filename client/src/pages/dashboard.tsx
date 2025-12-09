@@ -888,18 +888,36 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Script complet (définit circleUser + répond aux demandes d'auth)</Label>
+                    <Label>Script complet v4 (envoie thème immédiatement + auth)</Label>
                     <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all max-h-64 overflow-y-auto">
                       {`<script>
-// Script d'authentification Circle.so -> Replit Apps v3
+// Script d'authentification Circle.so -> Replit Apps v4
+// IMPORTANT: Envoie le thème IMMÉDIATEMENT pour éviter le flash
 // À placer dans: Settings → Code Snippets → JavaScript
 (function() {
   function getTheme() {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
   }
   
+  // ÉTAPE 1: Envoyer le thème IMMÉDIATEMENT à toutes les iframes
+  // Cela permet d'éviter le flash blanc dans les iframes
+  function sendThemeImmediately() {
+    var theme = getTheme();
+    var iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
+    iframes.forEach(function(iframe) {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'CIRCLE_THEME_INIT', theme: theme }, '*');
+      }
+    });
+  }
+  
+  // Envoyer le thème dès que possible
+  sendThemeImmediately();
+  // Et réessayer après un court délai au cas où les iframes ne sont pas encore prêtes
+  setTimeout(sendThemeImmediately, 50);
+  setTimeout(sendThemeImmediately, 150);
+  
   function buildPayload() {
-    // Circle.so expose automatiquement window.circleUser
     if (!window.circleUser || !window.circleUser.email) return null;
     return {
       type: 'CIRCLE_USER_AUTH',
@@ -926,9 +944,10 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
     }
   }
   
-  // Écouter les demandes d'auth des iframes
   window.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+      // Toujours envoyer le thème d'abord
+      sendThemeImmediately();
       var payload = buildPayload();
       if (payload && event.source) {
         event.source.postMessage(payload, '*');
@@ -936,7 +955,6 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
     }
   });
   
-  // Attendre que circleUser soit disponible puis envoyer
   function tryToSend() {
     if (window.circleUser && window.circleUser.email) {
       sendToAllIframes();
@@ -945,7 +963,6 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
     return false;
   }
   
-  // Essayer immédiatement puis toutes les 500ms pendant 10s
   if (!tryToSend()) {
     var attempts = 0;
     var interval = setInterval(function() {
@@ -956,8 +973,8 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
     }, 500);
   }
   
-  // Aussi envoyer après chargement complet
   window.addEventListener('load', function() {
+    sendThemeImmediately();
     setTimeout(sendToAllIframes, 100);
     setTimeout(sendToAllIframes, 1000);
   });
@@ -967,15 +984,30 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
                     <Button
                       onClick={async () => {
                         const authScript = `<script>
-// Script d'authentification Circle.so -> Replit Apps v3
+// Script d'authentification Circle.so -> Replit Apps v4
+// IMPORTANT: Envoie le thème IMMÉDIATEMENT pour éviter le flash
 // À placer dans: Settings → Code Snippets → JavaScript
 (function() {
   function getTheme() {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
   }
   
+  // ÉTAPE 1: Envoyer le thème IMMÉDIATEMENT à toutes les iframes
+  function sendThemeImmediately() {
+    var theme = getTheme();
+    var iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
+    iframes.forEach(function(iframe) {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'CIRCLE_THEME_INIT', theme: theme }, '*');
+      }
+    });
+  }
+  
+  sendThemeImmediately();
+  setTimeout(sendThemeImmediately, 50);
+  setTimeout(sendThemeImmediately, 150);
+  
   function buildPayload() {
-    // Circle.so expose automatiquement window.circleUser
     if (!window.circleUser || !window.circleUser.email) return null;
     return {
       type: 'CIRCLE_USER_AUTH',
@@ -1002,9 +1034,9 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
     }
   }
   
-  // Écouter les demandes d'auth des iframes
   window.addEventListener('message', function(event) {
     if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
+      sendThemeImmediately();
       var payload = buildPayload();
       if (payload && event.source) {
         event.source.postMessage(payload, '*');
@@ -1012,7 +1044,6 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
     }
   });
   
-  // Attendre que circleUser soit disponible puis envoyer
   function tryToSend() {
     if (window.circleUser && window.circleUser.email) {
       sendToAllIframes();
@@ -1021,7 +1052,6 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
     return false;
   }
   
-  // Essayer immédiatement puis toutes les 500ms pendant 10s
   if (!tryToSend()) {
     var attempts = 0;
     var interval = setInterval(function() {
@@ -1032,8 +1062,8 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
     }, 500);
   }
   
-  // Aussi envoyer après chargement complet
   window.addEventListener('load', function() {
+    sendThemeImmediately();
     setTimeout(sendToAllIframes, 100);
     setTimeout(sendToAllIframes, 1000);
   });
