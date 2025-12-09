@@ -7,6 +7,7 @@ import { PinCreationForm } from '@/components/pin-creation-form';
 import { PinLoginForm } from '@/components/pin-login-form';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { LoadingScreen, PageContainer } from '@/components/LoadingScreen';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -298,7 +299,7 @@ export default function AuthPage() {
   // Show error message if Circle.so auth failed
   if (circleError && !devMode) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <PageContainer className="flex items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-lg" data-testid="card-timeout">
           <CardHeader className="text-center space-y-4">
             <Logo size="lg" className="mx-auto" />
@@ -332,30 +333,22 @@ export default function AuthPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
   if ((authStep === 'waiting' || isValidating || isLoading) && !circleError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md shadow-lg" data-testid="card-loading">
-          <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
-            <Logo size="lg" />
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-base text-muted-foreground">
-              {devMode ? 'Initialisation du mode développement...' : 'Connexion en cours...'}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <LoadingScreen 
+        message={devMode ? 'Initialisation du mode développement...' : 'Connexion en cours...'} 
+      />
     );
   }
 
   // Public landing page when all security layers are disabled
   if (authStep === 'public_landing') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <PageContainer className="flex items-center justify-center p-4">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
@@ -380,13 +373,13 @@ export default function AuthPage() {
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
   if (authStep === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <PageContainer className="flex items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-lg" data-testid="card-error">
           <CardHeader>
             <div className="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-destructive/10">
@@ -412,14 +405,14 @@ export default function AuthPage() {
             </Button>
           </CardContent>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
   // Paywall blocked screen (Couche 3)
   if (authStep === 'paywall_blocked' && paywallInfo) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <PageContainer className="flex items-center justify-center p-4">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
@@ -476,12 +469,12 @@ export default function AuthPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <PageContainer className="flex items-center justify-center p-4">
       {error && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-40">
           <Alert variant="destructive" className="shadow-lg" data-testid="alert-error">
@@ -510,6 +503,6 @@ export default function AuthPage() {
           onError={handleError}
         />
       )}
-    </div>
+    </PageContainer>
   );
 }
