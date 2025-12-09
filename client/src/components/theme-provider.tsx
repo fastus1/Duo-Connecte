@@ -13,15 +13,6 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 // Custom event for Circle.so theme sync
 const CIRCLE_THEME_EVENT = 'circle-theme-change';
 
-// DEBUG
-const DEBUG_MODE = true;
-function debugLog(message: string, data?: unknown) {
-  if (DEBUG_MODE) {
-    const time = performance.now().toFixed(0);
-    console.log(`%c[${time}ms] ThemeProvider: ${message}`, 'color: #4CAF50; font-weight: bold', data || '');
-  }
-}
-
 interface ThemeProviderProps {
   children: ReactNode;
   defaultTheme?: Theme;
