@@ -8,6 +8,7 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-09** : Mode Prévisualisation Admin - Barre latérale pour naviguer vers toutes les pages (Solo, Duo, Inversion, pages spéciales)
 - **2025-12-09** : Gestion membres améliorée - Deux options de suppression : "Retirer l'accès payant" ou "Supprimer complètement" (utilisateur + données)
 - **2025-12-09** : Correction bug NIP Layer 4 - Les utilisateurs créés sans NIP peuvent maintenant en créer un quand la couche 4 est activée
 - **2025-12-09** : Nouvel endpoint admin `/api/admin/reset-user-pin` pour réinitialiser le NIP d'un utilisateur
