@@ -8,7 +8,6 @@ interface AccessContextType {
   circleIsAdmin: boolean;
   appEnvironment: 'development' | 'production';
   circleOnlyMode: boolean;
-  isBootstrapped: boolean;
   checkAccess: () => Promise<void>;
   refreshEnvironment: () => Promise<'development' | 'production'>;
   forceRecheck: () => void;
@@ -64,20 +63,17 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   const [originValidated, setOriginValidated] = useState<boolean>(() => {
     return window.__CIRCLE_ORIGIN_VALIDATED__ ?? false;
   });
-  
-  // Flag persistant qui ne revient JAMAIS à false
-  const [hasBootstrapped, setHasBootstrapped] = useState(false);
-  const hasBootstrappedRef = useRef(false);
-  
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [recheckTrigger, setRecheckTrigger] = useState(0);
   const lastProcessedEmailRef = useRef<string | null>(null);
   const circleOnlyModeRef = useRef<boolean>(false);
   const originTimeoutRef = useRef<number | null>(null);
-  const isCheckingRef = useRef(false);
 
   // Garder la ref synchronisée avec l'état
   circleOnlyModeRef.current = circleOnlyMode;
 
-  // Récupérer l'environnement de l'app depuis le backend (sans changer accessStatus)
+  // Récupérer l'environnement de l'app depuis le backend
   const refreshEnvironment = useCallback(async (): Promise<'development' | 'production'> => {
     try {
       const response = await fetch('/api/settings');
@@ -88,45 +84,41 @@ export function AccessProvider({ children }: { children: ReactNode }) {
         setAppEnvironment(env);
         setCircleOnlyMode(circleOnly);
         circleOnlyModeRef.current = circleOnly;
+        setSettingsLoaded(true);
         return env;
       }
     } catch (error) {
       console.error('Error fetching app settings:', error);
     }
+    setSettingsLoaded(true);
     return 'development';
   }, []);
 
-  // Vérifier l'accès - NE JAMAIS remettre à 'loading' une fois bootstrapped
+  // Vérifier l'accès
   const checkAccess = useCallback(async () => {
-    // Éviter les appels concurrents
-    if (isCheckingRef.current) return;
-    isCheckingRef.current = true;
-    
-    // NE PAS remettre à 'loading' si déjà bootstrapped
-    if (!hasBootstrappedRef.current) {
-      setAccessStatus('loading');
-    }
+    setAccessStatus('loading');
 
     // Récupérer l'environnement actuel
     const currentEnv = await refreshEnvironment();
 
     // Si mode Circle.so uniquement et origine non validée
     if (circleOnlyModeRef.current && !originValidated && !window.__CIRCLE_ORIGIN_VALIDATED__) {
-      // Ne pas marquer comme bootstrapped, attendre le timeout ou la validation
-      isCheckingRef.current = false;
+      // L'accès sera refusé après le timeout si aucun message Circle.so valide n'est reçu
+      setAccessStatus('loading');
+      setIsInitialized(true);
       return;
     }
 
     // Si pas d'email
     if (!userEmail) {
+      // En mode développement sans email, accorder l'accès par défaut
       if (currentEnv === 'development') {
         setAccessStatus('granted');
       } else {
+        // En mode production sans email, refuser l'accès
         setAccessStatus('denied');
       }
-      setHasBootstrapped(true);
-      hasBootstrappedRef.current = true;
-      isCheckingRef.current = false;
+      setIsInitialized(true);
       return;
     }
 
@@ -147,15 +139,14 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Error checking access:', error);
+      // En cas d'erreur, refuser l'accès
       setAccessStatus('denied');
     }
 
-    setHasBootstrapped(true);
-    hasBootstrappedRef.current = true;
-    isCheckingRef.current = false;
+    setIsInitialized(true);
   }, [userEmail, refreshEnvironment, originValidated]);
 
-  // Écouter les messages de Circle.so - TOUJOURS valider l'origine en premier
+  // Écouter les messages de Circle.so pour recevoir l'email
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const data = event.data as CircleUserMessage;
@@ -165,22 +156,21 @@ export function AccessProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // TOUJOURS valider l'origine si c'est Circle.so, même avant que les settings soient chargés
-      if (event.origin === ALLOWED_ORIGIN) {
-        // Marquer comme validé
-        if (!originValidated && !window.__CIRCLE_ORIGIN_VALIDATED__) {
+      // Vérifier l'origine si le mode Circle uniquement est activé
+      if (circleOnlyModeRef.current) {
+        if (event.origin !== ALLOWED_ORIGIN) {
+          return;
+        } else {
+          // Origine valide - marquer comme validée
           setOriginValidated(true);
           window.__CIRCLE_ORIGIN_VALIDATED__ = true;
-          
+
           // Annuler le timeout de rejet
           if (originTimeoutRef.current) {
             clearTimeout(originTimeoutRef.current);
             originTimeoutRef.current = null;
           }
         }
-      } else if (circleOnlyModeRef.current) {
-        // Origine invalide en mode Circle uniquement
-        return;
       }
 
       if (data.user?.email) {
@@ -201,21 +191,22 @@ export function AccessProvider({ children }: { children: ReactNode }) {
           setCircleIsAdmin(true);
         }
       }
+
+      // Forcer une re-vérification immédiate
+      setRecheckTrigger(prev => prev + 1);
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [originValidated]);
+  }, []);
 
   // Timeout pour rejeter l'accès si aucun message Circle.so valide n'est reçu
   useEffect(() => {
-    if (circleOnlyMode && !originValidated && !window.__CIRCLE_ORIGIN_VALIDATED__ && !hasBootstrappedRef.current) {
+    if (settingsLoaded && circleOnlyMode && !originValidated && !window.__CIRCLE_ORIGIN_VALIDATED__) {
       // Donner 3 secondes pour recevoir un message Circle.so valide
       originTimeoutRef.current = window.setTimeout(() => {
         if (!originValidated && !window.__CIRCLE_ORIGIN_VALIDATED__) {
           setAccessStatus('origin_invalid');
-          setHasBootstrapped(true);
-          hasBootstrappedRef.current = true;
         }
       }, 3000);
 
@@ -225,24 +216,17 @@ export function AccessProvider({ children }: { children: ReactNode }) {
         }
       };
     }
-  }, [circleOnlyMode, originValidated]);
+  }, [settingsLoaded, circleOnlyMode, originValidated]);
 
   // Fonction pour forcer une re-vérification de l'accès
   const forceRecheck = useCallback(() => {
-    checkAccess();
-  }, [checkAccess]);
-
-  // Vérifier l'accès au chargement initial
-  useEffect(() => {
-    checkAccess();
+    setRecheckTrigger(prev => prev + 1);
   }, []);
-  
-  // Vérifier l'accès quand l'email ou l'origine change
+
+  // Vérifier l'accès au chargement, quand l'email change, ou quand une re-vérification est demandée
   useEffect(() => {
-    if (userEmail || originValidated) {
-      checkAccess();
-    }
-  }, [userEmail, originValidated, checkAccess]);
+    checkAccess();
+  }, [checkAccess, recheckTrigger, originValidated]);
 
   return (
     <AccessContext.Provider value={{
@@ -251,7 +235,6 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       circleIsAdmin,
       appEnvironment,
       circleOnlyMode,
-      isBootstrapped: hasBootstrapped,
       checkAccess,
       refreshEnvironment,
       forceRecheck,

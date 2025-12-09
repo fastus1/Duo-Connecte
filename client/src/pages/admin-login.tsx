@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { PageContainer } from '@/components/LoadingScreen';
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -49,7 +48,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <PageContainer className="flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
@@ -139,6 +138,6 @@ export default function AdminLogin() {
           </Button>
         </CardContent>
       </Card>
-    </PageContainer>
+    </div>
   );
 }
