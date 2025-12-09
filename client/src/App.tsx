@@ -1,13 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider, useSession } from '@/contexts/SessionContext';
 import { AccessProvider, useAccess } from '@/contexts/AccessContext';
 import { soloFlow, duoFlow, getFlow } from '@shared/schema';
+import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
+import { AdminPreviewSidebar } from '@/components/AdminPreviewSidebar';
+import { getSessionToken } from '@/lib/auth';
+import { Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 // Template Pages
 import AuthPage from "@/pages/auth";
@@ -163,12 +168,17 @@ const duoPageComponents = [
   DuoInversionPage20a,
 ];
 
-function AccessGate({ children }: { children: React.ReactNode }) {
+function AccessGate({ children, isAdmin }: { children: React.ReactNode; isAdmin: boolean }) {
   const { accessStatus } = useAccess();
   const [location] = useLocation();
 
   // Admin page is always accessible (has its own protection)
   if (location === '/admin' || location === '/admin-login') {
+    return <>{children}</>;
+  }
+
+  // Admin bypass - admins can access all pages for preview
+  if (isAdmin) {
     return <>{children}</>;
   }
 
@@ -238,14 +248,34 @@ function AccessGate({ children }: { children: React.ReactNode }) {
 function SessionRouter() {
   const { session } = useSession();
   const [location, setLocation] = useLocation();
+  const { circleIsAdmin } = useAccess();
+  const sessionToken = getSessionToken();
+  const [previewMode, setPreviewMode] = useState(false);
+
+  // Check if user is admin via JWT
+  const { data: userData } = useQuery({
+    queryKey: ['/api/auth/me'],
+    queryFn: async () => {
+      if (!sessionToken) return null;
+      const response = await fetch('/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${sessionToken}` },
+      });
+      if (!response.ok) return null;
+      return response.json();
+    },
+    enabled: !!sessionToken,
+    retry: false,
+  });
+
+  const isAdmin = userData?.isAdmin || circleIsAdmin;
 
   // Get current flow configuration
   const flow = getFlow(session.appType);
 
-  // Sync URL with current step (but don't redirect if on admin or template pages)
+  // Sync URL with current step (but don't redirect if on admin or template pages or in preview mode)
   useEffect(() => {
-    // Skip redirection if user is on admin or template pages
-    if (location === '/admin' || location === '/admin-login' || location === '/' || location === '/user-home') {
+    // Skip redirection if in preview mode or on admin/template pages
+    if (previewMode || location === '/admin' || location === '/admin-login' || location === '/' || location === '/user-home') {
       return;
     }
 
@@ -256,12 +286,60 @@ function SessionRouter() {
         setLocation(currentPage.path);
       }
     }
-  }, [session.currentStep, session.appType, location, setLocation, flow.pages]);
+  }, [session.currentStep, session.appType, location, setLocation, flow.pages, previewMode]);
+
+  // Admin preview mode with sidebar
+  if (isAdmin && previewMode) {
+    return (
+      <SidebarProvider>
+        <div className="flex h-screen w-full">
+          <AdminPreviewSidebar />
+          <SidebarInset className="flex flex-col flex-1 overflow-hidden">
+            <header className="flex items-center justify-between p-2 border-b bg-card sticky top-0 z-50">
+              <div className="flex items-center gap-2">
+                <SidebarTrigger data-testid="button-sidebar-toggle" />
+                <span className="text-sm font-medium">Mode Prévisualisation</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPreviewMode(false)}
+                data-testid="button-exit-preview"
+              >
+                Quitter la prévisualisation
+              </Button>
+            </header>
+            <main className="flex-1 overflow-auto">
+              <AccessGate isAdmin={isAdmin}>
+                <Switch>
+                  <Route path="/" component={AuthPage} />
+                  <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
+                  <Route path="/admin-login" component={AdminLogin} />
+                  <Route path="/admin" component={Dashboard} />
+                  {soloFlow.pages.map((page, index) => (
+                    <Route key={`solo-${page.id}`} path={page.path}>
+                      {React.createElement(soloPageComponents[index] || NotFound)}
+                    </Route>
+                  ))}
+                  {duoFlow.pages.map((page, index) => (
+                    <Route key={`duo-${page.id}`} path={page.path}>
+                      {React.createElement(duoPageComponents[index] || NotFound)}
+                    </Route>
+                  ))}
+                  <Route component={NotFound} />
+                </Switch>
+              </AccessGate>
+            </main>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <GlobalHeader />
-      <AccessGate>
+      <GlobalHeader onEnterPreview={isAdmin ? () => setPreviewMode(true) : undefined} />
+      <AccessGate isAdmin={false}>
         <Switch>
           {/* Auth & Public Routes */}
           <Route path="/" component={AuthPage} />
