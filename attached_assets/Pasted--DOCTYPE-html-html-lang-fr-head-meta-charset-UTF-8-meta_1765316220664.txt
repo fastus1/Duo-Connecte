@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réponse à votre ticket de support</title>
+    <style>
+        /* Styles de base pour la compatibilité avec les clients de messagerie */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        
+        /* Reset et style par défaut */
+        body { margin: 0; padding: 0; height: 100% !important; width: 100% !important; font-family: Arial, sans-serif; }
+        a { text-decoration: none; color: #2563EB; } /* Liens color: #2563EB */
+        
+        /* Style du bouton */
+        .button {
+            background-color: #074491; /* Brand color: #074491 */
+            border: none;
+            color: #FFFFFF; /* Bouton text color: #FFFFFF */
+            padding: 12px 25px;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        /* Responsive styles */
+        @media screen and (max-width: 600px) {
+            .full-width { width: 100% !important; display: block !important; }
+            .content-padding { padding: 20px 20px 10px 20px !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f0f3f5;"> <center>
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+            <tr>
+                <td align="center" style="padding: 40px 0 40px 0;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="600" class="full-width" style="border-collapse: collapse; background-color: #FFFFFF; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);">
+                        
+                        <tr>
+                            <td align="left" style="padding: 20px 30px 20px 30px; background-color: #FFFFFF;"> <h1 style="margin: 0; font-size: 24px; color: #000000;">Votre Marque</h1> </td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="content-padding" style="padding: 40px 30px 30px 30px; color: #000000;">
+                                <h2 style="margin: 0; font-size: 20px; line-height: 28px; color: #074491;">
+                                    ✅ Votre demande de support a été traitée
+                                </h2>
+                                <p style="margin: 20px 0 0 0; font-size: 16px; line-height: 24px;">
+                                    Bonjour [Nom du client],
+                                </p>
+                                <p style="margin: 20px 0 0 0; font-size: 16px; line-height: 24px;">
+                                    Merci d'avoir contacté notre équipe de support. Nous avons le plaisir de vous informer que votre demande a été traitée avec succès :
+                                </p>
+                                
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 25px; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 10px 15px; background-color: #F0F3F5; border-radius: 4px;">
+                                            <p style="margin: 0; font-size: 15px; line-height: 22px; color: #545861;">
+                                                **Numéro de ticket :** [Numéro du Ticket]
+                                            </p>
+                                            <p style="margin: 5px 0 0 0; font-size: 15px; line-height: 22px; color: #545861;">
+                                                **Sujet :** [Sujet du Ticket]
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <p style="margin: 25px 0 0 0; font-size: 16px; line-height: 24px;">
+                                    **Notre réponse :**
+                                </p>
+                                <p style="margin: 5px 0 0 0; font-size: 16px; line-height: 24px; border-left: 3px solid #074491; padding-left: 15px;">
+                                    [**Insérez ici la résolution ou la réponse détaillée.**]<br>
+                                    *Exemple : Nous avons corrigé l'erreur de connexion en réinitialisant votre mot de passe. Veuillez utiliser le lien ci-dessous pour le définir à nouveau.*
+                                </p>
+
+                                <p align="center" style="margin: 30px 0;">
+                                    <a href="[Lien vers la solution ou la page de confirmation]" target="_blank" class="button" style="text-decoration: none; color: #FFFFFF;">
+                                        Cliquez ici pour l'action
+                                    </a>
+                                </p>
+
+                                <p style="margin: 30px 0 0 0; font-size: 16px; line-height: 24px;">
+                                    Si vous avez d'autres questions ou si le problème persiste, veuillez **simplement répondre à cet e-mail**.
+                                </p>
+                                <p style="margin: 10px 0 0 0; font-size: 16px; line-height: 24px;">
+                                    Nous espérons que cette solution vous est utile !
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding: 30px 30px 40px 30px; font-size: 14px; line-height: 20px; color: #545861;">
+                                <hr style="border: 0; border-top: 1px solid #E4E7EB; width: 100%; margin-bottom: 20px;">
+                                <p style="margin: 0;">
+                                    Cordialement,<br>
+                                    L'équipe de support de Votre Marque
+                                </p>
+                                <p style="margin: 10px 0 0 0;">
+                                    <a href="[Lien vers le Centre d'aide]" target="_blank" style="color: #2563EB;">Centre d'aide</a> | 
+                                    <a href="[Lien vers la page de Contact]" target="_blank" style="color: #2563EB;">Nous Contacter</a>
+                                </p>
+                                <p style="margin: 20px 0 0 0; font-size: 12px; color: #999999;">
+                                    Vous recevez cet e-mail en réponse à votre demande de support.
+                                </p>
+                            </td>
+                        </tr>
+                        
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>
