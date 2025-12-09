@@ -293,30 +293,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const resend = new Resend(process.env.RESEND_API_KEY);
       
+      const ticketDate = new Date(ticket.createdAt).toLocaleDateString('fr-CA', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      
       await resend.emails.send({
         from: 'Avancer Simplement <support@avancersimplement.com>',
         to: ticket.email,
         subject: `Re: ${ticket.subject}`,
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: #074491; padding: 20px; border-radius: 8px 8px 0 0;">
-              <h2 style="color: white; margin: 0;">Avancer Simplement</h2>
-            </div>
-            <div style="background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-top: none;">
-              <p style="color: #333;">Bonjour ${ticket.name},</p>
-              <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #074491;">
-                <p style="white-space: pre-wrap; margin: 0; color: #333;">${message}</p>
-              </div>
-              <p style="color: #666; font-size: 14px; margin-top: 20px;">
-                En réponse à votre demande : "${ticket.subject}"
-              </p>
-            </div>
-            <div style="background: #f0f0f0; padding: 15px; border-radius: 0 0 8px 8px; text-align: center;">
-              <p style="color: #666; font-size: 12px; margin: 0;">
-                Avancer Simplement - Duo Connecte
-              </p>
-            </div>
-          </div>
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="margin: 0; padding: 0; background-color: #f4f7fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f7fa; padding: 40px 20px;">
+              <tr>
+                <td align="center">
+                  <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
+                    
+                    <!-- Header avec accent -->
+                    <tr>
+                      <td style="background: linear-gradient(135deg, #074491 0%, #0a5dc2 100%); padding: 32px 40px;">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: -0.5px;">
+                          Avancer Simplement
+                        </h1>
+                        <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">
+                          Votre accompagnement personnalisé
+                        </p>
+                      </td>
+                    </tr>
+                    
+                    <!-- Corps du message -->
+                    <tr>
+                      <td style="padding: 40px;">
+                        <p style="margin: 0 0 24px 0; color: #1a1a2e; font-size: 18px; line-height: 1.5;">
+                          Bonjour <strong>${ticket.name}</strong>,
+                        </p>
+                        
+                        <div style="background: #f8fafc; border-radius: 12px; padding: 24px; margin: 0 0 24px 0;">
+                          <p style="margin: 0; color: #374151; font-size: 16px; line-height: 1.7; white-space: pre-wrap;">${message}</p>
+                        </div>
+                        
+                        <p style="margin: 24px 0 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
+                          Cordialement,<br>
+                          <strong style="color: #1a1a2e;">L'équipe Avancer Simplement</strong>
+                        </p>
+                      </td>
+                    </tr>
+                    
+                    <!-- Référence du ticket -->
+                    <tr>
+                      <td style="padding: 0 40px 32px 40px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background: #f0f4f8; border-radius: 8px; padding: 16px;">
+                          <tr>
+                            <td style="padding: 16px;">
+                              <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Référence de votre demande
+                              </p>
+                              <p style="margin: 0; color: #374151; font-size: 14px; font-weight: 500;">
+                                ${ticket.subject}
+                              </p>
+                              <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 12px;">
+                                Ticket du ${ticketDate}
+                              </p>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                      <td style="background: #f8fafc; padding: 24px 40px; border-top: 1px solid #e5e7eb;">
+                        <p style="margin: 0; color: #9ca3af; font-size: 12px; text-align: center;">
+                          Avancer Simplement - Duo Connecte<br>
+                          <span style="color: #6b7280;">Cet email a été envoyé en réponse à votre demande de support.</span>
+                        </p>
+                      </td>
+                    </tr>
+                    
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
+          </html>
         `
       });
 
