@@ -17,13 +17,24 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
 }
 
+function getInitialTheme(storedTheme: Theme | null, defaultTheme: Theme): 'light' | 'dark' {
+  const theme = storedTheme || defaultTheme;
+  if (theme === 'system') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return theme === 'dark' ? 'dark' : 'light';
+}
+
 export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
     const stored = localStorage.getItem('theme') as Theme;
     return stored || defaultTheme;
   });
 
-  const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
+  const [actualTheme, setActualTheme] = useState<'light' | 'dark'>(() => {
+    const stored = localStorage.getItem('theme') as Theme;
+    return getInitialTheme(stored, defaultTheme);
+  });
 
   useEffect(() => {
     const handleCircleTheme = (event: CustomEvent<{ theme: 'light' | 'dark' }>) => {
