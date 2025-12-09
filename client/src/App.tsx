@@ -285,19 +285,47 @@ function dbg(msg: string, data?: unknown) {
 
 function BootstrapGate({ children }: { children: React.ReactNode }) {
   const { isBootstrapped, accessStatus } = useAccess();
+  const [themeReady, setThemeReady] = useState(() => {
+    // Si le thème est déjà dans localStorage, pas besoin d'attendre Circle.so
+    return localStorage.getItem('theme') !== null;
+  });
   const [showContent, setShowContent] = useState(false);
   
-  dbg('BootstrapGate', { isBootstrapped, accessStatus, showContent });
+  dbg('BootstrapGate', { isBootstrapped, accessStatus, themeReady, showContent });
   
-  // Quand bootstrapped, attendre un frame avant d'afficher le contenu
+  // Écouter le thème Circle.so
   useEffect(() => {
-    if (isBootstrapped && !showContent) {
-      // Attendre que le thème soit appliqué avant de montrer le contenu
+    if (themeReady) return;
+    
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'CIRCLE_USER_AUTH' && event.data?.theme) {
+        dbg('→ Theme received from Circle.so:', event.data.theme);
+        setThemeReady(true);
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    
+    // Timeout de secours : si pas de thème après 2s, continuer quand même
+    const timeout = setTimeout(() => {
+      dbg('→ Theme timeout, continuing anyway');
+      setThemeReady(true);
+    }, 2000);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      clearTimeout(timeout);
+    };
+  }, [themeReady]);
+  
+  // Quand bootstrapped ET thème prêt, afficher le contenu
+  useEffect(() => {
+    if (isBootstrapped && themeReady && !showContent) {
       requestAnimationFrame(() => {
         setShowContent(true);
       });
     }
-  }, [isBootstrapped, showContent]);
+  }, [isBootstrapped, themeReady, showContent]);
   
   // Afficher un écran de chargement stable pendant le bootstrap
   if (!showContent) {

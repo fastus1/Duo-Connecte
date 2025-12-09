@@ -51,6 +51,13 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
     const handleGlobalMessage = (event: MessageEvent) => {
       if (event.data?.type === 'CIRCLE_USER_AUTH' && event.data?.theme) {
         const newTheme = event.data.theme as 'light' | 'dark';
+        const currentStored = localStorage.getItem('theme');
+        
+        // Ne rien faire si le thème est déjà correct (évite le flash)
+        if (currentStored === newTheme) {
+          return;
+        }
+        
         localStorage.setItem('theme', newTheme);
         setThemeState(newTheme);
       }
