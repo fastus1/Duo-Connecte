@@ -27,14 +27,15 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const specialPages = [
-    { path: '/', label: 'Page de connexion', icon: LogIn },
     { path: '/admin-login', label: 'Connexion Admin', icon: Shield },
     { path: '/admin', label: 'Dashboard Admin', icon: Shield },
 ];
 
 const demoScreens = [
-    { path: '/_demo/loading', label: 'Écran de chargement', icon: Loader2 },
-    { path: '/_demo/paywall', label: 'Écran Paywall', icon: Lock },
+    { path: '/_demo/loading', label: 'Chargement', icon: Loader2 },
+    { path: '/_demo/paywall', label: 'Paywall (Accès Réservé)', icon: Lock },
+    { path: '/_demo/pin-creation', label: 'Création NIP (Bienvenue)', icon: Shield },
+    { path: '/_demo/pin-login', label: 'Connexion NIP (Bon retour)', icon: LogIn },
 ];
 
 const soloPageLabels: Record<string, string> = {
