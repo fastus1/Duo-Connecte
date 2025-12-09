@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { LoadingScreen, PageContainer } from '@/components/LoadingScreen';
 import { getSessionToken, clearAuth } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
@@ -340,14 +341,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md shadow-lg">
-          <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-base text-muted-foreground">Chargement de vos données...</p>
-          </CardContent>
-        </Card>
-      </div>
+      <LoadingScreen message="Chargement de vos données..." />
     );
   }
 
@@ -355,7 +349,7 @@ export default function Dashboard() {
   const sessionStart = sessionTimestamp ? new Date(parseInt(sessionTimestamp)) : null;
 
   return (
-    <div className="min-h-screen bg-background pb-12">
+    <PageContainer className="pb-12">
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           <div>
@@ -1065,6 +1059,6 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
           </Tabs>
         </div>
       </main>
-    </div>
+    </PageContainer>
   );
 }
