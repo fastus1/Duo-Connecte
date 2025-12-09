@@ -15,6 +15,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DemoLoadingScreen from '@/pages/DemoLoadingScreen';
 import DemoPaywallScreen from '@/pages/DemoPaywallScreen';
+import DemoAuthPage from '@/pages/DemoAuthPage';
 
 // Template Pages
 import AuthPage from "@/pages/auth";
@@ -367,7 +368,7 @@ function SessionRouter() {
                 <Switch>
                   <Route path="/_demo/loading" component={DemoLoadingScreen} />
                   <Route path="/_demo/paywall" component={DemoPaywallScreen} />
-                  <Route path="/" component={AuthPage} />
+                  <Route path="/" component={DemoAuthPage} />
                   <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
                   <Route path="/admin-login" component={AdminLogin} />
                   <Route path="/admin" component={Dashboard} />
