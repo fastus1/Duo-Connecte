@@ -8,7 +8,6 @@ interface AccessContextType {
   circleIsAdmin: boolean;
   appEnvironment: 'development' | 'production';
   circleOnlyMode: boolean;
-  isInitialized: boolean;
   checkAccess: () => Promise<void>;
   refreshEnvironment: () => Promise<'development' | 'production'>;
   forceRecheck: () => void;
@@ -229,18 +228,6 @@ export function AccessProvider({ children }: { children: ReactNode }) {
     checkAccess();
   }, [checkAccess, recheckTrigger, originValidated]);
 
-  useEffect(() => {
-    if (isInitialized && accessStatus !== 'loading') {
-      const loader = document.getElementById('initial-loader');
-      if (loader) {
-        loader.classList.add('fade-out');
-        setTimeout(() => {
-          loader.remove();
-        }, 300);
-      }
-    }
-  }, [isInitialized, accessStatus]);
-
   return (
     <AccessContext.Provider value={{
       accessStatus,
@@ -248,7 +235,6 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       circleIsAdmin,
       appEnvironment,
       circleOnlyMode,
-      isInitialized,
       checkAccess,
       refreshEnvironment,
       forceRecheck,
