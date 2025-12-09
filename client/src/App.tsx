@@ -163,28 +163,42 @@ const duoPageComponents = [
   DuoInversionPage20a,
 ];
 
+// DEBUG - À RETIRER APRÈS DIAGNOSTIC
+let renderCount = 0;
+function dbg(msg: string, data?: unknown) {
+  renderCount++;
+  const t = performance.now().toFixed(0);
+  console.log(`%c[${t}ms] #${renderCount} ${msg}`, 'color: #FF0000; font-weight: bold; font-size: 14px', data || '');
+}
+
 function AccessGate({ children }: { children: React.ReactNode }) {
   const { accessStatus } = useAccess();
   const [location] = useLocation();
 
+  dbg('AccessGate', { accessStatus, location, hasToken: !!localStorage.getItem('session_token') });
+
   // Admin page is always accessible (has its own protection)
   if (location === '/admin' || location === '/admin-login') {
+    dbg('→ RETURN: admin page');
     return <>{children}</>;
   }
 
   // Allow access if user is logged in (admin/template auth)
   const sessionToken = localStorage.getItem('session_token');
   if (sessionToken) {
+    dbg('→ RETURN: has token');
     return <>{children}</>;
   }
 
   // Public pages
   if (location === '/') {
+    dbg('→ RETURN: public /');
     return <>{children}</>;
   }
 
   // Show loading state
   if (accessStatus === 'loading') {
+    dbg('→ RETURN: LOADING SCREEN ⚠️');
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
