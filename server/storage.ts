@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, type PaidMember, type InsertPaidMember, type Feedback, type InsertFeedback, users, loginAttempts, appConfig, paidMembers, feedbacks } from "@shared/schema";
+import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, type PaidMember, type InsertPaidMember, type Feedback, type InsertFeedback, type SupportTicket, type InsertSupportTicket, users, loginAttempts, appConfig, paidMembers, feedbacks, supportTickets } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { eq, and, gt } from "drizzle-orm";
@@ -38,6 +38,13 @@ export interface IStorage {
   archiveFeedback(id: string): Promise<void>;
   unarchiveFeedback(id: string): Promise<void>;
   deleteFeedback(id: string): Promise<void>;
+
+  // Support ticket operations
+  createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket>;
+  getAllSupportTickets(): Promise<SupportTicket[]>;
+  getSupportTicket(id: string): Promise<SupportTicket | undefined>;
+  updateSupportTicketStatus(id: string, status: string): Promise<SupportTicket | undefined>;
+  deleteSupportTicket(id: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -45,6 +52,7 @@ export class MemStorage implements IStorage {
   private loginAttempts: Map<string, LoginAttempt>;
   private paidMembersMap: Map<string, PaidMember>;
   private feedbacks: Map<string, Feedback>;
+  private supportTicketsMap: Map<string, SupportTicket>;
   private configState: AppConfig;
 
   constructor() {
@@ -52,6 +60,7 @@ export class MemStorage implements IStorage {
     this.loginAttempts = new Map();
     this.paidMembersMap = new Map();
     this.feedbacks = new Map();
+    this.supportTicketsMap = new Map();
     this.configState = {
       id: "main",
       requireCircleDomain: true,
@@ -254,6 +263,49 @@ export class MemStorage implements IStorage {
   async deleteFeedback(id: string): Promise<void> {
     this.feedbacks.delete(id);
   }
+
+  async createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket> {
+    const id = randomUUID();
+    const supportTicket: SupportTicket = {
+      id,
+      name: ticket.name,
+      email: ticket.email,
+      subject: ticket.subject,
+      description: ticket.description,
+      status: "new",
+      createdAt: new Date(),
+      resolvedAt: null,
+    };
+    this.supportTicketsMap.set(id, supportTicket);
+    return supportTicket;
+  }
+
+  async getAllSupportTickets(): Promise<SupportTicket[]> {
+    return Array.from(this.supportTicketsMap.values()).sort((a, b) => 
+      b.createdAt.getTime() - a.createdAt.getTime()
+    );
+  }
+
+  async getSupportTicket(id: string): Promise<SupportTicket | undefined> {
+    return this.supportTicketsMap.get(id);
+  }
+
+  async updateSupportTicketStatus(id: string, status: string): Promise<SupportTicket | undefined> {
+    const ticket = this.supportTicketsMap.get(id);
+    if (ticket) {
+      ticket.status = status;
+      if (status === "resolved") {
+        ticket.resolvedAt = new Date();
+      }
+      this.supportTicketsMap.set(id, ticket);
+      return ticket;
+    }
+    return undefined;
+  }
+
+  async deleteSupportTicket(id: string): Promise<void> {
+    this.supportTicketsMap.delete(id);
+  }
 }
 
 export class DbStorage implements IStorage {
@@ -422,6 +474,43 @@ export class DbStorage implements IStorage {
 
   async deleteFeedback(id: string): Promise<void> {
     await this.db.delete(feedbacks).where(eq(feedbacks.id, id));
+  }
+
+  async createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket> {
+    const [result] = await this.db.insert(supportTickets).values({
+      name: ticket.name,
+      email: ticket.email,
+      subject: ticket.subject,
+      description: ticket.description,
+    }).returning();
+    return result;
+  }
+
+  async getAllSupportTickets(): Promise<SupportTicket[]> {
+    return await this.db.select().from(supportTickets).orderBy(supportTickets.createdAt);
+  }
+
+  async getSupportTicket(id: string): Promise<SupportTicket | undefined> {
+    const result = await this.db.select().from(supportTickets)
+      .where(eq(supportTickets.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async updateSupportTicketStatus(id: string, status: string): Promise<SupportTicket | undefined> {
+    const updates: Partial<SupportTicket> = { status };
+    if (status === "resolved") {
+      updates.resolvedAt = new Date();
+    }
+    const [result] = await this.db.update(supportTickets)
+      .set(updates)
+      .where(eq(supportTickets.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteSupportTicket(id: string): Promise<void> {
+    await this.db.delete(supportTickets).where(eq(supportTickets.id, id));
   }
 }
 

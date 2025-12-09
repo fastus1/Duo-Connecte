@@ -2,7 +2,7 @@ import { useLocation } from 'wouter';
 import { 
     Home, Shield, LogIn, Lock, Loader2, 
     User, Users, RefreshCw, Heart, MessageSquare,
-    ChevronRight
+    ChevronRight, HelpCircle
 } from 'lucide-react';
 import {
     Sidebar,
@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 const specialPages = [
     { path: '/admin-login', label: 'Connexion Admin', icon: Shield },
     { path: '/admin', label: 'Dashboard Admin', icon: Shield },
+    { path: '/support', label: 'Page Support', icon: HelpCircle },
 ];
 
 const demoScreens = [

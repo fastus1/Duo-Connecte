@@ -17,7 +17,8 @@ import {
   createPinSchema,
   validatePinSchema,
   updateConfigSchema,
-  insertFeedbackSchema
+  insertFeedbackSchema,
+  insertSupportTicketSchema
 } from "@shared/schema";
 
 // Temporary cache for validated Circle.so data (5 minutes expiry)
@@ -137,6 +138,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       await storage.deleteFeedback(req.params.id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ========================================
+  // SUPPORT TICKET ENDPOINTS
+  // ========================================
+
+  // Create support ticket (public - no auth required)
+  app.post("/api/support/tickets", async (req, res) => {
+    try {
+      const validatedTicket = insertSupportTicketSchema.parse(req.body);
+      const ticket = await storage.createSupportTicket(validatedTicket);
+      
+      // Trigger Zapier webhook if configured
+      const config = await storage.getAppConfig();
+      if (config.webhookAppUrl) {
+        try {
+          // Get the base URL and construct the Zapier webhook URL
+          const zapierWebhookUrl = process.env.ZAPIER_WEBHOOK_URL;
+          if (zapierWebhookUrl) {
+            await fetch(zapierWebhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                event: 'new_support_ticket',
+                ticket: {
+                  id: ticket.id,
+                  name: ticket.name,
+                  email: ticket.email,
+                  subject: ticket.subject,
+                  description: ticket.description,
+                  createdAt: ticket.createdAt,
+                }
+              }),
+            });
+          }
+        } catch (webhookError) {
+          console.error('Failed to send Zapier webhook:', webhookError);
+        }
+      }
+      
+      res.json({ success: true, ticketId: ticket.id });
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  // Get all support tickets - Admin only
+  app.get("/api/admin/support/tickets", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      const tickets = await storage.getAllSupportTickets();
+      res.json(tickets);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Update ticket status - Admin only
+  app.patch("/api/admin/support/tickets/:id/status", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      const { status } = req.body;
+      if (!['new', 'in_progress', 'resolved'].includes(status)) {
+        return res.status(400).json({ error: "Statut invalide" });
+      }
+
+      const ticket = await storage.updateSupportTicketStatus(req.params.id, status);
+      if (!ticket) {
+        return res.status(404).json({ error: "Ticket non trouvé" });
+      }
+      res.json(ticket);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Delete ticket - Admin only
+  app.delete("/api/admin/support/tickets/:id", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      await storage.deleteSupportTicket(req.params.id);
       res.json({ success: true });
     } catch (error: any) {
       res.status(500).json({ error: error.message });

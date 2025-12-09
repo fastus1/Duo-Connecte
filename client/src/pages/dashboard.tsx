@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2, Code, Copy, Check, Info, MoreVertical, UserX, Ban } from 'lucide-react';
+import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2, Code, Copy, Check, Info, MoreVertical, UserX, Ban, Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -24,6 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
 
 import { AdminFeedbacks } from '@/components/admin/AdminFeedbacks';
+import { AdminSupportTickets } from '@/components/admin/AdminSupportTickets';
 
 // Helper function to copy text with fallback
 async function copyToClipboard(text: string): Promise<boolean> {
@@ -391,11 +392,20 @@ export default function Dashboard() {
                 <Users className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Feedbacks</span>
               </TabsTrigger>
+              <TabsTrigger value="support" className="flex-1 min-w-fit" data-testid="tab-support">
+                <Ticket className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Support</span>
+              </TabsTrigger>
             </TabsList>
 
             {/* Tab: Feedbacks */}
             <TabsContent value="feedbacks" className="space-y-6">
               <AdminFeedbacks />
+            </TabsContent>
+
+            {/* Tab: Support */}
+            <TabsContent value="support" className="space-y-6">
+              <AdminSupportTickets />
             </TabsContent>
 
             {/* Tab: Accueil */}

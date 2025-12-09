@@ -99,6 +99,8 @@ import DuoInversionPage17a from '@/pages/DuoInversionPage17a';
 import DuoInversionPage18a from '@/pages/DuoInversionPage18a';
 import DuoInversionPage19a from '@/pages/DuoInversionPage19a';
 import DuoInversionPage20a from '@/pages/DuoInversionPage20a';
+import SupportPage from '@/pages/SupportPage';
+import { SupportButton } from '@/components/SupportButton';
 
 const soloPageComponents = [
   Welcome,
@@ -284,6 +286,7 @@ function SessionRouter() {
     '/_demo/pin-login',
     '/admin-login',
     '/admin',
+    '/support',
     ...soloFlow.pages.map(p => p.path),
     ...duoFlow.pages.map(p => p.path),
   ], []);
@@ -375,6 +378,7 @@ function SessionRouter() {
                   <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
                   <Route path="/admin-login" component={AdminLogin} />
                   <Route path="/admin" component={Dashboard} />
+                  <Route path="/support" component={SupportPage} />
                   {soloFlow.pages.map((page, index) => (
                     <Route key={`solo-${page.id}`} path={page.path}>
                       {React.createElement(soloPageComponents[index] || NotFound)}
@@ -395,6 +399,9 @@ function SessionRouter() {
     );
   }
 
+  // Hide support button on admin pages and support page itself
+  const showSupportButton = !location.startsWith('/admin') && location !== '/support';
+
   return (
     <div className="min-h-screen flex flex-col">
       <GlobalHeader onEnterPreview={isAdmin ? () => setPreviewMode(true) : undefined} />
@@ -407,6 +414,7 @@ function SessionRouter() {
 
           {/* Protected Routes */}
           <Route path="/admin" component={Dashboard} />
+          <Route path="/support" component={SupportPage} />
 
           {/* Solo flow routes */}
           {soloFlow.pages.map((page, index) => (
@@ -425,6 +433,7 @@ function SessionRouter() {
           <Route component={NotFound} />
         </Switch>
       </AccessGate>
+      {showSupportButton && <SupportButton />}
     </div>
   );
 }
