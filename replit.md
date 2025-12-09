@@ -8,6 +8,9 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-09** : Gestion membres améliorée - Deux options de suppression : "Retirer l'accès payant" ou "Supprimer complètement" (utilisateur + données)
+- **2025-12-09** : Correction bug NIP Layer 4 - Les utilisateurs créés sans NIP peuvent maintenant en créer un quand la couche 4 est activée
+- **2025-12-09** : Nouvel endpoint admin `/api/admin/reset-user-pin` pour réinitialiser le NIP d'un utilisateur
 - **2025-12-08** : **CORRECTION MAJEURE** - Script Circle.so v3 : utilise `window.circleUser` (fourni par Circle.so) au lieu de variables Liquid qui ne fonctionnent pas dans le JS
 - **2025-12-08** : Header retiré pour les utilisateurs non-admin, sélecteur de thème en bas, bouton maison supprimé
 - **2025-12-08** : Correction du statut admin en production (endpoint /api/debug/fix-admin)
