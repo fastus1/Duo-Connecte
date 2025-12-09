@@ -1,4 +1,4 @@
-import { ArrowLeft, Lock, Home } from 'lucide-react';
+import { ArrowLeft, Lock, Home, HelpCircle } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -58,6 +58,14 @@ export function PersistentNav({
           )}
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setLocation('/support')}
+            data-testid="button-nav-support"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </Button>
           {isLoggedIn && isAdmin ? (
             <Button
               variant="outline"

@@ -100,7 +100,6 @@ import DuoInversionPage18a from '@/pages/DuoInversionPage18a';
 import DuoInversionPage19a from '@/pages/DuoInversionPage19a';
 import DuoInversionPage20a from '@/pages/DuoInversionPage20a';
 import SupportPage from '@/pages/SupportPage';
-import { SupportButton } from '@/components/SupportButton';
 
 const soloPageComponents = [
   Welcome,
@@ -323,84 +322,84 @@ function SessionRouter() {
     }
   }, [session.currentStep, session.appType, location, setLocation, flow.pages, previewMode]);
 
+
   // Admin preview mode with sidebar
   if (isAdmin && previewMode) {
     return (
-      <SidebarProvider>
-        <div className="flex h-screen w-full">
-          <AdminPreviewSidebar />
-          <SidebarInset className="flex flex-col flex-1 overflow-hidden">
-            <header className="flex items-center justify-between p-2 border-b bg-card sticky top-0 z-50 gap-2">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger data-testid="button-sidebar-toggle" />
-                <span className="text-sm font-medium hidden sm:inline">Prévisualisation</span>
-              </div>
-              <div className="flex items-center gap-1">
+      <>
+        <SidebarProvider>
+          <div className="flex h-screen w-full">
+            <AdminPreviewSidebar />
+            <SidebarInset className="flex flex-col flex-1 overflow-hidden">
+              <header className="flex items-center justify-between p-2 border-b bg-card sticky top-0 z-50 gap-2">
+                <div className="flex items-center gap-2">
+                  <SidebarTrigger data-testid="button-sidebar-toggle" />
+                  <span className="text-sm font-medium hidden sm:inline">Prévisualisation</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={goToPrevPage}
+                    disabled={!canGoPrev}
+                    data-testid="button-prev-page"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-xs text-muted-foreground min-w-[60px] text-center">
+                    {currentPageIndex >= 0 ? `${currentPageIndex + 1}/${allPreviewPages.length}` : '-'}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={goToNextPage}
+                    disabled={!canGoNext}
+                    data-testid="button-next-page"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
                 <Button
                   variant="outline"
-                  size="icon"
-                  onClick={goToPrevPage}
-                  disabled={!canGoPrev}
-                  data-testid="button-prev-page"
+                  size="sm"
+                  onClick={() => setPreviewMode(false)}
+                  data-testid="button-exit-preview"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Quitter</span>
+                  <span className="sm:hidden">X</span>
                 </Button>
-                <span className="text-xs text-muted-foreground min-w-[60px] text-center">
-                  {currentPageIndex >= 0 ? `${currentPageIndex + 1}/${allPreviewPages.length}` : '-'}
-                </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={goToNextPage}
-                  disabled={!canGoNext}
-                  data-testid="button-next-page"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPreviewMode(false)}
-                data-testid="button-exit-preview"
-              >
-                <span className="hidden sm:inline">Quitter</span>
-                <span className="sm:hidden">X</span>
-              </Button>
-            </header>
-            <main className="flex-1 overflow-auto">
-              <AccessGate isAdmin={isAdmin}>
-                <Switch>
-                  <Route path="/_demo/loading" component={DemoLoadingScreen} />
-                  <Route path="/_demo/paywall" component={DemoPaywallScreen} />
-                  <Route path="/_demo/pin-creation" component={DemoPinCreation} />
-                  <Route path="/_demo/pin-login" component={DemoPinLogin} />
-                  <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
-                  <Route path="/admin-login" component={AdminLogin} />
-                  <Route path="/admin" component={Dashboard} />
-                  <Route path="/support" component={SupportPage} />
-                  {soloFlow.pages.map((page, index) => (
-                    <Route key={`solo-${page.id}`} path={page.path}>
-                      {React.createElement(soloPageComponents[index] || NotFound)}
-                    </Route>
-                  ))}
-                  {duoFlow.pages.map((page, index) => (
-                    <Route key={`duo-${page.id}`} path={page.path}>
-                      {React.createElement(duoPageComponents[index] || NotFound)}
-                    </Route>
-                  ))}
-                  <Route component={NotFound} />
-                </Switch>
-              </AccessGate>
-            </main>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
+              </header>
+              <main className="flex-1 overflow-auto">
+                <AccessGate isAdmin={isAdmin}>
+                  <Switch>
+                    <Route path="/_demo/loading" component={DemoLoadingScreen} />
+                    <Route path="/_demo/paywall" component={DemoPaywallScreen} />
+                    <Route path="/_demo/pin-creation" component={DemoPinCreation} />
+                    <Route path="/_demo/pin-login" component={DemoPinLogin} />
+                    <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
+                    <Route path="/admin-login" component={AdminLogin} />
+                    <Route path="/admin" component={Dashboard} />
+                    <Route path="/support" component={SupportPage} />
+                    {soloFlow.pages.map((page, index) => (
+                      <Route key={`solo-${page.id}`} path={page.path}>
+                        {React.createElement(soloPageComponents[index] || NotFound)}
+                      </Route>
+                    ))}
+                    {duoFlow.pages.map((page, index) => (
+                      <Route key={`duo-${page.id}`} path={page.path}>
+                        {React.createElement(duoPageComponents[index] || NotFound)}
+                      </Route>
+                    ))}
+                    <Route component={NotFound} />
+                  </Switch>
+                </AccessGate>
+              </main>
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
+      </>
     );
   }
-
-  // Hide support button on admin pages and support page itself
-  const showSupportButton = !location.startsWith('/admin') && location !== '/support';
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -433,7 +432,6 @@ function SessionRouter() {
           <Route component={NotFound} />
         </Switch>
       </AccessGate>
-      {showSupportButton && <SupportButton />}
     </div>
   );
 }
