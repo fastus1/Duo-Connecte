@@ -10,19 +10,12 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// Custom event for Circle.so theme sync
 const CIRCLE_THEME_EVENT = 'circle-theme-change';
 
 interface ThemeProviderProps {
   children: ReactNode;
   defaultTheme?: Theme;
-}
-
-function getInitialTheme(storedTheme: Theme | null, defaultTheme: Theme): 'light' | 'dark' {
-  const theme = storedTheme || defaultTheme;
-  if (theme === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  return theme === 'dark' ? 'dark' : 'light';
 }
 
 export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProviderProps) {
@@ -31,11 +24,10 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
     return stored || defaultTheme;
   });
 
-  const [actualTheme, setActualTheme] = useState<'light' | 'dark'>(() => {
-    const stored = localStorage.getItem('theme') as Theme;
-    return getInitialTheme(stored, defaultTheme);
-  });
+  const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
 
+  // Listen for Circle.so theme changes via internal custom event
+  // This event is dispatched by setThemeFromCircle after Zod validation in useCircleAuth
   useEffect(() => {
     const handleCircleTheme = (event: CustomEvent<{ theme: 'light' | 'dark' }>) => {
       const newTheme = event.detail.theme;
@@ -47,17 +39,11 @@ export function ThemeProvider({ children, defaultTheme = 'system' }: ThemeProvid
     return () => window.removeEventListener(CIRCLE_THEME_EVENT, handleCircleTheme as EventListener);
   }, []);
 
+  // Global listener for Circle.so postMessage - accepts from any origin for theme sync
   useEffect(() => {
     const handleGlobalMessage = (event: MessageEvent) => {
       if (event.data?.type === 'CIRCLE_USER_AUTH' && event.data?.theme) {
         const newTheme = event.data.theme as 'light' | 'dark';
-        const currentStored = localStorage.getItem('theme');
-        
-        // Ne rien faire si le thème est déjà correct (évite le flash)
-        if (currentStored === newTheme) {
-          return;
-        }
-        
         localStorage.setItem('theme', newTheme);
         setThemeState(newTheme);
       }
@@ -113,6 +99,7 @@ export function useTheme() {
 }
 
 export function setThemeFromCircle(circleTheme: 'light' | 'dark') {
+  // Apply theme immediately to DOM (avoids race condition with React effects)
   localStorage.setItem('theme', circleTheme);
   const root = document.documentElement;
   if (circleTheme === 'dark') {
@@ -121,6 +108,7 @@ export function setThemeFromCircle(circleTheme: 'light' | 'dark') {
     root.classList.remove('dark');
   }
   
+  // Also dispatch custom event to sync with ThemeProvider React state
   window.dispatchEvent(new CustomEvent('circle-theme-change', { 
     detail: { theme: circleTheme } 
   }));

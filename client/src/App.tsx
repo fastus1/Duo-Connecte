@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -183,10 +183,27 @@ function AccessGate({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Show loading state - but don't show loading screen to avoid flash
-  // Just render nothing briefly while checking access
+  // Show loading state
   if (accessStatus === 'loading') {
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 mx-auto">
+            <img
+              src="/logo-blue.png"
+              alt="Logo"
+              className="w-16 h-16 animate-pulse dark:hidden"
+            />
+            <img
+              src="/logo-white.png"
+              alt="Logo"
+              className="w-16 h-16 animate-pulse hidden dark:block"
+            />
+          </div>
+          <p className="text-muted-foreground">Vérification de l'accès...</p>
+        </div>
+      </div>
+    );
   }
 
   // Show paywall if access denied
@@ -275,91 +292,16 @@ function SessionRouter() {
   );
 }
 
-// DEBUG - Compteur de renders
-let appRenderCount = 0;
-function dbg(msg: string, data?: unknown) {
-  appRenderCount++;
-  const t = performance.now().toFixed(0);
-  console.log(`%c[${t}ms] #${appRenderCount} ${msg}`, 'color: #FF0000; font-weight: bold; font-size: 12px', data || '');
-}
-
-function BootstrapGate({ children }: { children: React.ReactNode }) {
-  const { isBootstrapped, accessStatus } = useAccess();
-  const [themeReady, setThemeReady] = useState(() => {
-    // Si le thème est déjà dans localStorage, pas besoin d'attendre Circle.so
-    return localStorage.getItem('theme') !== null;
-  });
-  const [showContent, setShowContent] = useState(false);
-  
-  dbg('BootstrapGate', { isBootstrapped, accessStatus, themeReady, showContent });
-  
-  // Écouter le thème Circle.so
-  useEffect(() => {
-    if (themeReady) return;
-    
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'CIRCLE_USER_AUTH' && event.data?.theme) {
-        dbg('→ Theme received from Circle.so:', event.data.theme);
-        setThemeReady(true);
-      }
-    };
-    
-    window.addEventListener('message', handleMessage);
-    
-    // Timeout de secours : si pas de thème après 2s, continuer quand même
-    const timeout = setTimeout(() => {
-      dbg('→ Theme timeout, continuing anyway');
-      setThemeReady(true);
-    }, 2000);
-    
-    return () => {
-      window.removeEventListener('message', handleMessage);
-      clearTimeout(timeout);
-    };
-  }, [themeReady]);
-  
-  // Quand bootstrapped ET thème prêt, afficher le contenu
-  useEffect(() => {
-    if (isBootstrapped && themeReady && !showContent) {
-      requestAnimationFrame(() => {
-        setShowContent(true);
-      });
-    }
-  }, [isBootstrapped, themeReady, showContent]);
-  
-  // Afficher un écran de chargement stable pendant le bootstrap
-  // Utiliser des couleurs inline pour éviter le flash (CSS pas encore chargé)
-  if (!showContent) {
-    dbg('→ LOADING: stable screen');
-    const isDark = document.documentElement.classList.contains('dark');
-    return (
-      <div 
-        style={{ 
-          minHeight: '100vh',
-          backgroundColor: isDark ? '#252d3a' : '#f0f3f7'
-        }} 
-      />
-    );
-  }
-  
-  dbg('→ RENDER: content');
-  return <>{children}</>;
-}
-
 function App() {
-  dbg('App render');
-  
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system">
         <TooltipProvider>
           <AccessProvider>
-            <BootstrapGate>
-              <SessionProvider>
-                <Toaster />
-                <SessionRouter />
-              </SessionProvider>
-            </BootstrapGate>
+            <SessionProvider>
+              <Toaster />
+              <SessionRouter />
+            </SessionProvider>
           </AccessProvider>
         </TooltipProvider>
       </ThemeProvider>
