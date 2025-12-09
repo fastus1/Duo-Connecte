@@ -34,6 +34,10 @@ externalPort = 3003
 localPort = 43133
 externalPort = 4200
 
+[[ports]]
+localPort = 44289
+externalPort = 5000
+
 [env]
 PORT = "5000"
 NODE_ENV = "production"
@@ -76,7 +80,6 @@ VITE_CIRCLE_ORIGIN = "https://communaute.avancersimplement.com"
 
 [userenv.shared]
 WEBHOOK_SECRET = "3c3d6c737b2e7c8ec644581d9c2547753309e8ca1ec15dc9b88eb72867c2b443"
-ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/3188739/uf5lfff/"
 
 [agent]
 expertMode = true
