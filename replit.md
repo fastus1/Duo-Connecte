@@ -1,4 +1,4 @@
-# Duo-Connecté - Guide de Communication et Régulation Émotionnelle
+# duo-connecte - Guide de Communication et Régulation Émotionnelle
 
 ## Vue d'ensemble
 
