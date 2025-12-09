@@ -163,46 +163,28 @@ const duoPageComponents = [
   DuoInversionPage20a,
 ];
 
-// DEBUG: Compteur de renders
-let accessGateRenderCount = 0;
-const DEBUG_MODE = true;
-
-function debugLog(component: string, message: string, data?: unknown) {
-  if (DEBUG_MODE) {
-    const time = performance.now().toFixed(0);
-    console.log(`%c[${time}ms] ${component}: ${message}`, 'color: #FF6B6B; font-weight: bold', data || '');
-  }
-}
-
 function AccessGate({ children }: { children: React.ReactNode }) {
   const { accessStatus } = useAccess();
   const [location] = useLocation();
-  
-  accessGateRenderCount++;
-  debugLog('AccessGate', `Render #${accessGateRenderCount}`, { accessStatus, location });
 
   // Admin page is always accessible (has its own protection)
   if (location === '/admin' || location === '/admin-login') {
-    debugLog('AccessGate', 'Returning: admin page');
     return <>{children}</>;
   }
 
   // Allow access if user is logged in (admin/template auth)
   const sessionToken = localStorage.getItem('session_token');
   if (sessionToken) {
-    debugLog('AccessGate', 'Returning: has session token');
     return <>{children}</>;
   }
 
   // Public pages
   if (location === '/') {
-    debugLog('AccessGate', 'Returning: public page /');
     return <>{children}</>;
   }
 
   // Show loading state
   if (accessStatus === 'loading') {
-    debugLog('AccessGate', 'Returning: LOADING SCREEN');
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
