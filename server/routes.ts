@@ -264,6 +264,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reply to ticket - Admin only (sends email via Resend)
+  app.post("/api/admin/support/tickets/:id/reply", requireAuth, async (req, res) => {
+    try {
+      const { userId } = (req as any).user;
+      const user = await storage.getUser(userId);
+
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+      }
+
+      const { message } = req.body;
+      if (!message || typeof message !== 'string' || message.trim().length === 0) {
+        return res.status(400).json({ error: "Le message est requis" });
+      }
+
+      // Get the ticket
+      const tickets = await storage.getAllSupportTickets();
+      const ticket = tickets.find(t => t.id === req.params.id);
+      if (!ticket) {
+        return res.status(404).json({ error: "Ticket non trouvé" });
+      }
+
+      // Send email via Resend
+      if (!process.env.RESEND_API_KEY) {
+        return res.status(500).json({ error: "Service email non configuré" });
+      }
+
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      
+      await resend.emails.send({
+        from: 'Avancer Simplement <support@avancersimplement.com>',
+        to: ticket.email,
+        subject: `Re: ${ticket.subject}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #074491; padding: 20px; border-radius: 8px 8px 0 0;">
+              <h2 style="color: white; margin: 0;">Avancer Simplement</h2>
+            </div>
+            <div style="background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-top: none;">
+              <p style="color: #333;">Bonjour ${ticket.name},</p>
+              <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #074491;">
+                <p style="white-space: pre-wrap; margin: 0; color: #333;">${message}</p>
+              </div>
+              <p style="color: #666; font-size: 14px; margin-top: 20px;">
+                En réponse à votre demande : "${ticket.subject}"
+              </p>
+            </div>
+            <div style="background: #f0f0f0; padding: 15px; border-radius: 0 0 8px 8px; text-align: center;">
+              <p style="color: #666; font-size: 12px; margin: 0;">
+                Avancer Simplement - Duo Connecte
+              </p>
+            </div>
+          </div>
+        `
+      });
+
+      console.log('[RESEND] Reply sent to:', ticket.email, 'for ticket:', ticket.id);
+
+      // Update ticket status to in_progress if it was new
+      if (ticket.status === 'new') {
+        await storage.updateSupportTicketStatus(ticket.id, 'in_progress');
+      }
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('[RESEND] Failed to send reply:', error);
+      res.status(500).json({ error: "Erreur lors de l'envoi de l'email" });
+    }
+  });
+
   // GET /api/health - Health check endpoint for debugging
   app.get('/api/health', async (req: Request, res: Response) => {
     try {
