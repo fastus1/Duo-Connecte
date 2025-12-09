@@ -328,10 +328,17 @@ function BootstrapGate({ children }: { children: React.ReactNode }) {
   }, [isBootstrapped, themeReady, showContent]);
   
   // Afficher un écran de chargement stable pendant le bootstrap
+  // Utiliser des couleurs inline pour éviter le flash (CSS pas encore chargé)
   if (!showContent) {
     dbg('→ LOADING: stable screen');
+    const isDark = document.documentElement.classList.contains('dark');
     return (
-      <div className="min-h-screen bg-background" />
+      <div 
+        style={{ 
+          minHeight: '100vh',
+          backgroundColor: isDark ? '#252d3a' : '#f0f3f7'
+        }} 
+      />
     );
   }
   
