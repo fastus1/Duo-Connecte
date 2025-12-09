@@ -163,61 +163,30 @@ const duoPageComponents = [
   DuoInversionPage20a,
 ];
 
-// DEBUG - À RETIRER APRÈS DIAGNOSTIC
-let renderCount = 0;
-function dbg(msg: string, data?: unknown) {
-  renderCount++;
-  const t = performance.now().toFixed(0);
-  console.log(`%c[${t}ms] #${renderCount} ${msg}`, 'color: #FF0000; font-weight: bold; font-size: 14px', data || '');
-}
-
 function AccessGate({ children }: { children: React.ReactNode }) {
   const { accessStatus } = useAccess();
   const [location] = useLocation();
 
-  dbg('AccessGate', { accessStatus, location, hasToken: !!localStorage.getItem('session_token') });
-
   // Admin page is always accessible (has its own protection)
   if (location === '/admin' || location === '/admin-login') {
-    dbg('→ RETURN: admin page');
     return <>{children}</>;
   }
 
   // Allow access if user is logged in (admin/template auth)
   const sessionToken = localStorage.getItem('session_token');
   if (sessionToken) {
-    dbg('→ RETURN: has token');
     return <>{children}</>;
   }
 
   // Public pages
   if (location === '/') {
-    dbg('→ RETURN: public /');
     return <>{children}</>;
   }
 
-  // Show loading state
+  // Show loading state - but don't show loading screen to avoid flash
+  // Just render nothing briefly while checking access
   if (accessStatus === 'loading') {
-    dbg('→ RETURN: LOADING SCREEN ⚠️');
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 mx-auto">
-            <img
-              src="/logo-blue.png"
-              alt="Logo"
-              className="w-16 h-16 animate-pulse dark:hidden"
-            />
-            <img
-              src="/logo-white.png"
-              alt="Logo"
-              className="w-16 h-16 animate-pulse hidden dark:block"
-            />
-          </div>
-          <p className="text-muted-foreground">Vérification de l'accès...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Show paywall if access denied
