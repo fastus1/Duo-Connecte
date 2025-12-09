@@ -328,7 +328,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         return res.json({
           status: 'missing_pin',
-          user_id: existingUser.id,
+          user_id: userData.publicUid,
+          db_user_id: existingUser.id,
           email: userData.email,
           name: existingUser.name || userData.name,
           is_admin: finalIsAdmin,
