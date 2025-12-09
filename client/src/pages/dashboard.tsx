@@ -410,41 +410,50 @@ export default function Dashboard() {
 
             {/* Tab: Accueil */}
             <TabsContent value="accueil" className="space-y-6">
-              <Card data-testid="card-session-info">
-                <CardHeader>
-                  <CardTitle className="text-lg">Informations de session</CardTitle>
-                  <CardDescription>
-                    Détails de votre connexion actuelle
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">Session démarrée</p>
-                      <p className="text-xs text-muted-foreground">
-                        {sessionStart ? sessionStart.toLocaleString('fr-FR') : 'Non disponible'}
-                      </p>
+              <div className="grid grid-cols-2 gap-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-full bg-emerald-500/10">
+                        <Clock className="h-5 w-5 text-emerald-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">Session démarrée</p>
+                        <p className="text-xs text-muted-foreground">
+                          {sessionStart ? sessionStart.toLocaleString('fr-FR') : 'Non disponible'}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Shield className="h-5 w-5 text-muted-foreground" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">Expiration automatique</p>
-                      <p className="text-xs text-muted-foreground">
-                        60 minutes d'inactivité
-                      </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-full bg-blue-500/10">
+                        <Shield className="h-5 w-5 text-blue-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">Expiration</p>
+                        <p className="text-xs text-muted-foreground">60 min d'inactivité</p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Bienvenue, {userData?.name || 'Administrateur'}</CardTitle>
-                  <CardDescription>
-                    Vous êtes connecté en tant qu'administrateur
-                  </CardDescription>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-primary/10">
+                      <Home className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Bienvenue, {userData?.name || 'Administrateur'}</CardTitle>
+                      <CardDescription>
+                        Vous êtes connecté en tant qu'administrateur
+                      </CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
@@ -458,13 +467,17 @@ export default function Dashboard() {
             <TabsContent value="securite" className="space-y-6">
               <Card data-testid="card-security-config">
                 <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-muted-foreground" />
-                    <CardTitle className="text-lg">Couches de sécurité</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-violet-500/10">
+                      <Shield className="h-5 w-5 text-violet-500" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Couches de sécurité</CardTitle>
+                      <CardDescription>
+                        Activez ou désactivez les couches de protection selon vos besoins
+                      </CardDescription>
+                    </div>
                   </div>
-                  <CardDescription>
-                    Activez ou désactivez les couches de protection selon vos besoins
-                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-center justify-between gap-4">
@@ -582,13 +595,17 @@ export default function Dashboard() {
             <TabsContent value="paywall" className="space-y-6">
               <Card data-testid="card-paywall-config">
                 <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Lock className="h-5 w-5 text-muted-foreground" />
-                    <CardTitle className="text-lg">Configuration du Paywall</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-amber-500/10">
+                      <Lock className="h-5 w-5 text-amber-500" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Configuration du Paywall</CardTitle>
+                      <CardDescription>
+                        Personnalisez l'écran affiché aux membres non-payants
+                      </CardDescription>
+                    </div>
                   </div>
-                  <CardDescription>
-                    Personnalisez l'écran affiché aux membres non-payants
-                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -661,13 +678,17 @@ export default function Dashboard() {
             <TabsContent value="membres" className="space-y-6">
               <Card data-testid="card-paid-members">
                 <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-muted-foreground" />
-                    <CardTitle className="text-lg">Membres Payants</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-teal-500/10">
+                      <Users className="h-5 w-5 text-teal-500" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Membres Payants</CardTitle>
+                      <CardDescription>
+                        Gérez manuellement les accès payants (le webhook Circle.so ajoute automatiquement les nouveaux paiements)
+                      </CardDescription>
+                    </div>
                   </div>
-                  <CardDescription>
-                    Gérez manuellement les accès payants (le webhook Circle.so ajoute automatiquement les nouveaux paiements)
-                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex gap-2">
@@ -754,13 +775,17 @@ export default function Dashboard() {
             <TabsContent value="webhook" className="space-y-6">
               <Card data-testid="card-webhook-generator">
                 <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Code className="h-5 w-5 text-muted-foreground" />
-                    <CardTitle className="text-lg">Générateur de Script Webhook</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-orange-500/10">
+                      <Code className="h-5 w-5 text-orange-500" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Générateur de Script Webhook</CardTitle>
+                      <CardDescription>
+                        Générez le script à coller dans le Custom Code de votre paywall Circle.so
+                      </CardDescription>
+                    </div>
                   </div>
-                  <CardDescription>
-                    Générez le script à coller dans le Custom Code de votre paywall Circle.so
-                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -895,12 +920,17 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
 
               <Card data-testid="card-auth-script-generator">
                 <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-muted-foreground" />
-                    <CardTitle className="text-lg">Code Snippet Circle - Script d'Authentification</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-indigo-500/10">
+                      <Shield className="h-5 w-5 text-indigo-500" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Code Snippet Circle - Script d'Authentification</CardTitle>
+                      <CardDescription>
+                        Script à placer dans Settings → Code Snippets → JavaScript
+                      </CardDescription>
+                    </div>
                   </div>
-                  <CardDescription>
-                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
