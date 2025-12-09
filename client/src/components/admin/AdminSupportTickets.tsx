@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Ticket, Clock, CheckCircle, Loader2, Trash2, Mail, User } from 'lucide-react';
+import { Ticket, Clock, CheckCircle, Loader2, Trash2, Mail, User, Send } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient, apiRequest } from '@/lib/queryClient';
@@ -22,6 +23,8 @@ const statusLabels: Record<string, { label: string; color: string; icon: typeof 
 export function AdminSupportTickets() {
   const { toast } = useToast();
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
+  const [replyMessage, setReplyMessage] = useState<string>('');
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   const { data: tickets = [], isLoading } = useQuery<SupportTicket[]>({
     queryKey: ['/api/admin/support/tickets'],
@@ -58,6 +61,21 @@ export function AdminSupportTickets() {
     },
     onError: () => {
       toast({ title: "Erreur", description: "Impossible de supprimer le ticket", variant: "destructive" });
+    },
+  });
+
+  const sendReply = useMutation({
+    mutationFn: async ({ id, message }: { id: string; message: string }) => {
+      return await apiRequest('POST', `/api/admin/support/tickets/${id}/reply`, { message });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/support/tickets'] });
+      setReplyMessage('');
+      setReplyingTo(null);
+      toast({ title: "Réponse envoyée", description: "L'email a été envoyé au client" });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Impossible d'envoyer la réponse", variant: "destructive" });
     },
   });
 
@@ -198,12 +216,14 @@ export function AdminSupportTickets() {
                         <Button
                           variant="outline"
                           size="sm"
-                          asChild
+                          onClick={() => {
+                            setReplyingTo(replyingTo === ticket.id ? null : ticket.id);
+                            setReplyMessage('');
+                          }}
+                          data-testid={`button-reply-${ticket.id}`}
                         >
-                          <a href={`mailto:${ticket.email}?subject=Re: ${ticket.subject}`} data-testid={`button-reply-${ticket.id}`}>
-                            <Mail className="h-4 w-4 mr-2" />
-                            Répondre
-                          </a>
+                          <Mail className="h-4 w-4 mr-2" />
+                          Répondre
                         </Button>
                         
                         <Button
@@ -220,6 +240,46 @@ export function AdminSupportTickets() {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
+
+                      {replyingTo === ticket.id && (
+                        <div className="mt-4 pt-4 border-t space-y-3">
+                          <h4 className="font-medium">Répondre à {ticket.name}</h4>
+                          <Textarea
+                            placeholder="Écrivez votre réponse..."
+                            value={replyMessage}
+                            onChange={(e) => setReplyMessage(e.target.value)}
+                            rows={4}
+                            data-testid={`textarea-reply-${ticket.id}`}
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => {
+                                if (replyMessage.trim()) {
+                                  sendReply.mutate({ id: ticket.id, message: replyMessage });
+                                }
+                              }}
+                              disabled={!replyMessage.trim() || sendReply.isPending}
+                              data-testid={`button-send-reply-${ticket.id}`}
+                            >
+                              {sendReply.isPending ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              ) : (
+                                <Send className="h-4 w-4 mr-2" />
+                              )}
+                              Envoyer
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => {
+                                setReplyingTo(null);
+                                setReplyMessage('');
+                              }}
+                            >
+                              Annuler
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 )}
