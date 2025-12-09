@@ -32,6 +32,11 @@ const specialPages = [
     { path: '/admin', label: 'Dashboard Admin', icon: Shield },
 ];
 
+const demoScreens = [
+    { path: '/_demo/loading', label: 'Écran de chargement', icon: Loader2 },
+    { path: '/_demo/paywall', label: 'Écran Paywall', icon: Lock },
+];
+
 const soloPageLabels: Record<string, string> = {
     '/welcome': 'Accueil',
     '/solo/roles': 'Choix des rôles',
@@ -162,7 +167,24 @@ export function AdminPreviewSidebar() {
             </SidebarHeader>
 
             <SidebarContent className="overflow-y-auto">
-                <CollapsibleSection title="Pages spéciales" icon={Shield} color="text-foreground" defaultOpen={true}>
+                <CollapsibleSection title="Écrans de démonstration" icon={Loader2} color="text-orange-500" defaultOpen={true}>
+                    <SidebarMenu>
+                        {demoScreens.map((screen) => (
+                            <SidebarMenuItem key={screen.path}>
+                                <SidebarMenuButton
+                                    onClick={() => handleNavigate(screen.path)}
+                                    isActive={isActive(screen.path)}
+                                    data-testid={`sidebar-demo-${screen.path.replace(/\//g, '-')}`}
+                                >
+                                    <screen.icon className="h-4 w-4" />
+                                    <span>{screen.label}</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </CollapsibleSection>
+
+                <CollapsibleSection title="Pages spéciales" icon={Shield} color="text-foreground">
                     <SidebarMenu>
                         {specialPages.map((page) => (
                             <SidebarMenuItem key={page.path}>
