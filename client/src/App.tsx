@@ -15,7 +15,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DemoLoadingScreen from '@/pages/DemoLoadingScreen';
 import DemoPaywallScreen from '@/pages/DemoPaywallScreen';
-import DemoAuthPage from '@/pages/DemoAuthPage';
+import DemoPinCreation from '@/pages/DemoPinCreation';
+import DemoPinLogin from '@/pages/DemoPinLogin';
 
 // Template Pages
 import AuthPage from "@/pages/auth";
@@ -279,7 +280,8 @@ function SessionRouter() {
   const allPreviewPages = useMemo(() => [
     '/_demo/loading',
     '/_demo/paywall',
-    '/',
+    '/_demo/pin-creation',
+    '/_demo/pin-login',
     '/admin-login',
     '/admin',
     ...soloFlow.pages.map(p => p.path),
@@ -368,7 +370,8 @@ function SessionRouter() {
                 <Switch>
                   <Route path="/_demo/loading" component={DemoLoadingScreen} />
                   <Route path="/_demo/paywall" component={DemoPaywallScreen} />
-                  <Route path="/" component={DemoAuthPage} />
+                  <Route path="/_demo/pin-creation" component={DemoPinCreation} />
+                  <Route path="/_demo/pin-login" component={DemoPinLogin} />
                   <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
                   <Route path="/admin-login" component={AdminLogin} />
                   <Route path="/admin" component={Dashboard} />
