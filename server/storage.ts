@@ -15,6 +15,7 @@ export interface IStorage {
   updateUserRole(userId: string, isAdmin: boolean): Promise<void>;
   updateUserPublicUid(userId: string, publicUid: string): Promise<void>;
   updateUserPin(userId: string, pinHash: string | null): Promise<void>;
+  deleteUser(userId: string): Promise<void>;
 
   // Login attempt operations
   logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt>;
@@ -138,6 +139,15 @@ export class MemStorage implements IStorage {
     if (user) {
       user.pinHash = pinHash;
       this.users.set(userId, user);
+    }
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    this.users.delete(userId);
+    for (const [id, attempt] of this.loginAttempts.entries()) {
+      if (attempt.userId === userId) {
+        this.loginAttempts.delete(id);
+      }
     }
   }
 
@@ -297,6 +307,11 @@ export class DbStorage implements IStorage {
     await this.db.update(users)
       .set({ pinHash })
       .where(eq(users.id, userId));
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await this.db.delete(loginAttempts).where(eq(loginAttempts.userId, userId));
+    await this.db.delete(users).where(eq(users.id, userId));
   }
 
   async logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt> {
