@@ -166,7 +166,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           
           await resend.emails.send({
-            from: 'Duo Connecte <onboarding@resend.dev>',
+            from: 'Duo Connecte <support@avancersimplement.com>',
             to: 'support@avancersimplement.com',
             subject: `[Nouveau Ticket] ${ticket.subject}`,
             html: `
