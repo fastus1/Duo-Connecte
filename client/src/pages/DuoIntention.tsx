@@ -39,7 +39,7 @@ export default function Intention() {
         <div className="flex flex-col items-center pt-4 space-y-4">
           <Button
             size="lg"
-            onClick={() => transitionToStep(4)}
+            onClick={() => transitionToStep(3)}
             disabled={isTransitioning}
             className="px-12"
             data-testid="button-next"

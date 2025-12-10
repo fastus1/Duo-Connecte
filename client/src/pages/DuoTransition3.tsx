@@ -10,11 +10,11 @@ export default function Transition3() {
   const { session } = useSession();
 
   const handleOption1 = () => {
-    transitionToStep(21);
+    transitionToStep(20);
   };
 
   const handleOption2 = () => {
-    transitionToStep(25);
+    transitionToStep(24);
   };
 
   return (

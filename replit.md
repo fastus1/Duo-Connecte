@@ -8,6 +8,10 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-10** : Correction navigation parcours Duo
+  - Tous les indices `transitionToStep()` décrémentés de 1 (corrige offset +1)
+  - 38 pages Duo corrigées : main flow (24) + inversion flow (14)
+  - La page Warnings s'affiche maintenant correctement dans la séquence
 - **2025-12-10** : Restructuration Welcome - Page d'accueil séparée des parcours
   - Welcome (/welcome) est maintenant une page indépendante
   - Solo commence à /solo/roles (26 étapes)

@@ -26,7 +26,7 @@ export default function Feedback() {
         title: 'Merci!',
         description: 'Votre feedback a été enregistré avec succès.',
       });
-      transitionToStep(24);
+      transitionToStep(23);
     },
     onError: () => {
       toast({
@@ -48,7 +48,7 @@ export default function Feedback() {
   };
 
   const handleSkip = () => {
-    transitionToStep(24);
+    transitionToStep(23);
   };
 
   return (
