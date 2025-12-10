@@ -11,7 +11,7 @@ export default function Welcome() {
 
   const handleChoice = (type: 'solo' | 'duo') => {
     updateSession({ appType: type });
-    transitionToStep(1);
+    transitionToStep(0);
   };
 
   return (
