@@ -8,6 +8,10 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-10** : Optimisation performance Phase 5 - Extraction composants dashboard
+  - dashboard.tsx réduit de 1,111 → 290 lignes (-74%)
+  - Nouveaux composants: SecurityTab.tsx, PaywallTab.tsx, MembersTab.tsx, WebhookTab.tsx
+  - Chaque composant avec props TypeScript typés (UseMutationResult)
 - **2025-12-10** : Optimisation performance Phase 4 - Extraction routes d'authentification
   - routes.ts réduit de 885 → 237 lignes (-73% total depuis Phase 3)
   - Nouveau module `routes/auth.ts` (551 lignes) avec validation, NIP, paywall
