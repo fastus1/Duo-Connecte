@@ -130,3 +130,31 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   (req as any).user = payload;
   next();
 }
+
+// Factory function to create requireAdmin middleware with storage dependency
+export function createRequireAdmin(storage: { getUser: (id: string) => Promise<{ isAdmin: boolean } | undefined> }) {
+  return async function requireAdmin(req: Request, res: Response, next: NextFunction) {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Non autorisé' });
+    }
+
+    const token = authHeader.substring(7);
+    const payload = verifySessionToken(token);
+
+    if (!payload) {
+      return res.status(401).json({ error: 'Session invalide ou expirée' });
+    }
+
+    // Check admin status
+    const user = await storage.getUser(payload.userId);
+    if (!user || !user.isAdmin) {
+      return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+    }
+
+    (req as any).user = payload;
+    (req as any).adminUser = user;
+    next();
+  };
+}
