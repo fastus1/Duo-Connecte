@@ -60,7 +60,7 @@ export default function AdminLogin() {
             Connexion
           </CardTitle>
           <CardDescription>
-            Accédez à votre espace membre
+            Accédez à l'espace administrateur
           </CardDescription>
         </CardHeader>
 
