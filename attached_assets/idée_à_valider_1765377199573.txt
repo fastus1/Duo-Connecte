@@ -1,0 +1,66 @@
+Transformer cette webapp en Progressive Web App (PWA) pour permettre aux utilisateurs Android et iOS de l'installer sur leur écran d'accueil.
+
+Objectif
+Permettre aux utilisateurs mobile d'installer l'app comme un raccourci sur leur téléphone pour faciliter l'accès et augmenter l'engagement. L'app doit être installable sur Android (avec prompt automatique) et iOS (avec instructions manuelles).
+
+Composants à implémenter
+1. Fichier manifest.json
+Crée un fichier manifest.json à la racine avec:
+
+Nom de l'app (nom court et nom complet)
+
+Icônes en plusieurs tailles (192x192px et 512x512px minimum)
+
+Couleur de thème (match avec mon theme dark actuel)
+
+Couleur de fond
+
+Mode d'affichage: standalone (pour cacher la barre du navigateur)
+
+URL de démarrage
+
+Ajoute la référence au manifest dans le <head> du HTML principal.
+
+2. Service Worker basique
+Crée un service worker (sw.js) qui gère:
+
+Mise en cache des assets statiques (HTML, CSS, JS, images)
+
+Stratégie cache-first pour les ressources statiques
+
+Stratégie network-first pour les requêtes API
+
+Événements d'installation et d'activation
+
+Enregistre le service worker dans le fichier JavaScript principal.
+
+3. Prompt d'installation Android
+Implémente l'API beforeinstallprompt pour Android/Chrome:
+
+Capture l'événement beforeinstallprompt
+
+Crée un bouton "Installer l'app" visible sur mobile
+
+Au clic, déclenche prompt() pour afficher la popup d'installation native
+
+Cache le bouton après installation réussie
+
+4. Instructions pour iOS
+Détecte si l'utilisateur est sur iOS Safari et n'a pas encore installé l'app:
+
+Affiche une bannière ou modal avec instructions visuelles
+
+Explique: "Appuyez sur l'icône Partager → Ajouter à l'écran d'accueil"
+
+Ajoute une option pour fermer/ignorer les instructions
+
+Utilise localStorage pour ne pas re-afficher si l'utilisateur a fermé
+
+Contraintes
+L'app doit fonctionner normalement même si le PWA n'est pas installé
+
+Garde la performance actuelle (mobile loading priority)
+
+Assure-toi que l'app est servie via HTTPS (déjà le cas sur Replit)
+
+Teste que l'installation fonctionne sur mobile
