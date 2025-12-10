@@ -277,6 +277,7 @@ function SessionRouter() {
 
   // All preview pages for navigation
   const allPreviewPages = useMemo(() => [
+    '/welcome',
     '/_demo/loading',
     '/_demo/paywall',
     '/_demo/pin-creation',
@@ -313,8 +314,8 @@ function SessionRouter() {
 
     const currentPage = flow.pages[session.currentStep];
     if (currentPage && location !== currentPage.path) {
-      // Only redirect if we are in a flow path (starts with /solo or /duo or is /welcome)
-      if (location.startsWith('/solo') || location.startsWith('/duo') || location === '/welcome') {
+      // Only redirect if we are in a flow path (starts with /solo or /duo)
+      if (location.startsWith('/solo') || location.startsWith('/duo')) {
         setLocation(currentPage.path);
       }
     }
@@ -370,6 +371,7 @@ function SessionRouter() {
               <main className="flex-1 overflow-auto">
                 <AccessGate isAdmin={isAdmin}>
                   <Switch>
+                    <Route path="/welcome" component={Welcome} />
                     <Route path="/_demo/loading" component={DemoLoadingScreen} />
                     <Route path="/_demo/paywall" component={DemoPaywallScreen} />
                     <Route path="/_demo/pin-creation" component={DemoPinCreation} />
@@ -406,6 +408,7 @@ function SessionRouter() {
         <Switch>
           {/* Auth & Public Routes */}
           <Route path="/" component={AuthPage} />
+          <Route path="/welcome" component={Welcome} />
           <Route path="/user-home">{() => { window.location.replace('/welcome'); return null; }}</Route>
           <Route path="/admin-login" component={AdminLogin} />
 
