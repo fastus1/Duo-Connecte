@@ -1,17 +1,16 @@
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { PageLayout } from '@/components/PageLayout';
-import { usePageTransition } from '@/hooks/usePageTransition';
 import { useSession } from '@/contexts/SessionContext';
+import { useLocation } from 'wouter';
 import { Heart, Users } from 'lucide-react';
 
 export default function Welcome() {
   const { updateSession } = useSession();
-  const { isTransitioning, transitionToStep, progress } = usePageTransition();
+  const [, setLocation] = useLocation();
 
   const handleChoice = (type: 'solo' | 'duo') => {
-    updateSession({ appType: type });
-    transitionToStep(0);
+    updateSession({ appType: type, currentStep: 0 });
+    setLocation(type === 'solo' ? '/solo/roles' : '/duo/roles');
   };
 
   return (
@@ -62,7 +61,6 @@ export default function Welcome() {
               <Button
                 size="default"
                 onClick={() => handleChoice('solo')}
-                disabled={isTransitioning}
                 className="text-xs md:text-sm px-4 md:px-6 w-full mt-2"
                 data-testid="button-solo"
               >
@@ -83,7 +81,6 @@ export default function Welcome() {
               <Button
                 size="default"
                 onClick={() => handleChoice('duo')}
-                disabled={isTransitioning}
                 className="text-xs md:text-sm px-4 md:px-6 w-full mt-2"
                 data-testid="button-duo"
               >
@@ -91,12 +88,6 @@ export default function Welcome() {
               </Button>
             </div>
           </div>
-
-          {isTransitioning && (
-            <div className="pt-4">
-              <Progress value={progress} className="w-full md:w-96 mx-auto" />
-            </div>
-          )}
 
           <p className="text-xs md:text-sm text-muted-foreground pt-4 md:pt-6 max-w-lg mx-auto leading-relaxed px-4">
             Cet outil s'utilise uniquement en présentiel pour l'instant.<br />
