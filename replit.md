@@ -8,6 +8,10 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-10** : Optimisation performance Phase 4 - Extraction routes d'authentification
+  - routes.ts réduit de 885 → 237 lignes (-73% total depuis Phase 3)
+  - Nouveau module `routes/auth.ts` (551 lignes) avec validation, NIP, paywall
+  - Structure finale: routes.ts (237) + auth.ts (551) + admin.ts (165) + support.ts (225) + webhooks.ts (69)
 - **2025-12-10** : Optimisation performance Phase 3 - Refactoring routes.ts (1,464 → 885 lignes, -40%)
   - Nouveau middleware `createRequireAdmin` pour éliminer code dupliqué
   - Structure modulaire: `server/routes/` (admin.ts, support.ts, webhooks.ts)
@@ -103,14 +107,15 @@ client/src/
 
 server/
   app.ts           # Express + CORS + trust proxy
-  routes.ts        # Routes principales (auth, config, debug)
+  routes.ts        # Routes config, debug, health, feedback (237 lignes)
   storage.ts       # Interface DB (MemStorage ou DbStorage)
   middleware.ts    # JWT, bcrypt, rate limiting, requireAdmin
   routes/
-    index.ts       # Assemblage des modules
-    admin.ts       # Routes admin (feedbacks, membres, gestion utilisateurs)
-    support.ts     # Routes support tickets
-    webhooks.ts    # Webhook Circle.so paiement
+    index.ts       # Assemblage des modules (18 lignes)
+    auth.ts        # Authentification Circle.so, NIP, paywall (551 lignes)
+    admin.ts       # Routes admin (feedbacks, membres, gestion utilisateurs) (165 lignes)
+    support.ts     # Routes support tickets (225 lignes)
+    webhooks.ts    # Webhook Circle.so paiement (69 lignes)
 
 shared/
   schema.ts        # Modèles Drizzle + Zod + Configuration des parcours
