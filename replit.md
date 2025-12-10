@@ -8,6 +8,12 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-10** : PWA (Progressive Web App) implémentée
+  - manifest.json avec nom, icônes et couleurs
+  - Icônes PWA 192x192 et 512x512 dans /public/icons/
+  - Meta tags Apple pour iOS Safari
+  - Bannière d'installation sur mobile (Welcome page)
+  - Instructions adaptées iOS (Partager) et Android (Menu)
 - **2025-12-10** : Correction navigation parcours Duo
   - Tous les indices `transitionToStep()` décrémentés de 1 (corrige offset +1)
   - 38 pages Duo corrigées : main flow (24) + inversion flow (14)
