@@ -102,7 +102,6 @@ import DuoInversionPage20a from '@/pages/DuoInversionPage20a';
 import SupportPage from '@/pages/SupportPage';
 
 const soloPageComponents = [
-  Welcome,
   SoloRoles,
   SoloWarnings,
   SoloIntention,
@@ -132,7 +131,6 @@ const soloPageComponents = [
 ];
 
 const duoPageComponents = [
-  Welcome,
   DuoRoles,
   DuoWarnings,
   DuoIntention,
