@@ -191,8 +191,8 @@ function AccessGate({ children, isAdmin }: { children: React.ReactNode; isAdmin:
     return <>{children}</>;
   }
 
-  // Public pages
-  if (location === '/') {
+  // Public pages (landing and welcome)
+  if (location === '/' || location === '/welcome') {
     return <>{children}</>;
   }
 
