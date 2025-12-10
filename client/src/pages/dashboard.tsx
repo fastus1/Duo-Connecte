@@ -1,79 +1,52 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, Loader2, Home, Settings, Lock, AlertTriangle, Users, Plus, Trash2, Code, Copy, Check, Info, MoreVertical, UserX, Ban, Ticket } from 'lucide-react';
+import { LogOut, Shield, Clock, Loader2, Home, Lock, Users, Code, Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Logo } from '@/components/logo';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken, clearAuth } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
 
 import { AdminFeedbacks } from '@/components/admin/AdminFeedbacks';
 import { AdminSupportTickets } from '@/components/admin/AdminSupportTickets';
+import { SecurityTab } from '@/components/admin/SecurityTab';
+import { PaywallTab } from '@/components/admin/PaywallTab';
+import { MembersTab } from '@/components/admin/MembersTab';
+import { WebhookTab } from '@/components/admin/WebhookTab';
 
-// Helper function to copy text with fallback
-async function copyToClipboard(text: string): Promise<boolean> {
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } else {
-      // Fallback for insecure contexts or when clipboard API is not available
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      textArea.style.top = '-999999px';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      const success = document.execCommand('copy');
-      document.body.removeChild(textArea);
-      return success;
-    }
-  } catch (err) {
-    console.error('Failed to copy:', err);
-    return false;
-  }
+interface AppConfig {
+  requireCircleDomain: boolean;
+  requireCircleLogin: boolean;
+  requirePaywall: boolean;
+  requirePin: boolean;
+  paywallPurchaseUrl: string;
+  paywallInfoUrl: string;
+  paywallTitle: string;
+  paywallMessage: string;
+  webhookAppUrl: string;
+}
+
+type Environment = 'development' | 'production';
+
+interface SettingsData {
+  environment: Environment;
+  circleOnlyMode: boolean;
+}
+
+interface PaidMember {
+  id: string;
+  email: string;
+  paymentDate: string;
+  paymentPlan: string | null;
+  amountPaid: string | null;
+  couponUsed: string | null;
 }
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-
-  interface AppConfig {
-    requireCircleDomain: boolean;
-    requireCircleLogin: boolean;
-    requirePaywall: boolean;
-    requirePin: boolean;
-    paywallPurchaseUrl: string;
-    paywallInfoUrl: string;
-    paywallTitle: string;
-    paywallMessage: string;
-    webhookAppUrl: string;
-  }
-
-  type Environment = 'development' | 'production';
-
-  interface SettingsData {
-    environment: Environment;
-    circleOnlyMode: boolean;
-  }
 
   const { data: configData, isLoading: configLoading } = useQuery<AppConfig>({
     queryKey: ['/api/config'],
@@ -90,20 +63,18 @@ export default function Dashboard() {
 
   const environment = settingsData?.environment ?? 'development';
 
-  // Local state for paywall settings
   const [paywallTitle, setPaywallTitle] = useState('');
   const [paywallMessage, setPaywallMessage] = useState('');
   const [paywallPurchaseUrl, setPaywallPurchaseUrl] = useState('');
   const [paywallInfoUrl, setPaywallInfoUrl] = useState('');
   const [paywallSettingsLoaded, setPaywallSettingsLoaded] = useState(false);
 
-  // Local state for webhook script generator
   const [webhookAppUrl, setWebhookAppUrl] = useState('');
   const [webhookSecret, setWebhookSecret] = useState('');
   const [webhookSettingsLoaded, setWebhookSettingsLoaded] = useState(false);
-  const [scriptCopied, setScriptCopied] = useState(false);
 
-  // Load paywall and webhook settings when config is fetched
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+
   useEffect(() => {
     if (configData && !paywallSettingsLoaded) {
       setPaywallTitle(configData.paywallTitle || '');
@@ -151,41 +122,6 @@ export default function Dashboard() {
     },
   });
 
-  const environmentMutation = useMutation({
-    mutationFn: async (newEnvironment: Environment) => {
-      const token = getSessionToken();
-      const response = await fetch("/api/admin/settings/environment", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ environment: newEnvironment }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Impossible de changer l'environnement");
-      }
-
-      return response.json();
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
-      toast({
-        title: "Environnement modifié",
-        description: `Mode ${data.environment === 'development' ? 'Développement' : 'Production'} activé`,
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Save paywall settings
   const savePaywallSettings = () => {
     updateConfigMutation.mutate({
       paywallTitle,
@@ -194,18 +130,6 @@ export default function Dashboard() {
       paywallInfoUrl,
     });
   };
-
-  // Paid members management
-  interface PaidMember {
-    id: string;
-    email: string;
-    paymentDate: string;
-    paymentPlan: string | null;
-    amountPaid: string | null;
-    couponUsed: string | null;
-  }
-
-  const [newMemberEmail, setNewMemberEmail] = useState('');
 
   const { data: paidMembersData, isLoading: paidMembersLoading } = useQuery<{ members: PaidMember[] }>({
     queryKey: ['/api/admin/paid-members'],
@@ -398,17 +322,6 @@ export default function Dashboard() {
               </TabsTrigger>
             </TabsList>
 
-            {/* Tab: Feedbacks */}
-            <TabsContent value="feedbacks" className="space-y-6">
-              <AdminFeedbacks />
-            </TabsContent>
-
-            {/* Tab: Support */}
-            <TabsContent value="support" className="space-y-6">
-              <AdminSupportTickets />
-            </TabsContent>
-
-            {/* Tab: Accueil */}
             <TabsContent value="accueil" className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <Card>
@@ -463,644 +376,58 @@ export default function Dashboard() {
               </Card>
             </TabsContent>
 
-            {/* Tab: Sécurité */}
             <TabsContent value="securite" className="space-y-6">
-              <Card data-testid="card-security-config">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-violet-500/10">
-                      <Shield className="h-5 w-5 text-violet-500" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Couches de sécurité</CardTitle>
-                      <CardDescription>
-                        Activez ou désactivez les couches de protection selon vos besoins
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="space-y-1 flex-1">
-                      <Label htmlFor="require-circle-domain" className="text-sm font-medium">
-                        Couche 1 : Exiger le domaine Circle.so
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Si désactivé, l'app peut être accédée directement (mode développement)
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-                      <Switch
-                        id="require-circle-domain"
-                        checked={configData?.requireCircleDomain ?? true}
-                        onCheckedChange={(checked) => updateConfigMutation.mutate({ requireCircleDomain: checked })}
-                        disabled={updateConfigMutation.isPending || configLoading}
-                        data-testid="switch-require-circle-domain"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="space-y-1 flex-1">
-                      <Label htmlFor="require-circle-login" className="text-sm font-medium">
-                        Couche 2 : Exiger la connexion Circle.so
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        {!(configData?.requireCircleDomain) 
-                          ? "Requiert la Couche 1 (Circle.so envoie les infos utilisateur)"
-                          : "Si désactivé, les visiteurs non-connectés peuvent voir l'app"}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-                      <Switch
-                        id="require-circle-login"
-                        checked={configData?.requireCircleLogin ?? true}
-                        onCheckedChange={(checked) => {
-                          // Layer 2 requires Layer 1 - auto-enable it
-                          if (checked && !configData?.requireCircleDomain) {
-                            updateConfigMutation.mutate({ requireCircleDomain: true, requireCircleLogin: true });
-                          } else {
-                            updateConfigMutation.mutate({ requireCircleLogin: checked });
-                          }
-                        }}
-                        disabled={updateConfigMutation.isPending || configLoading}
-                        data-testid="switch-require-circle-login"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="space-y-1 flex-1">
-                      <Label htmlFor="require-paywall" className="text-sm font-medium">
-                        Couche 3 : Exiger le paiement (Paywall)
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        {!(configData?.requireCircleDomain && configData?.requireCircleLogin)
-                          ? "Requiert les Couches 1 et 2 (pour vérifier le courriel)"
-                          : "Si activé, seuls les membres payants peuvent accéder à l'app"}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-                      <Switch
-                        id="require-paywall"
-                        checked={configData?.requirePaywall ?? false}
-                        onCheckedChange={(checked) => {
-                          // Layer 3 requires Layers 1 and 2
-                          if (checked && (!configData?.requireCircleDomain || !configData?.requireCircleLogin)) {
-                            updateConfigMutation.mutate({ 
-                              requireCircleDomain: true, 
-                              requireCircleLogin: true, 
-                              requirePaywall: true 
-                            });
-                          } else {
-                            updateConfigMutation.mutate({ requirePaywall: checked });
-                          }
-                        }}
-                        disabled={updateConfigMutation.isPending || configLoading}
-                        data-testid="switch-require-paywall"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="space-y-1 flex-1">
-                      <Label htmlFor="require-pin" className="text-sm font-medium">
-                        Couche 4 : Exiger le NIP personnel
-                      </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Si désactivé, pas besoin de NIP pour accéder à l'app
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {updateConfigMutation.isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-                      <Switch
-                        id="require-pin"
-                        checked={configData?.requirePin ?? true}
-                        onCheckedChange={(checked) => updateConfigMutation.mutate({ requirePin: checked })}
-                        disabled={updateConfigMutation.isPending || configLoading}
-                        data-testid="switch-require-pin"
-                      />
-                    </div>
-                  </div>
-                  <div className="pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      <strong>Note :</strong> Désactiver la Couche 1 permet de tester l'app sans être dans Circle.so. À réactiver en production.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <SecurityTab
+                configData={configData}
+                configLoading={configLoading}
+                updateConfigMutation={updateConfigMutation}
+              />
             </TabsContent>
 
-            {/* Tab: Paywall */}
             <TabsContent value="paywall" className="space-y-6">
-              <Card data-testid="card-paywall-config">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-amber-500/10">
-                      <Lock className="h-5 w-5 text-amber-500" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Configuration du Paywall</CardTitle>
-                      <CardDescription>
-                        Personnalisez l'écran affiché aux membres non-payants
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="paywall-title">Titre de l'écran de blocage</Label>
-                    <Input
-                      id="paywall-title"
-                      placeholder="Accès Réservé"
-                      value={paywallTitle}
-                      onChange={(e) => setPaywallTitle(e.target.value)}
-                      data-testid="input-paywall-title"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="paywall-message">Message explicatif</Label>
-                    <Textarea
-                      id="paywall-message"
-                      placeholder="Cette application est réservée aux membres payants de la communauté."
-                      value={paywallMessage}
-                      onChange={(e) => setPaywallMessage(e.target.value)}
-                      rows={3}
-                      data-testid="input-paywall-message"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="paywall-purchase-url">URL d'achat (bouton principal)</Label>
-                    <Input
-                      id="paywall-purchase-url"
-                      placeholder="https://votre-communaute.circle.so/c/acheter"
-                      value={paywallPurchaseUrl}
-                      onChange={(e) => setPaywallPurchaseUrl(e.target.value)}
-                      data-testid="input-paywall-purchase-url"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Lien vers la page d'achat Circle.so ou Stripe
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="paywall-info-url">URL d'information (bouton secondaire)</Label>
-                    <Input
-                      id="paywall-info-url"
-                      placeholder="https://votre-communaute.circle.so/c/info"
-                      value={paywallInfoUrl}
-                      onChange={(e) => setPaywallInfoUrl(e.target.value)}
-                      data-testid="input-paywall-info-url"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Lien vers une page explicative (optionnel)
-                    </p>
-                  </div>
-                  <Button
-                    onClick={savePaywallSettings}
-                    disabled={updateConfigMutation.isPending}
-                    className="w-full"
-                    data-testid="button-save-paywall-settings"
-                  >
-                    {updateConfigMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Enregistrement...
-                      </>
-                    ) : (
-                      'Enregistrer les paramètres du paywall'
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
+              <PaywallTab
+                paywallTitle={paywallTitle}
+                setPaywallTitle={setPaywallTitle}
+                paywallMessage={paywallMessage}
+                setPaywallMessage={setPaywallMessage}
+                paywallPurchaseUrl={paywallPurchaseUrl}
+                setPaywallPurchaseUrl={setPaywallPurchaseUrl}
+                paywallInfoUrl={paywallInfoUrl}
+                setPaywallInfoUrl={setPaywallInfoUrl}
+                updateConfigMutation={updateConfigMutation}
+                onSave={savePaywallSettings}
+              />
             </TabsContent>
 
-            {/* Tab: Membres */}
             <TabsContent value="membres" className="space-y-6">
-              <Card data-testid="card-paid-members">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-teal-500/10">
-                      <Users className="h-5 w-5 text-teal-500" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Membres Payants</CardTitle>
-                      <CardDescription>
-                        Gérez manuellement les accès payants (le webhook Circle.so ajoute automatiquement les nouveaux paiements)
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="email@exemple.com"
-                      value={newMemberEmail}
-                      onChange={(e) => setNewMemberEmail(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
-                      data-testid="input-new-member-email"
-                    />
-                    <Button
-                      onClick={handleAddMember}
-                      disabled={addMemberMutation.isPending || !newMemberEmail.trim()}
-                      data-testid="button-add-member"
-                    >
-                      {addMemberMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Plus className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-
-                  <div className="border rounded-md divide-y max-h-96 overflow-y-auto">
-                    {paidMembersLoading ? (
-                      <div className="p-4 text-center text-muted-foreground">
-                        <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-                      </div>
-                    ) : paidMembersData?.members?.length === 0 ? (
-                      <div className="p-4 text-center text-muted-foreground text-sm">
-                        Aucun membre payant enregistré
-                      </div>
-                    ) : (
-                      paidMembersData?.members?.map((member) => (
-                        <div key={member.id} className="flex items-center justify-between p-3 gap-2" data-testid={`row-member-${member.id}`}>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{member.email}</p>
-                            <div className="flex flex-wrap gap-x-2 text-xs text-muted-foreground">
-                              <span>{member.paymentPlan || 'Ajout manuel'}</span>
-                              {member.amountPaid && <span>• {member.amountPaid}</span>}
-                              {member.couponUsed && <span>• Code: {member.couponUsed}</span>}
-                              <span>• {new Date(member.paymentDate).toLocaleDateString('fr-FR')}</span>
-                            </div>
-                          </div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                disabled={deleteMemberMutation.isPending || deleteUserCompleteMutation.isPending}
-                                data-testid={`button-member-actions-${member.id}`}
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => deleteMemberMutation.mutate(member.email)}
-                                data-testid={`button-revoke-access-${member.id}`}
-                              >
-                                <Ban className="h-4 w-4 mr-2" />
-                                Retirer l'accès payant
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => deleteUserCompleteMutation.mutate(member.email)}
-                                className="text-destructive focus:text-destructive"
-                                data-testid={`button-delete-user-${member.id}`}
-                              >
-                                <UserX className="h-4 w-4 mr-2" />
-                                Supprimer complètement
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              <MembersTab
+                paidMembersData={paidMembersData}
+                paidMembersLoading={paidMembersLoading}
+                newMemberEmail={newMemberEmail}
+                setNewMemberEmail={setNewMemberEmail}
+                addMemberMutation={addMemberMutation}
+                deleteMemberMutation={deleteMemberMutation}
+                deleteUserCompleteMutation={deleteUserCompleteMutation}
+                onAddMember={handleAddMember}
+              />
             </TabsContent>
 
-            {/* Tab: Webhook */}
             <TabsContent value="webhook" className="space-y-6">
-              <Card data-testid="card-webhook-generator">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-orange-500/10">
-                      <Code className="h-5 w-5 text-orange-500" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Générateur de Script Webhook</CardTitle>
-                      <CardDescription>
-                        Générez le script à coller dans le Custom Code de votre paywall Circle.so
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="webhook-app-url">URL de l'application</Label>
-                    <Input
-                      id="webhook-app-url"
-                      placeholder="https://votre-app.replit.app"
-                      value={webhookAppUrl}
-                      onChange={(e) => setWebhookAppUrl(e.target.value)}
-                      data-testid="input-webhook-app-url"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      L'URL complète du webhook sera : {webhookAppUrl ? `${webhookAppUrl}/webhooks/circle-payment` : '...'}
-                    </p>
-                  </div>
+              <WebhookTab
+                webhookAppUrl={webhookAppUrl}
+                setWebhookAppUrl={setWebhookAppUrl}
+                webhookSecret={webhookSecret}
+                setWebhookSecret={setWebhookSecret}
+                updateConfigMutation={updateConfigMutation}
+              />
+            </TabsContent>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="webhook-secret">Secret du webhook</Label>
-                    <Input
-                      id="webhook-secret"
-                      placeholder="votre-secret-securise"
-                      value={webhookSecret}
-                      onChange={(e) => setWebhookSecret(e.target.value)}
-                      data-testid="input-webhook-secret"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Ce secret doit correspondre à la variable d'environnement <code className="bg-muted px-1 rounded">WEBHOOK_SECRET</code>
-                    </p>
-                  </div>
+            <TabsContent value="feedbacks" className="space-y-6">
+              <AdminFeedbacks />
+            </TabsContent>
 
-                  <Button
-                    onClick={() => updateConfigMutation.mutate({ webhookAppUrl })}
-                    disabled={updateConfigMutation.isPending || !webhookAppUrl.trim()}
-                    variant="outline"
-                    className="w-full"
-                    data-testid="button-save-webhook-url"
-                  >
-                    {updateConfigMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : null}
-                    Sauvegarder l'URL
-                  </Button>
-
-                  {webhookAppUrl && webhookSecret && (
-                    <div className="space-y-2">
-                      <Label>Script à copier dans Circle.so</Label>
-                      <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all">
-                        {`<script>
-const WEBHOOK_SECRET = '${webhookSecret}';
-fetch('${webhookAppUrl}/webhooks/circle-payment', {
-  method: 'POST',
-  headers: { 
-    'Content-Type': 'application/json',
-    'X-Webhook-Secret': WEBHOOK_SECRET
-  },
-  body: JSON.stringify({
-    event: 'payment_received',
-    user: { 
-      email: '{member_email}', 
-      timestamp: Math.floor(Date.now() / 1000) 
-    },
-    payment: {
-      paywall_display_name: '{paywall_display_name}',
-      amount_paid: '{amount_paid}',
-      coupon_code: '{coupon_code}'
-    }
-  })
-});
-</script>`}
-                      </div>
-                      <Button
-                        onClick={async () => {
-                          const script = `<script>
-const WEBHOOK_SECRET = '${webhookSecret}';
-fetch('${webhookAppUrl}/webhooks/circle-payment', {
-  method: 'POST',
-  headers: { 
-    'Content-Type': 'application/json',
-    'X-Webhook-Secret': WEBHOOK_SECRET
-  },
-  body: JSON.stringify({
-    event: 'payment_received',
-    user: { 
-      email: '{member_email}', 
-      timestamp: Math.floor(Date.now() / 1000) 
-    },
-    payment: {
-      paywall_display_name: '{paywall_display_name}',
-      amount_paid: '{amount_paid}',
-      coupon_code: '{coupon_code}'
-    }
-  })
-});
-</script>`;
-                          const success = await copyToClipboard(script);
-                          if (success) {
-                            setScriptCopied(true);
-                            setTimeout(() => setScriptCopied(false), 2000);
-                            toast({ title: 'Copié !', description: 'Le script a été copié dans le presse-papiers.' });
-                          } else {
-                            toast({ title: 'Erreur', description: 'Impossible de copier. Sélectionnez manuellement le texte.', variant: 'destructive' });
-                          }
-                        }}
-                        className="w-full"
-                        data-testid="button-copy-script"
-                      >
-                        {scriptCopied ? (
-                          <>
-                            <Check className="h-4 w-4 mr-2" />
-                            Copié !
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="h-4 w-4 mr-2" />
-                            Copier le script
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  )}
-
-                  {(!webhookAppUrl || !webhookSecret) && (
-                    <Alert>
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription>
-                        Remplissez l'URL de l'application et le secret pour générer le script.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card data-testid="card-auth-script-generator">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-indigo-500/10">
-                      <Shield className="h-5 w-5 text-indigo-500" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Code Snippet Circle - Script d'Authentification</CardTitle>
-                      <CardDescription>
-                        Script à placer dans Settings → Code Snippets → JavaScript
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Script complet (définit circleUser + répond aux demandes d'auth)</Label>
-                    <div className="bg-muted p-3 rounded-md text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all max-h-64 overflow-y-auto">
-                      {`<script>
-// Script d'authentification Circle.so -> Replit Apps v3
-// À placer dans: Settings → Code Snippets → JavaScript
-(function() {
-  function getTheme() {
-    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-  }
-  
-  function buildPayload() {
-    // Circle.so expose automatiquement window.circleUser
-    if (!window.circleUser || !window.circleUser.email) return null;
-    return {
-      type: 'CIRCLE_USER_AUTH',
-      user: {
-        publicUid: window.circleUser.publicUid || '',
-        email: window.circleUser.email,
-        name: window.circleUser.name || 'Membre',
-        isAdmin: window.circleUser.is_admin === true,
-        timestamp: Date.now()
-      },
-      theme: getTheme()
-    };
-  }
-  
-  function sendToAllIframes() {
-    var iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
-    var payload = buildPayload();
-    if (payload) {
-      iframes.forEach(function(iframe) {
-        if (iframe.contentWindow) {
-          iframe.contentWindow.postMessage(payload, '*');
-        }
-      });
-    }
-  }
-  
-  // Écouter les demandes d'auth des iframes
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
-      var payload = buildPayload();
-      if (payload && event.source) {
-        event.source.postMessage(payload, '*');
-      }
-    }
-  });
-  
-  // Attendre que circleUser soit disponible puis envoyer
-  function tryToSend() {
-    if (window.circleUser && window.circleUser.email) {
-      sendToAllIframes();
-      return true;
-    }
-    return false;
-  }
-  
-  // Essayer immédiatement puis toutes les 500ms pendant 10s
-  if (!tryToSend()) {
-    var attempts = 0;
-    var interval = setInterval(function() {
-      attempts++;
-      if (tryToSend() || attempts >= 20) {
-        clearInterval(interval);
-      }
-    }, 500);
-  }
-  
-  // Aussi envoyer après chargement complet
-  window.addEventListener('load', function() {
-    setTimeout(sendToAllIframes, 100);
-    setTimeout(sendToAllIframes, 1000);
-  });
-})();
-</script>`}
-                    </div>
-                    <Button
-                      onClick={async () => {
-                        const authScript = `<script>
-// Script d'authentification Circle.so -> Replit Apps v3
-// À placer dans: Settings → Code Snippets → JavaScript
-(function() {
-  function getTheme() {
-    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-  }
-  
-  function buildPayload() {
-    // Circle.so expose automatiquement window.circleUser
-    if (!window.circleUser || !window.circleUser.email) return null;
-    return {
-      type: 'CIRCLE_USER_AUTH',
-      user: {
-        publicUid: window.circleUser.publicUid || '',
-        email: window.circleUser.email,
-        name: window.circleUser.name || 'Membre',
-        isAdmin: window.circleUser.is_admin === true,
-        timestamp: Date.now()
-      },
-      theme: getTheme()
-    };
-  }
-  
-  function sendToAllIframes() {
-    var iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
-    var payload = buildPayload();
-    if (payload) {
-      iframes.forEach(function(iframe) {
-        if (iframe.contentWindow) {
-          iframe.contentWindow.postMessage(payload, '*');
-        }
-      });
-    }
-  }
-  
-  // Écouter les demandes d'auth des iframes
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'CIRCLE_AUTH_REQUEST') {
-      var payload = buildPayload();
-      if (payload && event.source) {
-        event.source.postMessage(payload, '*');
-      }
-    }
-  });
-  
-  // Attendre que circleUser soit disponible puis envoyer
-  function tryToSend() {
-    if (window.circleUser && window.circleUser.email) {
-      sendToAllIframes();
-      return true;
-    }
-    return false;
-  }
-  
-  // Essayer immédiatement puis toutes les 500ms pendant 10s
-  if (!tryToSend()) {
-    var attempts = 0;
-    var interval = setInterval(function() {
-      attempts++;
-      if (tryToSend() || attempts >= 20) {
-        clearInterval(interval);
-      }
-    }, 500);
-  }
-  
-  // Aussi envoyer après chargement complet
-  window.addEventListener('load', function() {
-    setTimeout(sendToAllIframes, 100);
-    setTimeout(sendToAllIframes, 1000);
-  });
-})();
-</script>`;
-                        const success = await copyToClipboard(authScript);
-                        if (success) {
-                          toast({ title: 'Copié !', description: 'Le script d\'authentification complet a été copié.' });
-                        } else {
-                          toast({ title: 'Erreur', description: 'Impossible de copier. Sélectionnez manuellement le texte.', variant: 'destructive' });
-                        }
-                      }}
-                      className="w-full"
-                      data-testid="button-copy-auth-script"
-                    >
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copier le script complet
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            <TabsContent value="support" className="space-y-6">
+              <AdminSupportTickets />
             </TabsContent>
           </Tabs>
         </div>
