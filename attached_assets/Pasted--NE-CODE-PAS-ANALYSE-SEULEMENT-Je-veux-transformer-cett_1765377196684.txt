@@ -1,0 +1,59 @@
+⚠️ NE CODE PAS - ANALYSE SEULEMENT ⚠️
+
+Je veux transformer cette webapp en Progressive Web App (PWA) pour permettre l'installation sur mobile. J'ai documenté l'approche dans un fichier texte. Avant d'implémenter, j'ai besoin que tu analyses cette idée en profondeur.
+
+Ce que je veux savoir
+1. Faisabilité technique
+Est-ce que cette webapp peut devenir une PWA avec l'architecture actuelle?
+
+Identifie les fichiers/composants qui devront être modifiés
+
+Y a-t-il des dépendances ou configurations existantes qui pourraient causer des conflits?
+
+Est-ce que le déploiement Replit supporte correctement les PWA (HTTPS, service workers, etc.)?
+
+Quels sont les risques ou limitations techniques spécifiques à cette webapp?
+
+2. Complexité d'implémentation
+Évalue la complexité sur une échelle de 1-10 (1 = très simple, 10 = très complexe)
+
+Estime le temps de développement (en heures) pour chaque composant:
+
+Manifest.json et configuration
+
+Service worker et stratégies de cache
+
+API beforeinstallprompt (Android)
+
+Détection et instructions iOS
+
+Tests et ajustements
+
+Identifie les parties les plus risquées ou complexes
+
+Y a-t-il des pièges ou gotchas courants avec PWA que je devrais anticiper?
+
+Est-ce que l'implémentation pourrait affecter négativement les fonctionnalités existantes?
+
+3. Valeur et pertinence
+Considérant le type d'app et son usage actuel, est-ce que PWA apporte une vraie valeur?
+
+Quels sont les bénéfices concrets pour les utilisateurs?
+
+Quels sont les bénéfices pour moi en tant que développeur/propriétaire?
+
+Y a-t-il des alternatives plus simples qui atteindraient un résultat similaire?
+
+Est-ce que le ratio effort/bénéfice est favorable?
+
+4. Recommandation finale
+Basé sur ton analyse: devrais-je procéder, modifier l'approche, ou abandonner l'idée?
+
+Si je procède, dans quel ordre devrais-je implémenter les composants? (MVP d'abord, puis extensions)
+
+Y a-t-il des optimisations ou simplifications que tu recommandes?
+
+Format de réponse attendu
+Réponds de façon structurée avec des sections claires pour chaque point. Sois honnête sur les limitations et les défis. Fournis des justifications concrètes pour chaque évaluation.
+
+Rappel: Ne code rien, ne modifie aucun fichier. Je veux uniquement ton analyse détaillée.
