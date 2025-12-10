@@ -16,7 +16,7 @@ export default function Thanks() {
   const handleContinue = () => {
     if (followUpNeeded !== null) {
       updateSession({ suiviNecessaire: followUpNeeded });
-      transitionToStep(25);
+      transitionToStep(24);
     }
   };
 

@@ -29,7 +29,7 @@ export default function DuoInversionPage20a() {
             <div className="flex justify-center">
               <Button
                 size="lg"
-                onClick={() => transitionToStep(21)}
+                onClick={() => transitionToStep(20)}
                 disabled={isTransitioning}
                 className="min-w-48"
                 data-testid="button-continue"

@@ -91,7 +91,7 @@ export default function ReceiverExperience() {
             <div className="flex justify-center">
               <Button
                 size="lg"
-                onClick={() => transitionToStep(15)}
+                onClick={() => transitionToStep(14)}
                 disabled={isTransitioning}
                 className="min-w-48"
                 data-testid="button-next"

@@ -67,7 +67,7 @@ export default function DuoInversionPage7a() {
           <div className="pt-4 flex flex-col items-center space-y-3">
             <Button
               size="lg"
-              onClick={() => transitionToStep(26)}
+              onClick={() => transitionToStep(25)}
               disabled={isTransitioning}
               className="w-full md:w-auto px-8 min-w-48"
               data-testid="button-start"

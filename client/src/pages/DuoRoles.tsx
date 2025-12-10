@@ -16,7 +16,7 @@ export default function Roles() {
   const handleContinue = () => {
     if (senderName.trim() && receiverName.trim()) {
       updateSession({ senderName: senderName.trim(), receiverName: receiverName.trim() });
-      transitionToStep(2);
+      transitionToStep(1);
     }
   };
 
