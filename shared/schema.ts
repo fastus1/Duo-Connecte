@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -20,7 +20,9 @@ export const loginAttempts = pgTable("login_attempts", {
   success: boolean("success").notNull(),
   ipAddress: text("ip_address"),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_login_attempts_user_timestamp").on(table.userId, table.timestamp),
+]);
 
 export const appConfig = pgTable("app_config", {
   id: varchar("id").primaryKey().default("main"),
