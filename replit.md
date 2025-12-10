@@ -8,6 +8,10 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-10** : Optimisation performance Phase 3 - Refactoring routes.ts (1,464 → 885 lignes, -40%)
+  - Nouveau middleware `createRequireAdmin` pour éliminer code dupliqué
+  - Structure modulaire: `server/routes/` (admin.ts, support.ts, webhooks.ts)
+  - Index sur `login_attempts(user_id, timestamp)` pour rate limiting
 - **2025-12-09** : Système de support avec tickets, FAQ (Resend pour emails à configurer)
 - **2025-12-09** : Mode Prévisualisation Admin - Barre latérale pour naviguer vers toutes les pages (Solo, Duo, Inversion, pages spéciales)
 - **2025-12-09** : Gestion membres améliorée - Deux options de suppression : "Retirer l'accès payant" ou "Supprimer complètement" (utilisateur + données)
@@ -99,9 +103,14 @@ client/src/
 
 server/
   app.ts           # Express + CORS + trust proxy
-  routes.ts        # API endpoints
+  routes.ts        # Routes principales (auth, config, debug)
   storage.ts       # Interface DB (MemStorage ou DbStorage)
-  middleware.ts    # JWT, bcrypt, rate limiting
+  middleware.ts    # JWT, bcrypt, rate limiting, requireAdmin
+  routes/
+    index.ts       # Assemblage des modules
+    admin.ts       # Routes admin (feedbacks, membres, gestion utilisateurs)
+    support.ts     # Routes support tickets
+    webhooks.ts    # Webhook Circle.so paiement
 
 shared/
   schema.ts        # Modèles Drizzle + Zod + Configuration des parcours
