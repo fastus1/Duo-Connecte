@@ -8,6 +8,11 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-10** : Restructuration Welcome - Page d'accueil séparée des parcours
+  - Welcome (/welcome) est maintenant une page indépendante
+  - Solo commence à /solo/roles (26 étapes)
+  - Duo commence à /duo/roles (38 étapes incluant inversion)
+  - AccessGate autorise /welcome comme page publique
 - **2025-12-10** : Optimisation performance Phase 5 - Extraction composants dashboard
   - dashboard.tsx réduit de 1,111 → 290 lignes (-74%)
   - Nouveaux composants: SecurityTab.tsx, PaywallTab.tsx, MembersTab.tsx, WebhookTab.tsx
@@ -35,12 +40,12 @@ Application de guidance pour la communication authentique et la régulation émo
 ### Deux Modes de Parcours
 
 1. **Mode Solo** - Régulation émotionnelle personnelle
-   - 27 étapes guidées
+   - 26 étapes guidées (Welcome est séparé)
    - Travail individuel sur ses émotions
    - Couleur de progression : Rouge
 
 2. **Mode Duo** - Communication authentique à deux
-   - 39 étapes guidées (incluant le parcours inversé)
+   - 38 étapes guidées (incluant le parcours inversé, Welcome séparé)
    - Dialogue structuré entre émetteur et récepteur
    - Couleur de progression : Bleu
    - Possibilité d'inverser les rôles
