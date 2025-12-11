@@ -26,17 +26,6 @@ export default function Roles() {
   return (
     <PageLayout>
       <div className="space-y-6 md:space-y-8">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setLocation('/welcome')}
-          className="mb-2"
-          data-testid="button-back-welcome"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour
-        </Button>
-
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
           <Users className="w-8 h-8 text-primary" />
         </div>
@@ -107,15 +96,28 @@ export default function Roles() {
         </div>
 
         <div className="pt-4 space-y-3">
-          <Button
-            size="lg"
-            onClick={handleContinue}
-            disabled={!senderName.trim() || !receiverName.trim() || isTransitioning}
-            className="w-full md:w-auto px-8 min-w-48"
-            data-testid="button-next"
-          >
-            Suivant
-          </Button>
+          <div className="flex flex-col md:flex-row gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setLocation('/welcome')}
+              disabled={isTransitioning}
+              className="w-full md:w-auto px-8"
+              data-testid="button-back"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Retour
+            </Button>
+            <Button
+              size="lg"
+              onClick={handleContinue}
+              disabled={!senderName.trim() || !receiverName.trim() || isTransitioning}
+              className="w-full md:w-auto px-8 min-w-48"
+              data-testid="button-next"
+            >
+              Suivant
+            </Button>
+          </div>
           {isTransitioning && (
             <Progress value={progress} className="w-full md:w-48" />
           )}
