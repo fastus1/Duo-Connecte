@@ -294,3 +294,54 @@
     inset: -1px;
   }
 }
+
+/* Modern subtle scrollbar - iOS/macOS style */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+*:hover {
+  scrollbar-color: hsl(var(--foreground) / 0.2) transparent;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground) / 0.2);
+}
+
+*:hover::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground) / 0.35);
+}
+
+/* Dark mode adjustments */
+.dark * {
+  scrollbar-color: transparent transparent;
+}
+
+.dark *:hover {
+  scrollbar-color: hsl(var(--foreground) / 0.25) transparent;
+}
+
+.dark *:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground) / 0.25);
+}
+
+.dark *:hover::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground) / 0.4);
+}
