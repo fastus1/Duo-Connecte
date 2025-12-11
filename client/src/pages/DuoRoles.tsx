@@ -25,18 +25,6 @@ export default function Roles() {
   return (
     <PageLayout>
       <div className="flex flex-col items-center space-y-10 md:space-y-12">
-        <div className="w-full">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setLocation('/welcome')}
-            data-testid="button-back-welcome"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour
-          </Button>
-        </div>
-
         <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
           <Users className="w-8 h-8 text-primary" />
         </div>
@@ -99,15 +87,28 @@ export default function Roles() {
           </div>
 
           <div className="flex flex-col items-center pt-4 space-y-4">
-            <Button
-              size="lg"
-              onClick={handleContinue}
-              disabled={!senderName.trim() || !receiverName.trim() || isTransitioning}
-              className="w-full md:w-auto px-12"
-              data-testid="button-next"
-            >
-              Continuer
-            </Button>
+            <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setLocation('/welcome')}
+                disabled={isTransitioning}
+                className="w-full md:w-auto px-8"
+                data-testid="button-back"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Retour
+              </Button>
+              <Button
+                size="lg"
+                onClick={handleContinue}
+                disabled={!senderName.trim() || !receiverName.trim() || isTransitioning}
+                className="w-full md:w-auto px-12"
+                data-testid="button-next"
+              >
+                Continuer
+              </Button>
+            </div>
             {isTransitioning && (
               <Progress value={progress} className="w-full md:w-64" aria-label="Chargement en cours" />
             )}
