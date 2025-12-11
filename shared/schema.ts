@@ -222,38 +222,13 @@ export interface FlowConfig {
   }>;
 }
 
-// Solo flow configuration (Welcome is now a separate landing page)
+// Solo flow configuration (en cours de reconstruction)
 export const soloFlow: FlowConfig = {
   type: 'solo',
   label: 'Régulation émotionnelle',
   progressColor: 'hsl(0, 84%, 60%)', // Red for solo
   pages: [
-    { id: 0, path: "/solo/roles", section: 0 },
-    { id: 1, path: "/solo/warnings", section: 0 },
-    { id: 2, path: "/solo/intention", section: 1 },
-    { id: 3, path: "/solo/sender-grounding", section: 1 },
-    { id: 4, path: "/solo/receiver-grounding", section: 1 },
-    { id: 5, path: "/solo/transition-1", section: 1 },
-    { id: 6, path: "/solo/sender-situation", section: 2 },
-    { id: 7, path: "/solo/sender-experience", section: 2 },
-    { id: 8, path: "/solo/sender-interpretation", section: 2 },
-    { id: 9, path: "/solo/sender-impact", section: 2 },
-    { id: 10, path: "/solo/sender-summary", section: 2 },
-    { id: 11, path: "/solo/receiver-validation", section: 3 },
-    { id: 12, path: "/solo/sender-confirmation", section: 3 },
-    { id: 13, path: "/solo/sender-clarification", section: 3 },
-    { id: 14, path: "/solo/receiver-experience", section: 4 },
-    { id: 15, path: "/solo/sender-validation", section: 5 },
-    { id: 16, path: "/solo/receiver-confirmation", section: 5 },
-    { id: 17, path: "/solo/transition-2", section: 5 },
-    { id: 18, path: "/solo/sender-needs", section: 6 },
-    { id: 19, path: "/solo/receiver-response", section: 6 },
-    { id: 20, path: "/solo/transition-3", section: 6 },
-    { id: 21, path: "/solo/sender-closing", section: 7 },
-    { id: 22, path: "/solo/receiver-closing", section: 7 },
-    { id: 23, path: "/solo/thanks", section: 7 },
-    { id: 24, path: "/solo/feedback", section: 7 },
-    { id: 25, path: "/solo/completion", section: 7 },
+    { id: 0, path: "/solo/presentation", section: 0 },
   ],
 };
 
