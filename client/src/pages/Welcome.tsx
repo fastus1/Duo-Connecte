@@ -45,7 +45,7 @@ export default function Welcome() {
   }, [updateSession, setLocation, transitionDelay]);
 
   return (
-    <PageLayout showNav={true}>
+    <PageLayout showNav={true} showBackButton={false}>
       <InstallBanner />
       <div className="flex items-center justify-center min-h-[calc(100vh-180px)] md:min-h-[60vh]">
         <div className="max-w-2xl mx-auto text-center space-y-4 md:space-y-8 py-4">
