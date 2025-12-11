@@ -9,9 +9,10 @@ import { useSession } from '@/contexts/SessionContext';
 interface PageLayoutProps {
   children: ReactNode;
   showNav?: boolean;
+  showBackButton?: boolean;
 }
 
-export function PageLayout({ children, showNav = true }: PageLayoutProps) {
+export function PageLayout({ children, showNav = true, showBackButton = true }: PageLayoutProps) {
   const { session, goBack } = useSession();
   const [, setLocation] = useLocation();
   const flow = getFlow(session.appType);
@@ -59,7 +60,7 @@ export function PageLayout({ children, showNav = true }: PageLayoutProps) {
       {showNav && (
         <PersistentNav 
           onBack={handleBack} 
-          canGoBack={true} 
+          canGoBack={showBackButton} 
         />
       )}
     </div>
