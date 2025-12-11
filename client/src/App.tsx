@@ -31,32 +31,7 @@ import Welcome from '@/pages/Welcome';
 import PaywallScreen from '@/pages/PaywallScreen';
 
 // Import Solo flow pages
-import SoloRoles from '@/pages/SoloRoles';
-import SoloWarnings from '@/pages/SoloWarnings';
-import SoloIntention from '@/pages/SoloIntention';
-import SoloSenderGrounding from '@/pages/SoloSenderGrounding';
-import SoloReceiverGrounding from '@/pages/SoloReceiverGrounding';
-import SoloTransition1 from '@/pages/SoloTransition1';
-import SoloSenderSituation from '@/pages/SoloSenderSituation';
-import SoloSenderExperience from '@/pages/SoloSenderExperience';
-import SoloSenderInterpretation from '@/pages/SoloSenderInterpretation';
-import SoloSenderImpact from '@/pages/SoloSenderImpact';
-import SoloSenderSummary from '@/pages/SoloSenderSummary';
-import SoloReceiverValidation from '@/pages/SoloReceiverValidation';
-import SoloSenderConfirmation from '@/pages/SoloSenderConfirmation';
-import SoloSenderClarification from '@/pages/SoloSenderClarification';
-import SoloReceiverExperience from '@/pages/SoloReceiverExperience';
-import SoloSenderValidation from '@/pages/SoloSenderValidation';
-import SoloReceiverConfirmation from '@/pages/SoloReceiverConfirmation';
-import SoloTransition2 from '@/pages/SoloTransition2';
-import SoloSenderNeeds from '@/pages/SoloSenderNeeds';
-import SoloReceiverResponse from '@/pages/SoloReceiverResponse';
-import SoloTransition3 from '@/pages/SoloTransition3';
-import SoloSenderClosing from '@/pages/SoloSenderClosing';
-import SoloReceiverClosing from '@/pages/SoloReceiverClosing';
-import SoloThanks from '@/pages/SoloThanks';
-import SoloFeedback from '@/pages/SoloFeedback';
-import SoloCompletion from '@/pages/SoloCompletion';
+import SoloPresentation from '@/pages/SoloPresentation';
 
 // Import Duo flow pages
 import DuoRoles from '@/pages/DuoRoles';
@@ -102,32 +77,7 @@ import DuoInversionPage20a from '@/pages/DuoInversionPage20a';
 import SupportPage from '@/pages/SupportPage';
 
 const soloPageComponents = [
-  SoloRoles,
-  SoloWarnings,
-  SoloIntention,
-  SoloSenderGrounding,
-  SoloReceiverGrounding,
-  SoloTransition1,
-  SoloSenderSituation,
-  SoloSenderExperience,
-  SoloSenderInterpretation,
-  SoloSenderImpact,
-  SoloSenderSummary,
-  SoloReceiverValidation,
-  SoloSenderConfirmation,
-  SoloSenderClarification,
-  SoloReceiverExperience,
-  SoloSenderValidation,
-  SoloReceiverConfirmation,
-  SoloTransition2,
-  SoloSenderNeeds,
-  SoloReceiverResponse,
-  SoloTransition3,
-  SoloSenderClosing,
-  SoloReceiverClosing,
-  SoloThanks,
-  SoloFeedback,
-  SoloCompletion,
+  SoloPresentation,
 ];
 
 const duoPageComponents = [
