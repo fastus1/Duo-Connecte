@@ -5,12 +5,14 @@ import { Label } from '@/components/ui/label';
 import { PageLayout } from '@/components/PageLayout';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { Users } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { Users, ArrowLeft } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 export default function Roles() {
   const { session, updateSession } = useSession();
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
+  const [, setLocation] = useLocation();
   const [senderName, setSenderName] = useState(session.senderName || '');
   const [receiverName, setReceiverName] = useState(session.receiverName || '');
 
@@ -24,6 +26,17 @@ export default function Roles() {
   return (
     <PageLayout>
       <div className="space-y-6 md:space-y-8">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setLocation('/welcome')}
+          className="mb-2"
+          data-testid="button-back-welcome"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Retour
+        </Button>
+
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
           <Users className="w-8 h-8 text-primary" />
         </div>
