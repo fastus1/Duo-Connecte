@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useLocation } from 'wouter';
 import { ProgressBar } from './ProgressBar';
 import { PersistentNav } from './PersistentNav';
 import { getFlow } from '@shared/schema';
@@ -12,6 +13,7 @@ interface PageLayoutProps {
 
 export function PageLayout({ children, showNav = true }: PageLayoutProps) {
   const { session, goBack } = useSession();
+  const [, setLocation] = useLocation();
   const flow = getFlow(session.appType);
   const currentPage = flow.pages[session.currentStep];
 
@@ -25,6 +27,14 @@ export function PageLayout({ children, showNav = true }: PageLayoutProps) {
       rootElement.scrollTo(0, 0);
     }
   }, [session.currentStep]);
+
+  const handleBack = () => {
+    if (session.currentStep === 0) {
+      setLocation('/welcome');
+    } else {
+      goBack();
+    }
+  };
 
   return (
     <div className="min-h-full flex flex-col" style={{ background: 'hsl(var(--page-bg))' }}>
@@ -48,8 +58,8 @@ export function PageLayout({ children, showNav = true }: PageLayoutProps) {
 
       {showNav && (
         <PersistentNav 
-          onBack={goBack} 
-          canGoBack={session.currentStep > 0} 
+          onBack={handleBack} 
+          canGoBack={true} 
         />
       )}
     </div>

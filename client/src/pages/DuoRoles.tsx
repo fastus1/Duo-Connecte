@@ -4,14 +4,12 @@ import { Input } from '@/components/ui/input';
 import { PageLayout } from '@/components/PageLayout';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { useLocation } from 'wouter';
-import { Users, ArrowLeft } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 export default function Roles() {
   const { session, updateSession } = useSession();
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
-  const [, setLocation] = useLocation();
   const [senderName, setSenderName] = useState(session.senderName || '');
   const [receiverName, setReceiverName] = useState(session.receiverName || '');
 
@@ -87,28 +85,15 @@ export default function Roles() {
           </div>
 
           <div className="flex flex-col items-center pt-4 space-y-4">
-            <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => setLocation('/welcome')}
-                disabled={isTransitioning}
-                className="w-full md:w-auto px-8"
-                data-testid="button-back"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Retour
-              </Button>
-              <Button
-                size="lg"
-                onClick={handleContinue}
-                disabled={!senderName.trim() || !receiverName.trim() || isTransitioning}
-                className="w-full md:w-auto px-12"
-                data-testid="button-next"
-              >
-                Continuer
-              </Button>
-            </div>
+            <Button
+              size="lg"
+              onClick={handleContinue}
+              disabled={!senderName.trim() || !receiverName.trim() || isTransitioning}
+              className="w-full md:w-auto px-12"
+              data-testid="button-next"
+            >
+              Continuer
+            </Button>
             {isTransitioning && (
               <Progress value={progress} className="w-full md:w-64" aria-label="Chargement en cours" />
             )}
