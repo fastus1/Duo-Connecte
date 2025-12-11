@@ -5,14 +5,12 @@ import { Label } from '@/components/ui/label';
 import { PageLayout } from '@/components/PageLayout';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { useLocation } from 'wouter';
-import { Users, ArrowLeft } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 export default function Roles() {
   const { session, updateSession } = useSession();
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
-  const [, setLocation] = useLocation();
   const [senderName, setSenderName] = useState(session.senderName || '');
   const [receiverName, setReceiverName] = useState(session.receiverName || '');
 
@@ -96,28 +94,15 @@ export default function Roles() {
         </div>
 
         <div className="pt-4 space-y-3">
-          <div className="flex flex-col md:flex-row gap-3">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => setLocation('/welcome')}
-              disabled={isTransitioning}
-              className="w-full md:w-auto px-8"
-              data-testid="button-back"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Retour
-            </Button>
-            <Button
-              size="lg"
-              onClick={handleContinue}
-              disabled={!senderName.trim() || !receiverName.trim() || isTransitioning}
-              className="w-full md:w-auto px-8 min-w-48"
-              data-testid="button-next"
-            >
-              Suivant
-            </Button>
-          </div>
+          <Button
+            size="lg"
+            onClick={handleContinue}
+            disabled={!senderName.trim() || !receiverName.trim() || isTransitioning}
+            className="w-full md:w-auto px-8 min-w-48"
+            data-testid="button-next"
+          >
+            Suivant
+          </Button>
           {isTransitioning && (
             <Progress value={progress} className="w-full md:w-48" />
           )}
