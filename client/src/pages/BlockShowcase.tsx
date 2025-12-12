@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus, Users, MessageSquare, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus, Users, MessageSquare, RefreshCw, Smile, User, UserCheck, Settings } from 'lucide-react';
 import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards } from '@/components/flow';
 
 function AddButton({ template, onAdd, label }: { template: string; onAdd: (t: string) => void; label?: string }) {
@@ -408,6 +408,39 @@ export default function BlockShowcase() {
                 template={`ChoiceCards (1):\n  - Icon: Heart, Title: "Titre", Description: "Description...", Button: "Action"`} 
                 onAdd={handleAddTemplate} 
                 label="1 carte" 
+              />
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground font-medium">3 cartes (exemple suivi)</p>
+              <div className="p-4 border rounded-lg bg-background">
+                <ChoiceCards cards={[
+                  { icon: User, title: "Thérapie individuelle", description: "Yannick Delorme, Thérapeute", buttonText: "En savoir plus" },
+                  { icon: Users, title: "Thérapie de couple", description: "Diane Lapensée, TRA", buttonText: "En savoir plus" },
+                  { icon: Smile, title: "Non merci", description: "Je n'ai pas besoin de suivi pour l'instant", buttonText: "Continuer" }
+                ]} />
+              </div>
+              <AddButton 
+                template={`ChoiceCards (3):\n  - Icon: User, Title: "Option 1", Description: "...", Button: "Action"\n  - Icon: Users, Title: "Option 2", Description: "...", Button: "Action"\n  - Icon: Smile, Title: "Option 3", Description: "...", Button: "Action"`} 
+                onAdd={handleAddTemplate} 
+                label="3 cartes" 
+              />
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground font-medium">4 cartes</p>
+              <div className="p-4 border rounded-lg bg-background">
+                <ChoiceCards cards={[
+                  { icon: Heart, title: "Option A", description: "Description A", buttonText: "Choisir A" },
+                  { icon: MessageSquare, title: "Option B", description: "Description B", buttonText: "Choisir B" },
+                  { icon: UserCheck, title: "Option C", description: "Description C", buttonText: "Choisir C" },
+                  { icon: Settings, title: "Option D", description: "Description D", buttonText: "Choisir D" }
+                ]} />
+              </div>
+              <AddButton 
+                template={`ChoiceCards (4):\n  - Icon: Heart, Title: "Option A", Description: "...", Button: "Action"\n  - Icon: MessageSquare, Title: "Option B", Description: "...", Button: "Action"\n  - Icon: UserCheck, Title: "Option C", Description: "...", Button: "Action"\n  - Icon: Settings, Title: "Option D", Description: "...", Button: "Action"`} 
+                onAdd={handleAddTemplate} 
+                label="4 cartes" 
               />
             </div>
           </CardContent>

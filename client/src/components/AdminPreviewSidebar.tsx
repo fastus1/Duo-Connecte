@@ -93,7 +93,7 @@ const duoPageLabels: Record<string, string> = {
     '/duo/sender-closing': 'Clôture émetteur',
     '/duo/receiver-closing': 'Clôture récepteur',
     '/duo/feedback': 'Feedback',
-    '/duo/completion': 'Fin',
+    '/duo/completion': 'Fin (Conversation terminée)',
 };
 
 const inversionPageLabels: Record<string, string> = {
@@ -221,7 +221,7 @@ export function AdminPreviewSidebar() {
 
                 <CollapsibleSection title="Parcours Duo" icon={Users} color="text-blue-500">
                     <SidebarMenu>
-                        {duoFlow.pages.slice(0, 24).map((page, index) => (
+                        {duoFlow.pages.slice(0, 25).map((page, index) => (
                             <SidebarMenuItem key={`duo-${page.id}`}>
                                 <SidebarMenuButton
                                     onClick={() => handleNavigate(page.path)}

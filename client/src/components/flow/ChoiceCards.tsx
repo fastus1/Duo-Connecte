@@ -23,7 +23,9 @@ export function ChoiceCards({ cards }: ChoiceCardsProps) {
     ? 'grid-cols-1 max-w-md mx-auto' 
     : cards.length === 2 
     ? 'grid-cols-1 md:grid-cols-2' 
-    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+    : cards.length === 3
+    ? 'grid-cols-1 md:grid-cols-3'
+    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
 
   return (
     <div className={`grid ${gridCols} gap-4 md:gap-6 w-full`}>
