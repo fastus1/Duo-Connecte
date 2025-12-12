@@ -216,12 +216,22 @@ export default function BlockShowcase() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">Texte d'introduction sous le titre.</p>
-            <div className="py-4 border rounded-lg bg-background px-4">
-              <Subtitle>
-                Vous avez choisi d'avoir une conversation authentique. C'est un beau geste de confiance.
-              </Subtitle>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">muted (gris)</p>
+                <Subtitle variant="muted">
+                  Texte en gris, plus discret.
+                </Subtitle>
+                <AddButton template={`Subtitle (muted): "Texte..."`} onAdd={handleAddTemplate} label="muted" />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">default (blanc/noir)</p>
+                <Subtitle variant="default">
+                  Texte en couleur principale.
+                </Subtitle>
+                <AddButton template={`Subtitle (default): "Texte..."`} onAdd={handleAddTemplate} label="default" />
+              </div>
             </div>
-            <AddButton template={`Subtitle: "Texte d'introduction..."`} onAdd={handleAddTemplate} />
           </CardContent>
         </Card>
 
