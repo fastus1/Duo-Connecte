@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
-import { ExpandableSection } from '@/components/ExpandableSection';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { Anchor } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { ExplanationModal, Subtitle, BulletList, Callout } from '@/components/flow';
 
 export default function SenderGrounding() {
   const { session } = useSession();
@@ -57,14 +57,27 @@ export default function SenderGrounding() {
               </li>
             </ul>
 
-            <ExpandableSection>
-              <p className="mb-4">
-                Cette étape te permet de te connecter à ton état émotionnel actuel avant d'aborder le sujet qui te préoccupe. C'est un moment pour toi de reconnaître ce que tu vis maintenant : peut-être de la nervosité, de l'appréhension, de l'espoir, ou toute autre émotion.
-              </p>
-              <p>
-                En exprimant ces ressentis à voix haute, tu te prépares intérieurement et tu permets à l'autre de comprendre ton état d'esprit avant même que la conversation commence vraiment.
-              </p>
-            </ExpandableSection>
+            <ExplanationModal
+              triggerText="Pourquoi cette étape?"
+              title="L'importance de l'ancrage"
+            >
+              <Subtitle>
+                Cette étape te permet de te connecter à ton état émotionnel actuel avant d'aborder le sujet qui te préoccupe.
+              </Subtitle>
+              
+              <Callout variant="primary" className="my-6">
+                C'est un moment pour toi de reconnaître ce que tu vis maintenant : peut-être de la nervosité, de l'appréhension, de l'espoir, ou toute autre émotion.
+              </Callout>
+              
+              <BulletList
+                variant="primary"
+                items={[
+                  "Tu te prépares intérieurement",
+                  "L'autre comprend ton état d'esprit",
+                  "La conversation commence sur de bonnes bases"
+                ]}
+              />
+            </ExplanationModal>
           </div>
 
           <div className="pt-4 flex flex-col items-center space-y-3">
