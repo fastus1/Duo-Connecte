@@ -37,13 +37,16 @@ export default function DuoPresentation() {
             Ce parcours vous guidera pas à pas pour:
           </p>
 
-          <ul className="space-y-2 text-base md:text-lg text-foreground list-disc list-inside">
+          <div className="space-y-3">
             {steps.map((step, index) => (
-              <li key={index}>{step}</li>
+              <div key={index} className="flex items-start gap-3">
+                <span className="text-primary text-xl leading-relaxed">•</span>
+                <span className="text-base md:text-lg text-foreground leading-relaxed">{step}</span>
+              </div>
             ))}
-          </ul>
+          </div>
 
-          <div className="bg-card border border-card-border rounded-lg p-4 mt-6">
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 mt-6">
             <p className="font-semibold text-foreground">Conseil</p>
             <p className="text-sm md:text-base text-muted-foreground mt-1">
               Assurez-vous d'avoir 30 à 45 minutes devant vous, sans interruption. Choisissez un endroit calme où vous vous sentez en sécurité.
@@ -56,7 +59,7 @@ export default function DuoPresentation() {
             size="lg"
             onClick={handleContinue}
             disabled={isTransitioning}
-            className="px-12"
+            className="min-w-48"
             data-testid="button-continue"
           >
             Je suis prêt·e à commencer
