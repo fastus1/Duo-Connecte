@@ -4,28 +4,28 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText } from 'lucide-react';
+import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus } from 'lucide-react';
 import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon } from '@/components/flow';
 
-function CopyButton({ template }: { template: string }) {
-  const [copied, setCopied] = useState(false);
+function AddButton({ template, onAdd, label }: { template: string; onAdd: (t: string) => void; label?: string }) {
+  const [added, setAdded] = useState(false);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(template);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleAdd = () => {
+    onAdd(template);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   return (
     <Button
       variant="outline"
       size="sm"
-      onClick={handleCopy}
-      className="gap-2"
-      data-testid="button-copy-template"
+      onClick={handleAdd}
+      className="gap-1.5 text-xs"
+      data-testid="button-add-template"
     >
-      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-      {copied ? 'Copié!' : 'Copier'}
+      {added ? <Check className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+      {added ? 'Ajouté!' : (label || 'Ajouter')}
     </Button>
   );
 }
@@ -35,6 +35,10 @@ export default function BlockShowcase() {
   const [composerOpen, setComposerOpen] = useState(true);
   const [composerText, setComposerText] = useState('');
   const [allCopied, setAllCopied] = useState(false);
+
+  const handleAddTemplate = (template: string) => {
+    setComposerText(prev => prev ? `${prev}\n${template}` : template);
+  };
 
   const handleCopyAll = async () => {
     await navigator.clipboard.writeText(composerText);
@@ -61,7 +65,7 @@ export default function BlockShowcase() {
         </div>
 
         {/* Composer Panel */}
-        <Card className="border-primary/30 bg-primary/5">
+        <Card className="border-primary/30 bg-primary/5 sticky top-4 z-10">
           <Collapsible open={composerOpen} onOpenChange={setComposerOpen}>
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover-elevate">
@@ -69,6 +73,7 @@ export default function BlockShowcase() {
                   <div className="flex items-center gap-2">
                     <FileText className="w-5 h-5 text-primary" />
                     Composer
+                    {composerText && <span className="text-xs font-normal text-muted-foreground">({composerText.split('\n').filter(l => l.trim()).length} blocs)</span>}
                   </div>
                   <ChevronDown className={`w-5 h-5 transition-transform ${composerOpen ? 'rotate-180' : ''}`} />
                 </CardTitle>
@@ -77,13 +82,13 @@ export default function BlockShowcase() {
             <CollapsibleContent>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Cliquez sur "Copier" à côté de chaque bloc, puis collez ici. Modifiez le texte selon vos besoins.
+                  Cliquez sur les boutons "Ajouter" pour construire votre page. Modifiez le texte si nécessaire.
                 </p>
                 <Textarea
                   value={composerText}
                   onChange={(e) => setComposerText(e.target.value)}
-                  placeholder={`Logo (md)\nHeroIcon (primary, Heart)\nPageTitle: "Titre de la page"\nSubtitle: "Texte d'introduction..."\nBulletList (primary): ["Point 1", "Point 2"]\nCallout (primary): "Conseil important"\nCtaButton (primary): "Continuer"`}
-                  className="min-h-[200px] font-mono text-sm"
+                  placeholder={`Cliquez sur "Ajouter" sur les blocs ci-dessous...`}
+                  className="min-h-[150px] font-mono text-sm"
                   data-testid="textarea-composer"
                 />
                 <div className="flex gap-3">
@@ -112,106 +117,102 @@ export default function BlockShowcase() {
 
         {/* Blocks */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>Logo</CardTitle>
-            <CopyButton template='Logo (md)' />
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">Logo complet avec texte "AVANCER SIMPLEMENT". Tailles: sm, md, lg, xl</p>
+            <p className="text-sm text-muted-foreground">Logo complet avec texte "AVANCER SIMPLEMENT".</p>
             <div className="flex flex-wrap gap-6 items-end">
               <div className="flex flex-col items-center gap-2">
                 <div className="p-4 border rounded-lg bg-background">
                   <Logo size="sm" />
                 </div>
-                <span className="text-xs text-muted-foreground">sm</span>
+                <AddButton template='Logo (sm)' onAdd={handleAddTemplate} label="sm" />
               </div>
               <div className="flex flex-col items-center gap-2">
                 <div className="p-4 border rounded-lg bg-background">
                   <Logo size="md" />
                 </div>
-                <span className="text-xs text-muted-foreground">md</span>
+                <AddButton template='Logo (md)' onAdd={handleAddTemplate} label="md" />
               </div>
               <div className="flex flex-col items-center gap-2">
                 <div className="p-4 border rounded-lg bg-background">
                   <Logo size="lg" />
                 </div>
-                <span className="text-xs text-muted-foreground">lg</span>
+                <AddButton template='Logo (lg)' onAdd={handleAddTemplate} label="lg" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>ArrowsIcon</CardTitle>
-            <CopyButton template='ArrowsIcon (md)' />
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">Icône des flèches seule (sans texte). Tailles: sm, md, lg</p>
+            <p className="text-sm text-muted-foreground">Icône des flèches seule (sans texte).</p>
             <div className="flex flex-wrap gap-6 items-end">
               <div className="flex flex-col items-center gap-2">
                 <div className="p-4 border rounded-lg bg-background">
                   <ArrowsIcon size="sm" />
                 </div>
-                <span className="text-xs text-muted-foreground">sm</span>
+                <AddButton template='ArrowsIcon (sm)' onAdd={handleAddTemplate} label="sm" />
               </div>
               <div className="flex flex-col items-center gap-2">
                 <div className="p-4 border rounded-lg bg-background">
                   <ArrowsIcon size="md" />
                 </div>
-                <span className="text-xs text-muted-foreground">md</span>
+                <AddButton template='ArrowsIcon (md)' onAdd={handleAddTemplate} label="md" />
               </div>
               <div className="flex flex-col items-center gap-2">
                 <div className="p-4 border rounded-lg bg-background">
                   <ArrowsIcon size="lg" />
                 </div>
-                <span className="text-xs text-muted-foreground">lg</span>
+                <AddButton template='ArrowsIcon (lg)' onAdd={handleAddTemplate} label="lg" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>HeroIcon</CardTitle>
-            <CopyButton template='HeroIcon (primary, Heart)' />
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">Icône dans un cercle coloré. Variantes: primary, destructive, success. Icônes: Heart, AlertTriangle, CheckCheck, etc.</p>
+            <p className="text-sm text-muted-foreground">Icône dans un cercle coloré. Icônes: Heart, AlertTriangle, CheckCheck, MessageCircle, etc.</p>
             <div className="flex flex-wrap gap-6">
               <div className="flex flex-col items-center gap-2">
                 <HeroIcon icon={Heart} variant="primary" />
-                <span className="text-xs text-muted-foreground">primary</span>
+                <AddButton template='HeroIcon (primary, Heart)' onAdd={handleAddTemplate} label="primary" />
               </div>
               <div className="flex flex-col items-center gap-2">
                 <HeroIcon icon={AlertTriangle} variant="destructive" />
-                <span className="text-xs text-muted-foreground">destructive</span>
+                <AddButton template='HeroIcon (destructive, AlertTriangle)' onAdd={handleAddTemplate} label="destructive" />
               </div>
               <div className="flex flex-col items-center gap-2">
                 <HeroIcon icon={CheckCheck} variant="success" />
-                <span className="text-xs text-muted-foreground">success</span>
+                <AddButton template='HeroIcon (success, CheckCheck)' onAdd={handleAddTemplate} label="success" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>PageTitle</CardTitle>
-            <CopyButton template='PageTitle: "Titre de la page"' />
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">Titre principal de la page, centré, police serif.</p>
             <div className="py-4 border rounded-lg bg-background">
               <PageTitle>Se connecter</PageTitle>
             </div>
+            <AddButton template='PageTitle: "Titre de la page"' onAdd={handleAddTemplate} />
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>Subtitle</CardTitle>
-            <CopyButton template={`Subtitle: "Texte d'introduction..."`} />
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">Texte d'introduction sous le titre.</p>
@@ -220,97 +221,92 @@ export default function BlockShowcase() {
                 Vous avez choisi d'avoir une conversation authentique. C'est un beau geste de confiance.
               </Subtitle>
             </div>
+            <AddButton template={`Subtitle: "Texte d'introduction..."`} onAdd={handleAddTemplate} />
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>BulletList</CardTitle>
-            <CopyButton template='BulletList (primary): ["Point 1", "Point 2", "Point 3"]' />
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">Liste à puces. Variantes: primary, destructive</p>
+            <p className="text-sm text-muted-foreground">Liste à puces avec points colorés.</p>
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-4 border rounded-lg bg-background">
-                <p className="text-xs text-muted-foreground mb-2">primary</p>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
                 <BulletList 
-                  items={[
-                    "Premier point important",
-                    "Deuxième point à retenir",
-                    "Troisième élément clé"
-                  ]} 
+                  items={["Premier point", "Deuxième point", "Troisième point"]} 
                   variant="primary"
                 />
+                <AddButton template='BulletList (primary): ["Point 1", "Point 2", "Point 3"]' onAdd={handleAddTemplate} label="primary" />
               </div>
-              <div className="p-4 border rounded-lg bg-background">
-                <p className="text-xs text-muted-foreground mb-2">destructive</p>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
                 <BulletList 
-                  items={[
-                    "Attention à ceci",
-                    "Ne pas oublier cela",
-                    "Point critique"
-                  ]} 
+                  items={["Attention à ceci", "Ne pas oublier"]} 
                   variant="destructive"
                 />
+                <AddButton template='BulletList (destructive): ["Point 1", "Point 2"]' onAdd={handleAddTemplate} label="destructive" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>Callout</CardTitle>
-            <CopyButton template='Callout (primary, "Titre"): "Contenu du conseil"' />
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">Encadré pour mettre en valeur. Variantes: primary, destructive, neutral. Titre optionnel.</p>
+            <p className="text-sm text-muted-foreground">Encadré pour mettre en valeur une information.</p>
             <div className="space-y-4">
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">primary (avec titre)</p>
+              <div className="space-y-2">
                 <Callout title="Conseil" variant="primary">
-                  Assurez-vous d'avoir 30 à 45 minutes devant vous, sans interruption.
+                  Assurez-vous d'avoir 30 à 45 minutes devant vous.
                 </Callout>
+                <AddButton template='Callout (primary, "Conseil"): "Contenu..."' onAdd={handleAddTemplate} label="primary + titre" />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">primary (sans titre)</p>
+              <div className="space-y-2">
                 <Callout variant="primary">
                   L'objectif est que l'autre comprenne vraiment ce que tu vis.
                 </Callout>
+                <AddButton template='Callout (primary): "Contenu..."' onAdd={handleAddTemplate} label="primary" />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">destructive</p>
+              <div className="space-y-2">
                 <Callout title="Attention" variant="destructive">
                   Cet outil n'est pas un substitut à une thérapie relationnelle.
                 </Callout>
+                <AddButton template='Callout (destructive, "Attention"): "Contenu..."' onAdd={handleAddTemplate} label="destructive + titre" />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">neutral</p>
+              <div className="space-y-2">
                 <Callout variant="neutral">
                   Information neutre sans accent de couleur particulier.
                 </Callout>
+                <AddButton template='Callout (neutral): "Contenu..."' onAdd={handleAddTemplate} label="neutral" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>RoleIndicator</CardTitle>
-            <CopyButton template='RoleIndicator (speaking): "Marie"' />
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">Indicateur de rôle. Rôles: speaking, listening</p>
+            <p className="text-sm text-muted-foreground">Indicateur de qui parle ou écoute.</p>
             <div className="space-y-3">
-              <RoleIndicator name="Marie" role="speaking" />
-              <RoleIndicator name="Pierre" role="listening" />
+              <div className="flex items-center gap-4">
+                <RoleIndicator name="Marie" role="speaking" />
+                <AddButton template='RoleIndicator (speaking): "Nom"' onAdd={handleAddTemplate} label="speaking" />
+              </div>
+              <div className="flex items-center gap-4">
+                <RoleIndicator name="Pierre" role="listening" />
+                <AddButton template='RoleIndicator (listening): "Nom"' onAdd={handleAddTemplate} label="listening" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>WarningCard</CardTitle>
-            <CopyButton template={`WarningCard: "Message d'avertissement"`} />
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">Carte d'avertissement avec icône danger.</p>
@@ -318,38 +314,35 @@ export default function BlockShowcase() {
               <WarningCard>
                 Cet outil n'est pas un substitut à une thérapie relationnelle
               </WarningCard>
-              <WarningCard>
-                Le piège principal est d'aller trop vite. Un rythme lent est essentiel.
-              </WarningCard>
+              <AddButton template={`WarningCard: "Message d'avertissement"`} onAdd={handleAddTemplate} />
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader>
             <CardTitle>CtaButton</CardTitle>
-            <CopyButton template='CtaButton (primary): "Continuer"' />
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">Bouton d'action. Variantes: primary, destructive. Icône optionnelle.</p>
+            <p className="text-sm text-muted-foreground">Bouton d'action principal.</p>
             <div className="space-y-6">
-              <div className="p-4 border rounded-lg bg-background">
-                <p className="text-xs text-muted-foreground mb-2">primary</p>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
                 <CtaButton onClick={() => {}} variant="primary">
                   Continuer
                 </CtaButton>
+                <AddButton template='CtaButton (primary): "Continuer"' onAdd={handleAddTemplate} label="primary" />
               </div>
-              <div className="p-4 border rounded-lg bg-background">
-                <p className="text-xs text-muted-foreground mb-2">destructive (outline)</p>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
                 <CtaButton onClick={() => {}} variant="destructive">
                   J'ai compris, continuer
                 </CtaButton>
+                <AddButton template='CtaButton (destructive): "Texte..."' onAdd={handleAddTemplate} label="destructive" />
               </div>
-              <div className="p-4 border rounded-lg bg-background">
-                <p className="text-xs text-muted-foreground mb-2">avec icône</p>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
                 <CtaButton onClick={() => {}} icon={CheckCheck}>
                   J'ai été entendu
                 </CtaButton>
+                <AddButton template='CtaButton (primary, CheckCheck): "Texte..."' onAdd={handleAddTemplate} label="avec icône" />
               </div>
             </div>
           </CardContent>
