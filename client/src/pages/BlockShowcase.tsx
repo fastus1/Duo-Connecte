@@ -65,7 +65,7 @@ export default function BlockShowcase() {
         </div>
 
         {/* Composer Panel */}
-        <Card className="border-primary/30 bg-primary/5 sticky top-4 z-10">
+        <Card className="border-primary/30 bg-card sticky top-4 z-10 shadow-lg">
           <Collapsible open={composerOpen} onOpenChange={setComposerOpen}>
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover-elevate">
