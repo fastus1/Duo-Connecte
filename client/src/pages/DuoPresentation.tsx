@@ -64,7 +64,7 @@ export default function DuoPresentation() {
             className="min-w-48"
             data-testid="button-continue"
           >
-            Je suis prêt·e à commencer
+            Nous sommes prêts à commencer
           </Button>
           {isTransitioning && (
             <Progress value={progress} className="w-64" />
