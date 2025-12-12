@@ -8,7 +8,7 @@ export default function DuoPresentation() {
   const { isTransitioning, transitionToStep } = usePageTransition();
 
   const handleContinue = () => {
-    transitionToStep(2);
+    transitionToStep(1);
   };
 
   return (
@@ -20,7 +20,7 @@ export default function DuoPresentation() {
 
         <div className="text-center space-y-4 max-w-2xl">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground">
-            Prendre le temps de se connecter
+            Se connecter
           </h1>
 
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
@@ -65,8 +65,7 @@ export default function DuoPresentation() {
           <Button
             onClick={handleContinue}
             disabled={isTransitioning}
-            className="w-full text-base py-6"
-            size="lg"
+            className="w-full"
             data-testid="button-continue"
           >
             Je suis prêt·e à commencer

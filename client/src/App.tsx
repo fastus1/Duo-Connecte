@@ -82,8 +82,8 @@ const soloPageComponents = [
 ];
 
 const duoPageComponents = [
-  DuoRoles,
   DuoPresentation,
+  DuoRoles,
   DuoWarnings,
   DuoIntention,
   DuoSenderGrounding,

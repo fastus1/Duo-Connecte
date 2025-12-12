@@ -238,8 +238,8 @@ export const duoFlow: FlowConfig = {
   label: 'Communication authentique',
   progressColor: 'hsl(221, 83%, 53%)', // Blue for duo
   pages: [
-    { id: 0, path: "/duo/roles", section: 0 },
-    { id: 1, path: "/duo/presentation", section: 0 },
+    { id: 0, path: "/duo/presentation", section: 0 },
+    { id: 1, path: "/duo/roles", section: 0 },
     { id: 2, path: "/duo/warnings", section: 0 },
     { id: 3, path: "/duo/intention", section: 1 },
     { id: 4, path: "/duo/sender-grounding", section: 1 },
