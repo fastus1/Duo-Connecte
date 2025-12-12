@@ -4,27 +4,37 @@ import logoBlanc from '@assets/logo-blanc-320_1764950756900.png';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  showText?: boolean;
 }
 
-const sizeClasses = {
-  sm: 'h-16',
-  md: 'h-24',
-  lg: 'h-32',
-  xl: 'h-40',
+const sizeConfig = {
+  sm: { image: 'h-12', text: 'text-sm' },
+  md: { image: 'h-20', text: 'text-base' },
+  lg: { image: 'h-28', text: 'text-xl' },
+  xl: { image: 'h-36', text: 'text-2xl' },
 };
 
-export function Logo({ size = 'md' }: LogoProps) {
+export function Logo({ size = 'md', showText = true }: LogoProps) {
   const { actualTheme } = useTheme();
   const logoSrc = actualTheme === 'dark' ? logoBlanc : logoBleu;
+  const config = sizeConfig[size];
 
   return (
-    <div className="flex justify-center">
+    <div className="flex flex-col items-center gap-2">
       <img 
         src={logoSrc} 
         alt="Avancer Simplement" 
-        className={`${sizeClasses[size]} object-contain`}
+        className={`${config.image} object-contain`}
         data-testid="img-logo"
       />
+      {showText && (
+        <div 
+          className={`${config.text} font-black italic text-primary`}
+          style={{ fontFamily: 'Montserrat, sans-serif' }}
+        >
+          AVANCER SIMPLEMENT
+        </div>
+      )}
     </div>
   );
 }
