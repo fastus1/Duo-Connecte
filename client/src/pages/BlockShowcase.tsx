@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus, Users, MessageSquare, RefreshCw, Smile, User, UserCheck, Settings } from 'lucide-react';
-import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards, StarRating, TextQuestion } from '@/components/flow';
+import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards, StarRating, TextQuestion, ExplanationModal } from '@/components/flow';
 
 function AddButton({ template, onAdd, label }: { template: string; onAdd: (t: string) => void; label?: string }) {
   const [added, setAdded] = useState(false);
@@ -507,6 +507,61 @@ export default function BlockShowcase() {
                   template='TextQuestion: "Question?" placeholder="Exemple..."' 
                   onAdd={handleAddTemplate} 
                   label="requis" 
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>ExplanationModal</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Popup fullscreen pour explications détaillées avec support audio optionnel.
+            </p>
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Sans audio</p>
+                <ExplanationModal
+                  triggerText="En savoir plus"
+                  title="Qu'est-ce que le vécu?"
+                >
+                  <p className="text-foreground leading-relaxed mb-4">
+                    Le vécu désigne l'ensemble des sensations, émotions et ressentis que vous avez expérimentés dans une situation donnée.
+                  </p>
+                  <p className="text-foreground leading-relaxed mb-4">
+                    Il s'agit de ce que vous avez ressenti "dans votre corps" : tension, chaleur, froid, oppression, légèreté, etc.
+                  </p>
+                  <p className="text-foreground leading-relaxed">
+                    Exprimer son vécu permet à l'autre de mieux comprendre l'impact émotionnel d'une situation sur vous.
+                  </p>
+                </ExplanationModal>
+                <AddButton 
+                  template={`ExplanationModal: "Titre"\n  triggerText: "En savoir plus"\n  Contenu: paragraphes d'explication`} 
+                  onAdd={handleAddTemplate} 
+                  label="sans audio" 
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Avec audio</p>
+                <ExplanationModal
+                  triggerText="Écouter l'explication"
+                  title="L'importance de l'ancrage"
+                  audioSrc="/audio/example.mp3"
+                >
+                  <p className="text-foreground leading-relaxed mb-4">
+                    L'ancrage est une technique qui permet de se recentrer sur le moment présent avant d'entamer une conversation importante.
+                  </p>
+                  <p className="text-foreground leading-relaxed">
+                    Il aide à réduire le stress et à aborder l'échange avec plus de clarté mentale.
+                  </p>
+                </ExplanationModal>
+                <AddButton 
+                  template={`ExplanationModal: "Titre"\n  triggerText: "Écouter l'explication"\n  audioSrc: "/audio/fichier.mp3"\n  Contenu: paragraphes d'explication`} 
+                  onAdd={handleAddTemplate} 
+                  label="avec audio" 
                 />
               </div>
             </div>

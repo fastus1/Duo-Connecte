@@ -11,3 +11,4 @@ export { ArrowsIcon } from './ArrowsIcon';
 export { ChoiceCards } from './ChoiceCards';
 export { StarRating } from './StarRating';
 export { TextQuestion } from './TextQuestion';
+export { ExplanationModal } from './ExplanationModal';
