@@ -368,60 +368,60 @@ export default function BlockShowcase() {
             </p>
             
             <div className="space-y-4">
-              <p className="text-xs text-muted-foreground font-medium">2 cartes (exemple parcours)</p>
+              <p className="text-xs text-muted-foreground font-medium">1 carte</p>
               <div className="p-4 border rounded-lg bg-background">
                 <ChoiceCards cards={[
-                  { icon: Heart, title: "Régulation émotionnelle", description: "Gérer vos émotions en solo", buttonText: "Parcours Solo" },
-                  { icon: Users, title: "Communication authentique", description: "Dialoguer et se comprendre à deux", buttonText: "Parcours Duo" }
+                  { icon: Heart, title: "Option A", description: "Description A", buttonText: "Choisir A" }
                 ]} />
               </div>
               <AddButton 
-                template={`ChoiceCards (2):\n  - Icon: Heart, Title: "Titre 1", Description: "Description...", Button: "Action 1"\n  - Icon: Users, Title: "Titre 2", Description: "Description...", Button: "Action 2"`} 
-                onAdd={handleAddTemplate} 
-                label="2 cartes" 
-              />
-            </div>
-
-            <div className="space-y-4">
-              <p className="text-xs text-muted-foreground font-medium">2 cartes avec sous-titre (exemple options)</p>
-              <div className="p-4 border rounded-lg bg-background">
-                <ChoiceCards cards={[
-                  { icon: MessageSquare, title: "Option 1 : Clôturer", subtitle: "Un dernier feedback", description: "Partagez comment vous vous sentez après cet échange.", buttonText: "Clôturer maintenant" },
-                  { icon: RefreshCw, title: "Option 2 : Inverser", subtitle: "Le récepteur s'exprime", description: "Explorer les deux perspectives.", buttonText: "Inverser les rôles" }
-                ]} />
-              </div>
-              <AddButton 
-                template={`ChoiceCards (2):\n  - Icon: MessageSquare, Title: "Option 1", Subtitle: "Sous-titre", Description: "...", Button: "Action"\n  - Icon: RefreshCw, Title: "Option 2", Subtitle: "Sous-titre", Description: "...", Button: "Action"`} 
-                onAdd={handleAddTemplate} 
-                label="2 cartes + sous-titre" 
-              />
-            </div>
-
-            <div className="space-y-4">
-              <p className="text-xs text-muted-foreground font-medium">1 carte seule</p>
-              <div className="p-4 border rounded-lg bg-background">
-                <ChoiceCards cards={[
-                  { icon: Heart, title: "Action unique", description: "Description de l'action", buttonText: "Continuer" }
-                ]} />
-              </div>
-              <AddButton 
-                template={`ChoiceCards (1):\n  - Icon: Heart, Title: "Titre", Description: "Description...", Button: "Action"`} 
+                template={`ChoiceCards (1):\n  - Icon: Heart, Title: "Option A", Description: "...", Button: "Action"`} 
                 onAdd={handleAddTemplate} 
                 label="1 carte" 
               />
             </div>
 
             <div className="space-y-4">
-              <p className="text-xs text-muted-foreground font-medium">3 cartes (exemple suivi)</p>
+              <p className="text-xs text-muted-foreground font-medium">2 cartes</p>
               <div className="p-4 border rounded-lg bg-background">
                 <ChoiceCards cards={[
-                  { icon: User, title: "Thérapie individuelle", description: "Yannick Delorme, Thérapeute", buttonText: "En savoir plus" },
-                  { icon: Users, title: "Thérapie de couple", description: "Diane Lapensée, TRA", buttonText: "En savoir plus" },
-                  { icon: Smile, title: "Non merci", description: "Je n'ai pas besoin de suivi pour l'instant", buttonText: "Continuer" }
+                  { icon: Heart, title: "Option A", description: "Description A", buttonText: "Choisir A" },
+                  { icon: Users, title: "Option B", description: "Description B", buttonText: "Choisir B" }
                 ]} />
               </div>
               <AddButton 
-                template={`ChoiceCards (3):\n  - Icon: User, Title: "Option 1", Description: "...", Button: "Action"\n  - Icon: Users, Title: "Option 2", Description: "...", Button: "Action"\n  - Icon: Smile, Title: "Option 3", Description: "...", Button: "Action"`} 
+                template={`ChoiceCards (2):\n  - Icon: Heart, Title: "Option A", Description: "...", Button: "Action"\n  - Icon: Users, Title: "Option B", Description: "...", Button: "Action"`} 
+                onAdd={handleAddTemplate} 
+                label="2 cartes" 
+              />
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground font-medium">2 cartes avec sous-titre</p>
+              <div className="p-4 border rounded-lg bg-background">
+                <ChoiceCards cards={[
+                  { icon: MessageSquare, title: "Option A", subtitle: "Sous-titre A", description: "Description A", buttonText: "Choisir A" },
+                  { icon: RefreshCw, title: "Option B", subtitle: "Sous-titre B", description: "Description B", buttonText: "Choisir B" }
+                ]} />
+              </div>
+              <AddButton 
+                template={`ChoiceCards (2):\n  - Icon: MessageSquare, Title: "Option A", Subtitle: "Sous-titre A", Description: "...", Button: "Action"\n  - Icon: RefreshCw, Title: "Option B", Subtitle: "Sous-titre B", Description: "...", Button: "Action"`} 
+                onAdd={handleAddTemplate} 
+                label="2 cartes + sous-titre" 
+              />
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground font-medium">3 cartes</p>
+              <div className="p-4 border rounded-lg bg-background">
+                <ChoiceCards cards={[
+                  { icon: User, title: "Option A", description: "Description A", buttonText: "Choisir A" },
+                  { icon: Users, title: "Option B", description: "Description B", buttonText: "Choisir B" },
+                  { icon: Smile, title: "Option C", description: "Description C", buttonText: "Choisir C" }
+                ]} />
+              </div>
+              <AddButton 
+                template={`ChoiceCards (3):\n  - Icon: User, Title: "Option A", Description: "...", Button: "Action"\n  - Icon: Users, Title: "Option B", Description: "...", Button: "Action"\n  - Icon: Smile, Title: "Option C", Description: "...", Button: "Action"`} 
                 onAdd={handleAddTemplate} 
                 label="3 cartes" 
               />
