@@ -83,7 +83,7 @@ export default function SenderNeeds() {
             <div className="flex justify-center">
               <Button
                 size="lg"
-                onClick={() => transitionToStep(18)}
+                onClick={() => transitionToStep(19)}
                 disabled={isTransitioning}
                 className="min-w-48"
                 data-testid="button-finished"

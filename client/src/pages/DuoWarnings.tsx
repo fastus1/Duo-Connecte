@@ -46,7 +46,7 @@ export default function Warnings() {
           <Button
             size="lg"
             variant="outline"
-            onClick={() => transitionToStep(2)}
+            onClick={() => transitionToStep(3)}
             disabled={isTransitioning}
             className="px-12 text-destructive border-destructive hover:bg-destructive/10"
             data-testid="button-understood"
