@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus } from 'lucide-react';
-import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon } from '@/components/flow';
+import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus, Users, MessageSquare, RefreshCw } from 'lucide-react';
+import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards } from '@/components/flow';
 
 function AddButton({ template, onAdd, label }: { template: string; onAdd: (t: string) => void; label?: string }) {
   const [added, setAdded] = useState(false);
@@ -354,6 +354,61 @@ export default function BlockShowcase() {
                 </CtaButton>
                 <AddButton template='CtaButton (primary, CheckCheck): "Texte..."' onAdd={handleAddTemplate} label="avec icône" />
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>ChoiceCards</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              Cartes de choix avec icône, titre, description et bouton. Flexible de 1 à 3 cartes.
+            </p>
+            
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground font-medium">2 cartes (exemple parcours)</p>
+              <div className="p-4 border rounded-lg bg-background">
+                <ChoiceCards cards={[
+                  { icon: Heart, title: "Régulation émotionnelle", description: "Gérer vos émotions en solo", buttonText: "Parcours Solo" },
+                  { icon: Users, title: "Communication authentique", description: "Dialoguer et se comprendre à deux", buttonText: "Parcours Duo" }
+                ]} />
+              </div>
+              <AddButton 
+                template={`ChoiceCards (2):\n  - Icon: Heart, Title: "Titre 1", Description: "Description...", Button: "Action 1"\n  - Icon: Users, Title: "Titre 2", Description: "Description...", Button: "Action 2"`} 
+                onAdd={handleAddTemplate} 
+                label="2 cartes" 
+              />
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground font-medium">2 cartes avec sous-titre (exemple options)</p>
+              <div className="p-4 border rounded-lg bg-background">
+                <ChoiceCards cards={[
+                  { icon: MessageSquare, title: "Option 1 : Clôturer", subtitle: "Un dernier feedback", description: "Partagez comment vous vous sentez après cet échange.", buttonText: "Clôturer maintenant" },
+                  { icon: RefreshCw, title: "Option 2 : Inverser", subtitle: "Le récepteur s'exprime", description: "Explorer les deux perspectives.", buttonText: "Inverser les rôles" }
+                ]} />
+              </div>
+              <AddButton 
+                template={`ChoiceCards (2):\n  - Icon: MessageSquare, Title: "Option 1", Subtitle: "Sous-titre", Description: "...", Button: "Action"\n  - Icon: RefreshCw, Title: "Option 2", Subtitle: "Sous-titre", Description: "...", Button: "Action"`} 
+                onAdd={handleAddTemplate} 
+                label="2 cartes + sous-titre" 
+              />
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground font-medium">1 carte seule</p>
+              <div className="p-4 border rounded-lg bg-background">
+                <ChoiceCards cards={[
+                  { icon: Heart, title: "Action unique", description: "Description de l'action", buttonText: "Continuer" }
+                ]} />
+              </div>
+              <AddButton 
+                template={`ChoiceCards (1):\n  - Icon: Heart, Title: "Titre", Description: "Description...", Button: "Action"`} 
+                onAdd={handleAddTemplate} 
+                label="1 carte" 
+              />
             </div>
           </CardContent>
         </Card>

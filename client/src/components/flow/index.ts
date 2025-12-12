@@ -8,3 +8,4 @@ export { RoleIndicator } from './RoleIndicator';
 export { WarningCard } from './WarningCard';
 export { Logo } from './Logo';
 export { ArrowsIcon } from './ArrowsIcon';
+export { ChoiceCards } from './ChoiceCards';
