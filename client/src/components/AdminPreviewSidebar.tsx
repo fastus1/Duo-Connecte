@@ -28,6 +28,8 @@ import { cn } from '@/lib/utils';
 
 const specialPages = [
     { path: '/welcome', label: 'Page d\'accueil', icon: Home },
+    { path: '/duo/feedback', label: 'Feedback', icon: Heart },
+    { path: '/duo/completion', label: 'Fin (Conversation terminée)', icon: Heart },
     { path: '/admin-login', label: 'Connexion Admin', icon: Shield },
     { path: '/admin', label: 'Dashboard Admin', icon: Shield },
     { path: '/support', label: 'Page Support', icon: HelpCircle },
@@ -221,7 +223,7 @@ export function AdminPreviewSidebar() {
 
                 <CollapsibleSection title="Parcours Duo" icon={Users} color="text-blue-500">
                     <SidebarMenu>
-                        {duoFlow.pages.slice(0, 25).map((page, index) => (
+                        {duoFlow.pages.slice(0, 23).map((page, index) => (
                             <SidebarMenuItem key={`duo-${page.id}`}>
                                 <SidebarMenuButton
                                     onClick={() => handleNavigate(page.path)}
@@ -238,7 +240,7 @@ export function AdminPreviewSidebar() {
 
                 <CollapsibleSection title="Inversion des rôles" icon={RefreshCw} color="text-purple-500">
                     <SidebarMenu>
-                        {duoFlow.pages.slice(24).map((page) => (
+                        {duoFlow.pages.slice(25).map((page) => (
                             <SidebarMenuItem key={`inv-${page.id}`}>
                                 <SidebarMenuButton
                                     onClick={() => handleNavigate(page.path)}
