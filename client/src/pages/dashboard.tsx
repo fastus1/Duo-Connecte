@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { LogOut, Shield, Clock, Loader2, Home, Lock, Users, Code, Ticket } from 'lucide-react';
+import { LogOut, Shield, Clock, Loader2, Home, Lock, Users, Code, Ticket, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -283,11 +283,21 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background pb-12">
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
-          <div>
-            <h2 className="text-3xl font-semibold mb-2">Tableau de bord</h2>
-            <p className="text-muted-foreground">
-              Gérez votre application avec l'authentification à 4 couches
-            </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-semibold mb-2">Tableau de bord</h2>
+              <p className="text-muted-foreground">
+                Gérez votre application avec l'authentification à 4 couches
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setLocation('/admin/blocks')}
+              data-testid="button-design-system"
+            >
+              <Palette className="h-4 w-4 mr-2" />
+              Design
+            </Button>
           </div>
 
           <Tabs defaultValue="accueil" className="w-full">

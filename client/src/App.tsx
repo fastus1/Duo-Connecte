@@ -76,6 +76,7 @@ import DuoInversionPage18a from '@/pages/DuoInversionPage18a';
 import DuoInversionPage19a from '@/pages/DuoInversionPage19a';
 import DuoInversionPage20a from '@/pages/DuoInversionPage20a';
 import SupportPage from '@/pages/SupportPage';
+import BlockShowcase from '@/pages/BlockShowcase';
 
 const soloPageComponents = [
   SoloPresentation,
@@ -366,6 +367,7 @@ function SessionRouter() {
 
           {/* Protected Routes */}
           <Route path="/admin" component={Dashboard} />
+          <Route path="/admin/blocks" component={BlockShowcase} />
           <Route path="/support" component={SupportPage} />
 
           {/* Solo flow routes */}
