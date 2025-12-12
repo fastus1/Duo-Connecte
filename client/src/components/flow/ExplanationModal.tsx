@@ -65,7 +65,7 @@ export function ExplanationModal({
           data-testid="modal-explanation"
         >
           <div 
-            className="h-full w-full md:h-auto md:max-h-[90vh] md:max-w-2xl md:rounded-2xl overflow-hidden shadow-2xl"
+            className="h-full w-full md:h-[85vh] md:w-[420px] md:rounded-2xl overflow-hidden shadow-2xl"
             style={{ backgroundColor: '#074491' }}
             onClick={(e) => e.stopPropagation()}
           >
