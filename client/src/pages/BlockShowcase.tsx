@@ -2,7 +2,7 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Heart, AlertTriangle, CheckCheck, MessageCircle } from 'lucide-react';
-import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard } from '@/components/flow';
+import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon } from '@/components/flow';
 
 export default function BlockShowcase() {
   const [, setLocation] = useLocation();
@@ -24,6 +24,64 @@ export default function BlockShowcase() {
             <p className="text-muted-foreground">Bibliothèque des blocs réutilisables</p>
           </div>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Logo</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">Logo complet avec texte "AVANCER SIMPLEMENT". S'adapte au mode clair/sombre.</p>
+            <div className="flex flex-wrap gap-6 items-end">
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-4 border rounded-lg bg-background">
+                  <Logo size="sm" />
+                </div>
+                <span className="text-xs text-muted-foreground">sm</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-4 border rounded-lg bg-background">
+                  <Logo size="md" />
+                </div>
+                <span className="text-xs text-muted-foreground">md</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-4 border rounded-lg bg-background">
+                  <Logo size="lg" />
+                </div>
+                <span className="text-xs text-muted-foreground">lg</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>ArrowsIcon</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">Icône des flèches seule (sans texte). S'adapte au mode clair/sombre.</p>
+            <div className="flex flex-wrap gap-6 items-end">
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-4 border rounded-lg bg-background">
+                  <ArrowsIcon size="sm" />
+                </div>
+                <span className="text-xs text-muted-foreground">sm</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-4 border rounded-lg bg-background">
+                  <ArrowsIcon size="md" />
+                </div>
+                <span className="text-xs text-muted-foreground">md</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-4 border rounded-lg bg-background">
+                  <ArrowsIcon size="lg" />
+                </div>
+                <span className="text-xs text-muted-foreground">lg</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
