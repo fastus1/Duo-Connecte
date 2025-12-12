@@ -9,3 +9,5 @@ export { WarningCard } from './WarningCard';
 export { Logo } from './Logo';
 export { ArrowsIcon } from './ArrowsIcon';
 export { ChoiceCards } from './ChoiceCards';
+export { StarRating } from './StarRating';
+export { TextQuestion } from './TextQuestion';
