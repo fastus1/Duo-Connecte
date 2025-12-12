@@ -32,7 +32,7 @@ export default function Transition1() {
           <div className="pt-4 flex flex-col items-center space-y-3">
             <Button
               size="lg"
-              onClick={() => transitionToStep(6)}
+              onClick={() => transitionToStep(7)}
               disabled={isTransitioning}
               className="w-full md:w-auto px-8 min-w-48"
               data-testid="button-continue"

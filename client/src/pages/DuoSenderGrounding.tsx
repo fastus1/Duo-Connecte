@@ -70,7 +70,7 @@ export default function SenderGrounding() {
           <div className="pt-4 flex flex-col items-center space-y-3">
             <Button
               size="lg"
-              onClick={() => transitionToStep(4)}
+              onClick={() => transitionToStep(5)}
               disabled={isTransitioning}
               className="w-full md:w-auto px-8 min-w-48"
               data-testid="button-next"

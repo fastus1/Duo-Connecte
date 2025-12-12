@@ -71,7 +71,7 @@ export default function SenderConfirmation() {
             <div className="flex justify-center">
               <Button
                 size="lg"
-                onClick={() => transitionToStep(13)}
+                onClick={() => transitionToStep(14)}
                 disabled={isTransitioning}
                 className="min-w-48"
                 data-testid="button-confirm"

@@ -37,7 +37,7 @@ export default function Transition2() {
             <div className="flex justify-center">
               <Button
                 size="lg"
-                onClick={() => transitionToStep(17)}
+                onClick={() => transitionToStep(18)}
                 disabled={isTransitioning}
                 className="min-w-48"
                 data-testid="button-continue"

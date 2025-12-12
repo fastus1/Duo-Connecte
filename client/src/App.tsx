@@ -35,6 +35,7 @@ import SoloPresentation from '@/pages/SoloPresentation';
 
 // Import Duo flow pages
 import DuoRoles from '@/pages/DuoRoles';
+import DuoPresentation from '@/pages/DuoPresentation';
 import DuoWarnings from '@/pages/DuoWarnings';
 import DuoIntention from '@/pages/DuoIntention';
 import DuoSenderGrounding from '@/pages/DuoSenderGrounding';
@@ -82,6 +83,7 @@ const soloPageComponents = [
 
 const duoPageComponents = [
   DuoRoles,
+  DuoPresentation,
   DuoWarnings,
   DuoIntention,
   DuoSenderGrounding,

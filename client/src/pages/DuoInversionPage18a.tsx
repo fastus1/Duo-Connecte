@@ -83,7 +83,7 @@ export default function DuoInversionPage18a() {
             <div className="flex justify-center">
               <Button
                 size="lg"
-                onClick={() => transitionToStep(36)}
+                onClick={() => transitionToStep(37)}
                 disabled={isTransitioning}
                 className="min-w-48"
                 data-testid="button-finished"
