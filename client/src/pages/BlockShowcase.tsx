@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus, Users, MessageSquare, RefreshCw, Smile, User, UserCheck, Settings } from 'lucide-react';
-import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards } from '@/components/flow';
+import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards, StarRating, TextQuestion } from '@/components/flow';
 
 function AddButton({ template, onAdd, label }: { template: string; onAdd: (t: string) => void; label?: string }) {
   const [added, setAdded] = useState(false);
@@ -35,6 +35,8 @@ export default function BlockShowcase() {
   const [composerOpen, setComposerOpen] = useState(true);
   const [composerText, setComposerText] = useState('');
   const [allCopied, setAllCopied] = useState(false);
+  const [demoRating, setDemoRating] = useState(0);
+  const [demoText, setDemoText] = useState('');
 
   const handleAddTemplate = (template: string) => {
     setComposerText(prev => prev ? `${prev}\n${template}` : template);
@@ -442,6 +444,71 @@ export default function BlockShowcase() {
                 onAdd={handleAddTemplate} 
                 label="4 cartes" 
               />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>StarRating</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">Système de notation par étoiles cliquables.</p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">sm</p>
+                <StarRating value={demoRating} onChange={setDemoRating} size="sm" />
+                <AddButton template='StarRating (sm)' onAdd={handleAddTemplate} label="sm" />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">md</p>
+                <StarRating value={demoRating} onChange={setDemoRating} size="md" />
+                <AddButton template='StarRating (md)' onAdd={handleAddTemplate} label="md" />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">lg (défaut)</p>
+                <StarRating value={demoRating} onChange={setDemoRating} size="lg" />
+                <AddButton template='StarRating (lg)' onAdd={handleAddTemplate} label="lg" />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Valeur actuelle : {demoRating}/5</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>TextQuestion</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">Champ de texte avec label et placeholder.</p>
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <TextQuestion
+                  label="Qu'est-ce qui a été le plus utile?"
+                  value={demoText}
+                  onChange={setDemoText}
+                  placeholder="Par exemple: la structure étape par étape..."
+                  optional
+                />
+                <AddButton 
+                  template='TextQuestion (optional): "Question?" placeholder="Exemple..."' 
+                  onAdd={handleAddTemplate} 
+                  label="optionnel" 
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <TextQuestion
+                  label="Votre message"
+                  value={demoText}
+                  onChange={setDemoText}
+                  placeholder="Écrivez ici..."
+                />
+                <AddButton 
+                  template='TextQuestion: "Question?" placeholder="Exemple..."' 
+                  onAdd={handleAddTemplate} 
+                  label="requis" 
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
