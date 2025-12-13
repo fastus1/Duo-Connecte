@@ -20,7 +20,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
         const updateHeaderHeight = () => {
             if (headerRef.current) {
                 const height = headerRef.current.getBoundingClientRect().height;
-                document.documentElement.style.setProperty('--global-header-height', `${Math.ceil(height)}px`);
+                document.documentElement.style.setProperty('--global-header-height', `${Math.ceil(height) + 2}px`);
             }
         };
 

@@ -8,6 +8,9 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-13** : Correction sticky composer dans BlockShowcase
+  - Le composer sticky était coupé car le header retourne `null` pendant le chargement
+  - Solution: lecture réactive de `--global-header-height` via MutationObserver + useState
 - **2025-12-10** : PWA (Progressive Web App) implémentée
   - manifest.json avec nom, icônes et couleurs
   - Icônes PWA 192x192 et 512x512 dans /public/icons/
