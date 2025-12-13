@@ -39,27 +39,33 @@ export default function BlockShowcase() {
   const [demoText, setDemoText] = useState('');
   const [demoToggle1, setDemoToggle1] = useState(false);
   const [demoToggle2, setDemoToggle2] = useState(true);
-  const [stickyTop, setStickyTop] = useState('73px');
+  const [stickyTop, setStickyTop] = useState('100px');
 
   useEffect(() => {
     const updateStickyTop = () => {
-      const value = getComputedStyle(document.documentElement).getPropertyValue('--global-header-height').trim();
-      if (value) {
-        setStickyTop(value);
+      const header = document.querySelector('header.sticky');
+      if (header) {
+        const height = header.getBoundingClientRect().height;
+        setStickyTop(`${Math.ceil(height) + 16}px`);
       }
     };
 
     updateStickyTop();
+    window.addEventListener('resize', updateStickyTop);
 
-    const intervalId = setInterval(updateStickyTop, 100);
-    setTimeout(() => clearInterval(intervalId), 2000);
+    const observer = new ResizeObserver(updateStickyTop);
+    const header = document.querySelector('header.sticky');
+    if (header) {
+      observer.observe(header);
+    }
 
-    const observer = new MutationObserver(updateStickyTop);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+    const intervalId = setInterval(updateStickyTop, 300);
+    setTimeout(() => clearInterval(intervalId), 5000);
 
     return () => {
-      clearInterval(intervalId);
+      window.removeEventListener('resize', updateStickyTop);
       observer.disconnect();
+      clearInterval(intervalId);
     };
   }, []);
 
