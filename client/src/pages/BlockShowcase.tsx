@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,35 +39,6 @@ export default function BlockShowcase() {
   const [demoText, setDemoText] = useState('');
   const [demoToggle1, setDemoToggle1] = useState(false);
   const [demoToggle2, setDemoToggle2] = useState(true);
-  const [stickyTop, setStickyTop] = useState('100px');
-
-  useEffect(() => {
-    const updateStickyTop = () => {
-      const header = document.querySelector('header.sticky');
-      if (header) {
-        const height = header.getBoundingClientRect().height;
-        setStickyTop(`${Math.ceil(height) + 16}px`);
-      }
-    };
-
-    updateStickyTop();
-    window.addEventListener('resize', updateStickyTop);
-
-    const observer = new ResizeObserver(updateStickyTop);
-    const header = document.querySelector('header.sticky');
-    if (header) {
-      observer.observe(header);
-    }
-
-    const intervalId = setInterval(updateStickyTop, 300);
-    setTimeout(() => clearInterval(intervalId), 5000);
-
-    return () => {
-      window.removeEventListener('resize', updateStickyTop);
-      observer.disconnect();
-      clearInterval(intervalId);
-    };
-  }, []);
 
   const handleAddTemplate = (template: string) => {
     setComposerText(prev => prev ? `${prev}\n${template}` : template);
@@ -98,7 +69,7 @@ export default function BlockShowcase() {
         </div>
 
         {/* Composer Panel */}
-        <Card className="border-primary/30 bg-card sticky z-10 shadow-lg" style={{ top: stickyTop }}>
+        <Card className="border-primary/30 bg-card sticky z-10 shadow-lg" style={{ top: 'calc(var(--global-header-height, 73px) + 1.5rem)' }}>
           <Collapsible open={composerOpen} onOpenChange={setComposerOpen}>
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover-elevate">
