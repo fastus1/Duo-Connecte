@@ -17,4 +17,3 @@ export { TipCard } from './TipCard';
 export { Separator } from './Separator';
 export { StepProgress } from './StepProgress';
 export { ToggleCard } from './ToggleCard';
-export { ImageBlock } from './ImageBlock';

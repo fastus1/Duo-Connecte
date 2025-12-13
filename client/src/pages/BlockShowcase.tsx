@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus, Users, MessageSquare, RefreshCw, Smile, User, UserCheck, Settings } from 'lucide-react';
-import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards, StarRating, TextQuestion, ExplanationModal, QuoteBlock, TipCard, Separator, StepProgress, ToggleCard, ImageBlock } from '@/components/flow';
+import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards, StarRating, TextQuestion, ExplanationModal, QuoteBlock, TipCard, Separator, StepProgress, ToggleCard } from '@/components/flow';
 
 function AddButton({ template, onAdd, label }: { template: string; onAdd: (t: string) => void; label?: string }) {
   const [added, setAdded] = useState(false);
@@ -69,7 +69,7 @@ export default function BlockShowcase() {
         </div>
 
         {/* Composer Panel */}
-        <Card className="border-primary/30 bg-card sticky top-4 z-10 shadow-lg">
+        <Card className="border-primary/30 bg-card sticky top-0 z-10 shadow-lg">
           <Collapsible open={composerOpen} onOpenChange={setComposerOpen}>
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover-elevate">
@@ -751,43 +751,6 @@ export default function BlockShowcase() {
                   template={`ToggleCard: "Label"\n  description: "Description"\n  checked: true\n  onChange: handler`} 
                   onAdd={handleAddTemplate} 
                   label="avec desc"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>ImageBlock</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Image avec légende optionnelle et coins arrondis configurables.
-            </p>
-            <div className="space-y-6">
-              <div className="p-4 border rounded-lg bg-background space-y-3">
-                <p className="text-xs text-muted-foreground mb-2">Sans légende</p>
-                <ImageBlock 
-                  src="https://images.unsplash.com/photo-1516534775068-ba3e7458af70?w=400&h=250&fit=crop"
-                  alt="Deux personnes en conversation"
-                />
-                <AddButton 
-                  template={`ImageBlock: "/chemin/image.jpg"\n  alt: "Description"`} 
-                  onAdd={handleAddTemplate} 
-                />
-              </div>
-              <div className="p-4 border rounded-lg bg-background space-y-3">
-                <p className="text-xs text-muted-foreground mb-2">Avec légende</p>
-                <ImageBlock 
-                  src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=250&fit=crop"
-                  alt="Personne en réflexion"
-                  caption="Prendre le temps de réfléchir avant de s'exprimer"
-                />
-                <AddButton 
-                  template={`ImageBlock: "/chemin/image.jpg"\n  alt: "Description"\n  caption: "Légende de l'image"`} 
-                  onAdd={handleAddTemplate} 
-                  label="avec légende"
                 />
               </div>
             </div>
