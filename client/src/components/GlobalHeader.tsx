@@ -6,6 +6,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { getSessionToken, clearAuth } from '@/lib/auth';
 import { useQuery } from '@tanstack/react-query';
 import { useAccess } from '@/contexts/AccessContext';
+import { useRef, useEffect } from 'react';
 
 interface GlobalHeaderProps {
     onEnterPreview?: () => void;
@@ -13,6 +14,25 @@ interface GlobalHeaderProps {
 
 export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
     const [location, setLocation] = useLocation();
+    const headerRef = useRef<HTMLElement>(null);
+
+    useEffect(() => {
+        const updateHeaderHeight = () => {
+            if (headerRef.current) {
+                const height = headerRef.current.getBoundingClientRect().height;
+                document.documentElement.style.setProperty('--global-header-height', `${Math.ceil(height)}px`);
+            }
+        };
+
+        updateHeaderHeight();
+
+        const resizeObserver = new ResizeObserver(updateHeaderHeight);
+        if (headerRef.current) {
+            resizeObserver.observe(headerRef.current);
+        }
+
+        return () => resizeObserver.disconnect();
+    }, []);
     const sessionToken = getSessionToken();
     const isLoggedIn = !!sessionToken;
     const { circleIsAdmin } = useAccess();
@@ -58,7 +78,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
     }
 
     return (
-        <header className="border-b bg-card sticky top-0 z-50">
+        <header ref={headerRef} className="border-b bg-card sticky top-0 z-50">
             <div className="container mx-auto px-4 py-4 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => setLocation(isLoggedIn ? '/welcome' : '/')}>
                     <Logo size="md" />
