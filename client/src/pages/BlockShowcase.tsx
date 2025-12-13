@@ -39,12 +39,14 @@ export default function BlockShowcase() {
   const [demoText, setDemoText] = useState('');
   const [demoToggle1, setDemoToggle1] = useState(false);
   const [demoToggle2, setDemoToggle2] = useState(true);
-  const [stickyTop, setStickyTop] = useState('0px');
+  const [stickyTop, setStickyTop] = useState('73px');
 
   useEffect(() => {
     const updateStickyTop = () => {
       const value = getComputedStyle(document.documentElement).getPropertyValue('--global-header-height').trim();
-      setStickyTop(value || '0px');
+      if (value) {
+        setStickyTop(value);
+      }
     };
 
     updateStickyTop();
