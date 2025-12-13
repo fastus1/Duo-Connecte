@@ -60,7 +60,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
         window.location.href = '/';
     };
 
-    const isAdminPage = location === '/admin' || location === '/admin-login';
+    const isAdminPage = location.startsWith('/admin');
     
     if (!isAdmin && !isAdminPage) {
         return null;
@@ -69,7 +69,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
     let title = "Espace Membre";
     let subtitle = "Communauté Avancer Simplement";
 
-    if (location === '/admin') {
+    if (location.startsWith('/admin')) {
         title = "Dashboard Admin";
         subtitle = "Espace d'administration";
     } else if (location === '/welcome' || location.startsWith('/solo') || location.startsWith('/duo')) {
