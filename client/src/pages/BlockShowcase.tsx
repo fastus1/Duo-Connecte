@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ArrowLeft, Heart, AlertTriangle, CheckCheck, Copy, Check, ChevronDown, FileText, Plus, Users, MessageSquare, RefreshCw, Smile, User, UserCheck, Settings } from 'lucide-react';
-import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards, StarRating, TextQuestion, ExplanationModal } from '@/components/flow';
+import { HeroIcon, PageTitle, Subtitle, BulletList, Callout, CtaButton, RoleIndicator, WarningCard, Logo, ArrowsIcon, ChoiceCards, StarRating, TextQuestion, ExplanationModal, QuoteBlock, TipCard, Separator, StepProgress, ToggleCard, ImageBlock } from '@/components/flow';
 
 function AddButton({ template, onAdd, label }: { template: string; onAdd: (t: string) => void; label?: string }) {
   const [added, setAdded] = useState(false);
@@ -37,6 +37,8 @@ export default function BlockShowcase() {
   const [allCopied, setAllCopied] = useState(false);
   const [demoRating, setDemoRating] = useState(0);
   const [demoText, setDemoText] = useState('');
+  const [demoToggle1, setDemoToggle1] = useState(false);
+  const [demoToggle2, setDemoToggle2] = useState(true);
 
   const handleAddTemplate = (template: string) => {
     setComposerText(prev => prev ? `${prev}\n${template}` : template);
@@ -562,6 +564,230 @@ export default function BlockShowcase() {
                   template={`ExplanationModal: "Titre"\n  triggerText: "Écouter l'explication"\n  audioSrc: "/audio/fichier.mp3"\n  Contenu: paragraphes d'explication`} 
                   onAdd={handleAddTemplate} 
                   label="avec audio" 
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>QuoteBlock</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Citation mise en valeur avec guillemets décoratifs.
+            </p>
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Sans auteur</p>
+                <QuoteBlock>
+                  Prendre le temps de s'exprimer, c'est se donner la chance d'être entendu.
+                </QuoteBlock>
+                <AddButton 
+                  template={`QuoteBlock: "Votre citation ici"`} 
+                  onAdd={handleAddTemplate} 
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Avec auteur</p>
+                <QuoteBlock author="Marshall Rosenberg">
+                  Derrière chaque comportement, il y a un besoin qui cherche à être satisfait.
+                </QuoteBlock>
+                <AddButton 
+                  template={`QuoteBlock: "Citation"\n  author: "Nom de l'auteur"`} 
+                  onAdd={handleAddTemplate} 
+                  label="avec auteur"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>TipCard</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Carte conseil avec icône ampoule pour donner des astuces pratiques.
+            </p>
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Titre par défaut</p>
+                <TipCard>
+                  Prends une grande respiration avant de commencer à t'exprimer. Cela t'aidera à te recentrer.
+                </TipCard>
+                <AddButton 
+                  template={`TipCard: "Texte du conseil"`} 
+                  onAdd={handleAddTemplate} 
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Titre personnalisé</p>
+                <TipCard title="Astuce">
+                  Tu peux reformuler ce que tu as entendu pour t'assurer d'avoir bien compris.
+                </TipCard>
+                <AddButton 
+                  template={`TipCard: "Texte du conseil"\n  title: "Titre personnalisé"`} 
+                  onAdd={handleAddTemplate} 
+                  label="titre custom"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Separator</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Ligne de séparation stylisée avec 3 variantes.
+            </p>
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Ligne simple</p>
+                <Separator variant="line" />
+                <AddButton 
+                  template={`Separator: line`} 
+                  onAdd={handleAddTemplate} 
+                  label="line"
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Points</p>
+                <Separator variant="dots" />
+                <AddButton 
+                  template={`Separator: dots`} 
+                  onAdd={handleAddTemplate} 
+                  label="dots"
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Gradient</p>
+                <Separator variant="gradient" />
+                <AddButton 
+                  template={`Separator: gradient`} 
+                  onAdd={handleAddTemplate} 
+                  label="gradient"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>StepProgress</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Indicateur de progression avec 3 variantes visuelles.
+            </p>
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Points</p>
+                <StepProgress currentStep={3} totalSteps={5} variant="dots" />
+                <AddButton 
+                  template={`StepProgress: 3/5 (dots)`} 
+                  onAdd={handleAddTemplate} 
+                  label="dots"
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Barres</p>
+                <StepProgress currentStep={2} totalSteps={4} variant="bars" />
+                <AddButton 
+                  template={`StepProgress: 2/4 (bars)`} 
+                  onAdd={handleAddTemplate} 
+                  label="bars"
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Numéros</p>
+                <StepProgress currentStep={2} totalSteps={4} variant="numbers" />
+                <AddButton 
+                  template={`StepProgress: 2/4 (numbers)`} 
+                  onAdd={handleAddTemplate} 
+                  label="numbers"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>ToggleCard</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Carte avec switch on/off pour des options binaires.
+            </p>
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Simple</p>
+                <ToggleCard 
+                  label="Activer les notifications"
+                  checked={demoToggle1}
+                  onChange={setDemoToggle1}
+                />
+                <AddButton 
+                  template={`ToggleCard: "Label"\n  checked: false\n  onChange: handler`} 
+                  onAdd={handleAddTemplate} 
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Avec description</p>
+                <ToggleCard 
+                  label="Mode silencieux"
+                  description="Désactive tous les sons de l'application"
+                  checked={demoToggle2}
+                  onChange={setDemoToggle2}
+                />
+                <AddButton 
+                  template={`ToggleCard: "Label"\n  description: "Description"\n  checked: true\n  onChange: handler`} 
+                  onAdd={handleAddTemplate} 
+                  label="avec desc"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>ImageBlock</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Image avec légende optionnelle et coins arrondis configurables.
+            </p>
+            <div className="space-y-6">
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Sans légende</p>
+                <ImageBlock 
+                  src="https://images.unsplash.com/photo-1516534775068-ba3e7458af70?w=400&h=250&fit=crop"
+                  alt="Deux personnes en conversation"
+                />
+                <AddButton 
+                  template={`ImageBlock: "/chemin/image.jpg"\n  alt: "Description"`} 
+                  onAdd={handleAddTemplate} 
+                />
+              </div>
+              <div className="p-4 border rounded-lg bg-background space-y-3">
+                <p className="text-xs text-muted-foreground mb-2">Avec légende</p>
+                <ImageBlock 
+                  src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=250&fit=crop"
+                  alt="Personne en réflexion"
+                  caption="Prendre le temps de réfléchir avant de s'exprimer"
+                />
+                <AddButton 
+                  template={`ImageBlock: "/chemin/image.jpg"\n  alt: "Description"\n  caption: "Légende de l'image"`} 
+                  onAdd={handleAddTemplate} 
+                  label="avec légende"
                 />
               </div>
             </div>
