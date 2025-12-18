@@ -30,6 +30,7 @@ Ce document décrit tous les blocs disponibles pour construire des pages. Utilis
 6. [Blocs de Navigation](#blocs-de-navigation)
    - [RoleIndicator](#roleindicator)
    - [StepProgress](#stepprogress)
+   - [TransitionProgress](#transitionprogress)
 7. [Blocs Utilitaires](#blocs-utilitaires)
    - [Separator](#separator)
    - [ExplanationModal](#explanationmodal)
@@ -536,6 +537,31 @@ StepProgress: 3/5 (dots)
 StepProgress: 2/4 (bars)
 StepProgress: 2/4 (numbers)
 ```
+
+---
+
+### TransitionProgress
+
+Barre de chargement animée qui apparaît sous le bouton CTA lors de la navigation. S'anime de 0% à 100% en ~1.2 secondes puis disparaît quand la page change.
+
+**Syntaxe:**
+```
+TransitionProgress: sous le CtaButton
+```
+
+**Comportement:**
+- Apparaît au clic sur le bouton de navigation
+- S'anime progressivement de 0% à 100%
+- Durée : ~1.2 secondes (respecte `prefers-reduced-motion`)
+- Disparaît automatiquement puis la page change
+
+**Exemple dans une page:**
+```
+CtaButton (primary): "Continuer"
+TransitionProgress: sous le CtaButton, apparaît au clic, anime 0→100% en 1.2s
+```
+
+**Note technique:** Utilise le hook `usePageTransition` qui gère `isTransitioning` et `progress`. Le composant `Progress` de shadcn s'affiche conditionnellement.
 
 ---
 

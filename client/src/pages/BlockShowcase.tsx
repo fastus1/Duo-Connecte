@@ -735,50 +735,26 @@ export default function BlockShowcase() {
 
         <Card>
           <CardHeader>
-            <CardTitle>ProgressBar</CardTitle>
+            <CardTitle>TransitionProgress</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Barre de progression globale du parcours avec section actuelle et nom.
+              Barre de chargement animée qui apparaît sous le bouton lors de la navigation vers la page suivante. S'anime de 0% à 100% puis disparaît.
             </p>
-            <div className="space-y-6">
-              <div className="border rounded-lg bg-background overflow-hidden">
-                <div className="w-full bg-card border-b border-card-border py-4 px-4">
-                  <div className="max-w-3xl mx-auto">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-foreground">Section 3/7</span>
-                      <span className="text-sm font-medium text-muted-foreground">Le vif du sujet</span>
-                    </div>
-                    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full rounded-full bg-primary" style={{ width: '45%' }} />
-                    </div>
-                  </div>
+            <div className="p-4 border rounded-lg bg-background space-y-4">
+              <p className="text-xs text-muted-foreground mb-2">Exemple avec bouton + barre de transition</p>
+              <div className="flex flex-col items-center gap-4">
+                <Button className="w-full md:w-auto">Continuer</Button>
+                <div className="w-full md:w-48 h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full rounded-full bg-primary animate-pulse" style={{ width: '65%' }} />
                 </div>
-                <AddButton 
-                  template={`ProgressBar: section 3/7 "Le vif du sujet" (45%)`} 
-                  onAdd={handleAddTemplate} 
-                  label="primary (Duo)"
-                />
               </div>
-              <div className="border rounded-lg bg-background overflow-hidden">
-                <div className="w-full bg-card border-b border-card-border py-4 px-4">
-                  <div className="max-w-3xl mx-auto">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-foreground">Section 5/7</span>
-                      <span className="text-sm font-medium text-muted-foreground">Ce que vit le récepteur</span>
-                    </div>
-                    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full rounded-full bg-destructive" style={{ width: '70%' }} />
-                    </div>
-                  </div>
-                </div>
-                <AddButton 
-                  template={`ProgressBar: section 5/7 "Ce que vit le récepteur" (70%)`} 
-                  onAdd={handleAddTemplate} 
-                  label="destructive (Solo)"
-                />
-              </div>
+              <p className="text-xs text-center text-muted-foreground">La barre s'anime de 0% à 100% en ~1.2s puis la page change</p>
             </div>
+            <AddButton 
+              template={`TransitionProgress: sous le CtaButton, apparaît au clic, anime 0→100% en 1.2s`} 
+              onAdd={handleAddTemplate} 
+            />
           </CardContent>
         </Card>
 
