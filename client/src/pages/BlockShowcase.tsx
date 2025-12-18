@@ -379,6 +379,31 @@ export default function BlockShowcase() {
 
         <Card>
           <CardHeader>
+            <CardTitle>TransitionProgress</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Barre de chargement animée qui apparaît sous le bouton lors de la navigation vers la page suivante. S'anime de 0% à 100% puis disparaît.
+            </p>
+            <div className="p-4 border rounded-lg bg-background space-y-4">
+              <p className="text-xs text-muted-foreground mb-2">Exemple avec bouton + barre de transition</p>
+              <div className="flex flex-col items-center gap-4">
+                <Button className="w-full md:w-auto">Continuer</Button>
+                <div className="w-full md:w-48 h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full rounded-full bg-primary animate-pulse" style={{ width: '65%' }} />
+                </div>
+              </div>
+              <p className="text-xs text-center text-muted-foreground">La barre s'anime de 0% à 100% en ~1.2s puis la page change</p>
+            </div>
+            <AddButton 
+              template={`TransitionProgress: sous le CtaButton, apparaît au clic, anime 0→100% en 1.2s`} 
+              onAdd={handleAddTemplate} 
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>ChoiceCards</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -730,31 +755,6 @@ export default function BlockShowcase() {
                 />
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>TransitionProgress</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Barre de chargement animée qui apparaît sous le bouton lors de la navigation vers la page suivante. S'anime de 0% à 100% puis disparaît.
-            </p>
-            <div className="p-4 border rounded-lg bg-background space-y-4">
-              <p className="text-xs text-muted-foreground mb-2">Exemple avec bouton + barre de transition</p>
-              <div className="flex flex-col items-center gap-4">
-                <Button className="w-full md:w-auto">Continuer</Button>
-                <div className="w-full md:w-48 h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-primary animate-pulse" style={{ width: '65%' }} />
-                </div>
-              </div>
-              <p className="text-xs text-center text-muted-foreground">La barre s'anime de 0% à 100% en ~1.2s puis la page change</p>
-            </div>
-            <AddButton 
-              template={`TransitionProgress: sous le CtaButton, apparaît au clic, anime 0→100% en 1.2s`} 
-              onAdd={handleAddTemplate} 
-            />
           </CardContent>
         </Card>
 
