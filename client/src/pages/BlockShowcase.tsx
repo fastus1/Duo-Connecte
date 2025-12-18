@@ -735,6 +735,55 @@ export default function BlockShowcase() {
 
         <Card>
           <CardHeader>
+            <CardTitle>ProgressBar</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Barre de progression globale du parcours avec section actuelle et nom.
+            </p>
+            <div className="space-y-6">
+              <div className="border rounded-lg bg-background overflow-hidden">
+                <div className="w-full bg-card border-b border-card-border py-4 px-4">
+                  <div className="max-w-3xl mx-auto">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-foreground">Section 3/7</span>
+                      <span className="text-sm font-medium text-muted-foreground">Le vif du sujet</span>
+                    </div>
+                    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full rounded-full bg-primary" style={{ width: '45%' }} />
+                    </div>
+                  </div>
+                </div>
+                <AddButton 
+                  template={`ProgressBar: section 3/7 "Le vif du sujet" (45%)`} 
+                  onAdd={handleAddTemplate} 
+                  label="primary (Duo)"
+                />
+              </div>
+              <div className="border rounded-lg bg-background overflow-hidden">
+                <div className="w-full bg-card border-b border-card-border py-4 px-4">
+                  <div className="max-w-3xl mx-auto">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-foreground">Section 5/7</span>
+                      <span className="text-sm font-medium text-muted-foreground">Ce que vit le récepteur</span>
+                    </div>
+                    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full rounded-full bg-destructive" style={{ width: '70%' }} />
+                    </div>
+                  </div>
+                </div>
+                <AddButton 
+                  template={`ProgressBar: section 5/7 "Ce que vit le récepteur" (70%)`} 
+                  onAdd={handleAddTemplate} 
+                  label="destructive (Solo)"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>ToggleCard</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
