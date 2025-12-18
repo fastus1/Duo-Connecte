@@ -241,6 +241,21 @@ export default function BlockShowcase() {
 
         <Card>
           <CardHeader>
+            <CardTitle>Paragraph</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">Texte de paragraphe simple pour le contenu principal.</p>
+            <div className="p-4 border rounded-lg bg-background">
+              <p className="text-foreground leading-relaxed">
+                Ceci est un exemple de paragraphe. Il peut contenir du texte explicatif, des instructions ou toute autre information que vous souhaitez communiquer à l'utilisateur.
+              </p>
+            </div>
+            <AddButton template='Paragraph: "Votre texte ici..."' onAdd={handleAddTemplate} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>BulletList</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
