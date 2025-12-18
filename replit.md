@@ -8,6 +8,12 @@ Application de guidance pour la communication authentique et la régulation émo
 
 ## Changements Récents
 
+- **2025-12-18** : Documentation Design System
+  - Nouveau document `docs/design-system-blocks.md` décrivant tous les 20 blocs réutilisables
+  - Syntaxe, variantes, exemples et règles de composition
+  - Utilisable comme contexte pour générer des layouts avec une IA
+  - Ajout bloc Paragraph au Design System (/admin/blocks)
+  - Suppression sticky du composer (comportement imprévisible dans iframe Circle.so)
 - **2025-12-13** : Correction sticky composer dans BlockShowcase
   - Le composer sticky était coupé car le header retourne `null` pendant le chargement
   - Solution: lecture réactive de `--global-header-height` via MutationObserver + useState
