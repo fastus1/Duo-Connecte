@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { PageLayout } from '@/components/PageLayout';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
@@ -55,18 +54,15 @@ export default function Roles() {
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
               La personne qui souhaite partager son vécu
             </p>
-            <div className="space-y-2">
-              <Label htmlFor="sender-name">Nom de l'émetteur</Label>
-              <Input
-                id="sender-name"
-                type="text"
-                placeholder="Prénom de l'émetteur"
-                value={senderName}
-                onChange={(e) => setSenderName(e.target.value)}
-                className="text-base"
-                data-testid="input-sender-name"
-              />
-            </div>
+            <Input
+              id="sender-name"
+              type="text"
+              placeholder="Prénom de l'émetteur"
+              value={senderName}
+              onChange={(e) => setSenderName(e.target.value)}
+              className="text-base"
+              data-testid="input-sender-name"
+            />
           </div>
 
           <div className="space-y-3">
@@ -81,18 +77,15 @@ export default function Roles() {
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
               La personne qui offre son écoute bienveillante
             </p>
-            <div className="space-y-2">
-              <Label htmlFor="receiver-name">Nom du récepteur</Label>
-              <Input
-                id="receiver-name"
-                type="text"
-                placeholder="Prénom du récepteur"
-                value={receiverName}
-                onChange={(e) => setReceiverName(e.target.value)}
-                className="text-base"
-                data-testid="input-receiver-name"
-              />
-            </div>
+            <Input
+              id="receiver-name"
+              type="text"
+              placeholder="Prénom du récepteur"
+              value={receiverName}
+              onChange={(e) => setReceiverName(e.target.value)}
+              className="text-base"
+              data-testid="input-receiver-name"
+            />
           </div>
 
           <div className="flex flex-col items-center pt-4 space-y-4">
