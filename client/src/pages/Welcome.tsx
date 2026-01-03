@@ -5,7 +5,7 @@ import { PageLayout } from '@/components/PageLayout';
 import { InstallBanner } from '@/components/InstallBanner';
 import { useSession } from '@/contexts/SessionContext';
 import { useLocation } from 'wouter';
-import { Heart, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 export default function Welcome() {
   const { updateSession } = useSession();
@@ -16,15 +16,13 @@ export default function Welcome() {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const transitionDelay = prefersReducedMotion ? 0 : 1200;
 
-  const handleChoice = useCallback((type: 'solo' | 'duo') => {
-    const targetPath = type === 'solo' ? '/solo/roles' : '/duo/roles';
-    
+  const handleStart = useCallback(() => {
     setIsTransitioning(true);
-    updateSession({ appType: type, currentStep: 0 });
+    updateSession({ appType: 'duo', currentStep: 0 });
     
     if (transitionDelay === 0) {
       setProgress(100);
-      setLocation(targetPath);
+      setLocation('/duo/presentation');
       return;
     }
     
@@ -38,7 +36,7 @@ export default function Welcome() {
       if (newProgress >= 100) {
         clearInterval(interval);
         setTimeout(() => {
-          setLocation(targetPath);
+          setLocation('/duo/presentation');
         }, 200);
       }
     }, 16);
@@ -76,49 +74,28 @@ export default function Welcome() {
           </h1>
 
           <p className="text-sm md:text-lg text-foreground leading-relaxed max-w-lg mx-auto pt-3 md:pt-4 px-4">
-            Un outil pour faciliter la gestion des émotions (relation à soi) et la communication authentique (relation à l'autre)
+            Un outil pour faciliter la communication authentique et se comprendre à deux
           </p>
 
-          <div className="grid md:grid-cols-2 gap-3 md:gap-4 pt-6 md:pt-8 max-w-2xl mx-auto px-4">
-            <div className="flex flex-col items-center space-y-2 md:space-y-3 p-4 md:p-6 rounded-lg border-2 border-border hover-elevate active-elevate-2 transition-all">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Heart className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+          <div className="pt-6 md:pt-8 max-w-md mx-auto px-4">
+            <div className="flex flex-col items-center space-y-3 md:space-y-4 p-6 md:p-8 rounded-lg border-2 border-primary/20 bg-primary/5">
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <Users className="w-6 h-6 md:w-8 md:h-8 text-primary" />
               </div>
-              <h2 className="text-base md:text-lg font-bold text-foreground" style={{ fontFamily: 'Figtree, sans-serif' }}>
-                Régulation émotionnelle
-              </h2>
-              <p className="text-xs md:text-sm text-muted-foreground text-center leading-relaxed">
-                Gérer vos émotions en solo
-              </p>
-              <Button
-                size="default"
-                onClick={() => handleChoice('solo')}
-                disabled={isTransitioning}
-                className="text-xs md:text-sm px-4 md:px-6 w-full mt-2"
-                data-testid="button-solo"
-              >
-                Parcours Solo
-              </Button>
-            </div>
-
-            <div className="flex flex-col items-center space-y-2 md:space-y-3 p-4 md:p-6 rounded-lg border-2 border-border hover-elevate active-elevate-2 transition-all">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Users className="w-5 h-5 md:w-6 md:h-6 text-primary" />
-              </div>
-              <h2 className="text-base md:text-lg font-bold text-foreground" style={{ fontFamily: 'Figtree, sans-serif' }}>
+              <h2 className="text-lg md:text-xl font-bold text-foreground" style={{ fontFamily: 'Figtree, sans-serif' }}>
                 Communication authentique
               </h2>
-              <p className="text-xs md:text-sm text-muted-foreground text-center leading-relaxed">
-                Dialoguer et se comprendre à deux
+              <p className="text-sm md:text-base text-muted-foreground text-center leading-relaxed">
+                Dialoguer et se comprendre à deux grâce à un parcours guidé
               </p>
               <Button
-                size="default"
-                onClick={() => handleChoice('duo')}
+                size="lg"
+                onClick={handleStart}
                 disabled={isTransitioning}
-                className="text-xs md:text-sm px-4 md:px-6 w-full mt-2"
-                data-testid="button-duo"
+                className="text-sm md:text-base px-8 md:px-10 w-full mt-2"
+                data-testid="button-start-duo"
               >
-                Parcours Duo
+                Commencer
               </Button>
             </div>
           </div>
