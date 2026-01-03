@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { Heart } from 'lucide-react';
+import { Heart, Lightbulb } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 export default function DuoPresentation() {
@@ -12,7 +12,7 @@ export default function DuoPresentation() {
   };
 
   const steps = [
-    "Exprimer votre vécu avec clarté",
+    "Exprimer votre vécu",
     "Écouter l'autre avec bienveillance",
     "Comprendre les deux perspectives d'une même situation",
   ];
@@ -29,7 +29,7 @@ export default function DuoPresentation() {
         </h1>
 
         <p className="text-base md:text-lg text-muted-foreground leading-relaxed text-center max-w-2xl">
-          Vous avez choisi d'avoir une conversation authentique. C'est un beau geste de confiance envers vous-même et l'autre personne.
+          Ce guide vous aide à naviguer une conversation difficile avec authenticité. Il crée un espace pour vous rapprocher et dissiper les malaises entre vous.
         </p>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
@@ -49,9 +49,12 @@ export default function DuoPresentation() {
           </div>
 
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-            <p className="font-semibold text-foreground">Conseil</p>
+            <p className="font-semibold text-foreground flex items-center gap-2">
+              <Lightbulb className="w-4 h-4 text-primary" />
+              Conseil
+            </p>
             <p className="text-sm md:text-base text-muted-foreground mt-1">
-              Assurez-vous d'avoir 30 à 45 minutes devant vous, sans interruption. Choisissez un endroit calme où vous vous sentez en sécurité.
+              Prévoyez 45 à 60 minutes dans un endroit calme, sans distractions, où vous vous sentez en sécurité.
             </p>
           </div>
         </div>
@@ -64,7 +67,7 @@ export default function DuoPresentation() {
             className="min-w-48"
             data-testid="button-continue"
           >
-            Nous sommes prêts à commencer
+            Commencer le parcours
           </Button>
           {isTransitioning && (
             <Progress value={progress} className="w-64" />
