@@ -9,6 +9,10 @@ export default function ReceiverConfirmation() {
   const { session } = useSession();
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
 
+  const handleContinue = () => {
+    transitionToStep(17);
+  };
+
   return (
     <PageLayout>
       <div className="flex flex-col items-center space-y-8 md:space-y-10">
@@ -17,7 +21,7 @@ export default function ReceiverConfirmation() {
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground text-center">
-          Tu as été bien entendu {session.receiverName}?
+          As-tu été bien entendu?
         </h1>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
@@ -27,7 +31,7 @@ export default function ReceiverConfirmation() {
             </h2>
 
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              Si {session.senderName} a bien entendu ce que tu as nommé, tu peux continuer. Sinon, prends le temps de rectifier et de préciser ce qui est important pour toi.
+              Si {session.senderName} a saisi l'essentiel de ton vécu, tu peux continuer. Sinon, prends le temps de clarifier ce qui est important pour toi et continuez par la suite.
             </p>
           </div>
 
@@ -35,7 +39,7 @@ export default function ReceiverConfirmation() {
             <div className="flex justify-center">
               <Button
                 size="lg"
-                onClick={() => transitionToStep(17)}
+                onClick={handleContinue}
                 disabled={isTransitioning}
                 className="min-w-48"
                 data-testid="button-confirm"
