@@ -48,12 +48,11 @@ export default function PaywallScreen({
             </div>
           </div>
 
-          <h1 className="text-lg md:text-xl font-semibold text-muted-foreground">
-            Accès Réservé
-          </h1>
-
           <Card className="max-w-md mx-auto">
-            <CardContent className="p-6 md:p-8 space-y-6">
+            <CardContent className="p-6 md:p-8 space-y-4">
+              <h1 className="text-lg md:text-xl font-semibold text-muted-foreground">
+                Accès Réservé
+              </h1>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                 Cette application est réservée aux membres ayant payé leur accès. Achetez votre accès pour commencer à utiliser Duo-Connecte.
               </p>
