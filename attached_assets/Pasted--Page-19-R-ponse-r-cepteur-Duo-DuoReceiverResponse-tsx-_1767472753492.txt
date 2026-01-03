@@ -1,0 +1,108 @@
+## Page 19 - Réponse récepteur Duo (DuoReceiverResponse.tsx)
+
+### Titre
+
+On peut s'entendre?
+
+### Bannière
+
+{senderName}: écoute avec ouverture
+
+### Sous-titre
+
+{receiverName}, est-ce que la demande de {senderName} fait du sens pour toi?
+
+### Texte
+
+Est-ce que tu es capable et volontaire pour répondre à la demande de {senderName}?
+
+### Instructions (puces)
+
+- Nomme ce que tu peux ou ne peux pas offrir
+- Propose des alternatives si nécessaire
+- Sois honnête sur tes limites et tes capacités
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-pages
+
+***Popup page 1: [Titres approprié]***
+
+{senderName} vient de formuler une demande. Ton rôle maintenant est d'y répondre avec authenticité et respect.
+
+**Les quatre types de réponses possibles :**
+
+Tu peux répondre de plusieurs façons, toutes légitimes si elles sont honnêtes :
+
+**1. Accepter complètement**
+
+Tu peux répondre à la demande telle quelle. C'est réalisable pour toi et tu es volontaire.
+
+- Exemple : "Oui, je peux poser mon téléphone quand tu me parles. Ça fait du sens."
+
+**2. Accepter partiellement**
+
+Tu ne peux pas tout offrir, mais tu peux répondre en partie à la demande.
+
+- Exemple : "Je ne peux pas promettre tous les soirs, mais je peux m'engager à te donner mon attention pleine trois fois par semaine."
+
+***Popup page 2:***
+
+**3. Proposer une alternative**
+
+La demande spécifique est difficile pour toi, mais tu veux combler le besoin d'une autre façon.
+
+- Exemple : "Ce que tu demandes est difficile pour moi, mais je pourrais plutôt te prévenir quand j'ai besoin d'espace. Est-ce que ça répondrait à ton besoin?"
+
+**4. Refuser avec respect**
+
+Tu ne peux pas répondre à la demande, mais tu reconnais le besoin comme légitime.
+
+- Exemple : "Je ne peux pas faire ça parce que ça me met trop de pression. Par contre, je comprends que c'est important pour toi et je veux qu'on trouve une autre solution ensemble."
+
+**Rappel crucial : le besoin est légitime, la demande est négociable!**
+
+***Popup page 3:***
+
+Même si tu ne peux pas répondre à la demande exacte de {senderName}, son *besoin* reste valide et important. Ton refus ou ta limite ne nie pas son besoin.
+
+**Exemples concrets de réponses honnêtes :**
+
+- "Oui, je peux faire ça. Je comprends pourquoi c'est important pour toi."
+- "Je ne peux pas m'engager sur tous les soirs, mais je peux le faire les mardis et jeudis. Est-ce que ça pourrait aider?"
+- "Ce que tu demandes me met mal à l'aise, mais je pourrais plutôt... Est-ce que ça répondrait à ton besoin?"
+- "Je ne peux pas promettre ça parce que je ne sais pas si je suis capable de tenir cet engagement. Mais je veux vraiment qu'on trouve une solution qui fonctionne pour nous deux."
+
+***Popup page 4:***
+
+**Pourquoi l'honnêteté est essentielle :**
+
+Une fausse promesse crée plus de problèmes qu'une limite clairement exprimée. Si tu acceptes quelque chose que tu ne peux pas tenir, tu prépares une future déception. {senderName} préfère connaître tes vraies limites maintenant plutôt que d'être déçu plus tard.
+
+**Ce qu'il faut éviter :**
+
+- ❌ Accepter sans conviction (tu ne tiendras pas)
+- ❌ Refuser de façon défensive ("C'est ridicule comme demande")
+- ❌ Minimiser le besoin ("Tu exagères, c'est pas si important")
+- ❌ Contre-attaquer ("Toi aussi tu fais ça!")
+
+***Popup page 5:***
+
+**Ce qui fonctionne :**
+
+- ✅ Reconnaître le besoin même si tu refuses la demande
+- ✅ Proposer des alternatives créatives
+- ✅ Être clair sur ce que tu peux vraiment offrir
+- ✅ Exprimer ta volonté de trouver une solution ensemble
+
+Ton honnêteté respectueuse ouvre la porte à une vraie négociation, pas à un compromis forcé.
+
+## Bouton
+
+J’ai terminé
+
+***Fin du popup***
+
+### Bouton
+
+J'ai terminé
