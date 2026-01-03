@@ -33,7 +33,12 @@ export default function DuoPresentation() {
           </p>
           
           <Callout variant="primary">
-            <strong className="text-foreground">Ce parcours de communication n'est pas une thérapie de couple</strong>, mais un guide pour naviguer une conversation difficile ensemble. Il vous aide à ralentir, à sortir des automatismes, et à vraiment vous écouter.
+            <p className="mb-3">
+              <strong className="text-foreground">Ce parcours de communication n'est pas une thérapie de couple</strong>
+            </p>
+            <p>
+              C'est un guide pour naviguer une conversation difficile ensemble. Il vous aide à ralentir, à sortir des automatismes, et à vraiment vous écouter.
+            </p>
           </Callout>
         </div>
       )
