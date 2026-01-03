@@ -151,7 +151,7 @@ export default function SenderSituation() {
             </li>
           </ul>
 
-          <Callout variant="muted">
+          <Callout variant="neutral">
             <p>
               Pas de situation précise à nommer? C'est correct. Si ton besoin est de partager ton vécu directement, passe à l'étape suivante.
             </p>
