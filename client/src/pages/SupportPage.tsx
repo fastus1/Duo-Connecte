@@ -25,7 +25,7 @@ type SupportFormValues = z.infer<typeof supportFormSchema>;
 const faqItems = [
   {
     question: "Comment fonctionne l'application ?",
-    answer: "L'application vous guide à travers un parcours structuré de communication authentique. Vous pouvez choisir entre le mode Solo (régulation émotionnelle personnelle) ou le mode Duo (dialogue structuré à deux). Suivez simplement les étapes affichées à l'écran."
+    answer: "L'application vous guide à travers un parcours structuré de communication authentique à deux. Suivez simplement les étapes affichées à l'écran pour dialoguer et vous comprendre."
   },
   {
     question: "Puis-je reprendre un parcours plus tard ?",

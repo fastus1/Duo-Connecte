@@ -72,7 +72,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
     if (location.startsWith('/admin')) {
         title = "Dashboard Admin";
         subtitle = "Espace d'administration";
-    } else if (location === '/welcome' || location.startsWith('/solo') || location.startsWith('/duo')) {
+    } else if (location === '/welcome' || location.startsWith('/duo')) {
         title = "Jumelage";
         subtitle = "Application duo-connecte";
     }
