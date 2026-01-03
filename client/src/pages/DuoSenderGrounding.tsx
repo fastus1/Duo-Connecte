@@ -2,13 +2,71 @@ import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { Anchor } from 'lucide-react';
+import { Anchor, Heart, Brain, MessageCircle } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { ExplanationModal, Subtitle, BulletList, Callout } from '@/components/flow';
+import { MultiPageModal, Subtitle, BulletList } from '@/components/flow';
 
 export default function SenderGrounding() {
   const { session } = useSession();
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
+
+  const handleContinue = () => {
+    transitionToStep(5);
+  };
+
+  const theoryPages = [
+    {
+      title: "Préparer le terrain",
+      icon: Heart,
+      content: (
+        <div className="space-y-8">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Avant de plonger dans le vif du sujet, prends un moment pour nommer ton état. C'est comme mettre la table avant le repas : ça crée les conditions pour bien accueillir ce qui va suivre.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: "Pourquoi c'est important",
+      icon: Brain,
+      content: (
+        <div className="space-y-8">
+          <Subtitle>Pourquoi c'est important</Subtitle>
+          
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Quand tu nommes ton état émotionnel, ton système nerveux se calme. Tu sors du mode réactif et tu deviens plus présent. Ça crée une pause entre ce que tu ressens et ce que tu vas dire.
+          </p>
+          
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Pour {session.receiverName}, entendre ce que tu vis change tout. Ça désarme. Au lieu de se préparer à se défendre, il/elle peut t'accueillir. Ça baisse les défenses des deux côtés.
+          </p>
+          
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Sans nommer ton état, ce que tu ressens peut être mal interprété. Nommer ton émotion la rend acceptable et met la table pour une conversation authentique plutôt que défensive.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: "Exemples",
+      icon: MessageCircle,
+      content: (
+        <div className="space-y-8">
+          <Subtitle>Voici quelques exemples de ce que tu pourrais dire</Subtitle>
+          
+          <BulletList
+            variant="primary"
+            items={[
+              "« Je me sens nerveux·se parce que ce sujet est important pour moi… »",
+              "« J'ai peur qu'on se dispute… »",
+              "« Je suis soulagé·e qu'on prenne enfin ce temps ensemble… »",
+              "« Je suis fatigué·e, mais je veux vraiment régler ça… »"
+            ]}
+          />
+        </div>
+      )
+    }
+  ];
 
   return (
     <PageLayout>
@@ -19,76 +77,56 @@ export default function SenderGrounding() {
 
         <div className="flex flex-col items-center gap-2">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground text-center">
-            Ici et maintenant
+            Ici et maintenant - 1/2
           </h1>
-          <span className="text-sm text-muted-foreground">1/2</span>
         </div>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-xl md:text-2xl font-medium text-foreground">
-              {session.senderName}, prends le temps de te déposer...
-            </h2>
-
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-              Comment te sens-tu à l'idée de t'exprimer à {session.receiverName}?
-            </p>
-          </div>
+          <h2 className="text-xl md:text-2xl font-medium text-foreground text-center">
+            {session.senderName}, prends un moment pour te déposer…
+          </h2>
 
           <div className="space-y-3 md:space-y-4">
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  Parle de ce que tu ressens maintenant, en ce moment précis
+                  Identifie ce que tu ressens en ce moment (nervosité, confiance, hésitation...)
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  Ne parle pas encore du sujet de la conversation
+                  Nomme tes émotions face à l'idée de parler à {session.receiverName}
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  Prends tout ton temps pour exprimer ton état présent
+                  Prends le temps de te déposer et laisse monter ce qui est là
                 </span>
               </li>
             </ul>
+          </div>
 
-            <ExplanationModal
-              triggerText="Pourquoi cette étape?"
-              title="L'importance de l'ancrage"
-            >
-              <Subtitle>
-                Cette étape te permet de te connecter à ton état émotionnel actuel avant d'aborder le sujet qui te préoccupe.
-              </Subtitle>
-              
-              <Callout variant="primary" className="my-6">
-                C'est un moment pour toi de reconnaître ce que tu vis maintenant : peut-être de la nervosité, de l'appréhension, de l'espoir, ou toute autre émotion.
-              </Callout>
-              
-              <BulletList
-                variant="primary"
-                items={[
-                  "Tu te prépares intérieurement",
-                  "L'autre comprend ton état d'esprit",
-                  "La conversation commence sur de bonnes bases"
-                ]}
-              />
-            </ExplanationModal>
+          <div className="flex justify-center">
+            <MultiPageModal
+              triggerText="Plus d'infos: Théories"
+              pages={theoryPages}
+              finalButtonText="Étape suivante"
+              onComplete={handleContinue}
+            />
           </div>
 
           <div className="pt-4 flex flex-col items-center space-y-3">
             <Button
               size="lg"
-              onClick={() => transitionToStep(5)}
+              onClick={handleContinue}
               disabled={isTransitioning}
               className="w-full md:w-auto px-8 min-w-48"
               data-testid="button-next"
             >
-              Suivant
+              Étape suivante
             </Button>
             {isTransitioning && (
               <Progress value={progress} className="w-full md:w-48" />
