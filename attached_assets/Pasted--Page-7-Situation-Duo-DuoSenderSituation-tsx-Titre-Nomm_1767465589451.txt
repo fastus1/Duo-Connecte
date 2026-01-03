@@ -1,0 +1,66 @@
+## Page 7 - Situation Duo (DuoSenderSituation.tsx)
+
+### Titre
+
+Nomme la situation
+
+### Bannière
+
+{receiverName}: écoute attentive et bienveillante
+
+### Sous-titre
+
+{senderName}, de quoi veux-tu parler (la situation, le déclencheur)
+
+### Instructions (puces)
+
+- Décris les faits observables, comme une caméra filmait la scène
+- Ne parle pas encore de tes émotions ni de tes interprétations
+- Reste bref : environ 1 minute
+
+### Note encadrée
+
+Pas de situation précise à nommer? C'est correct. Si ton besoin est de partager ton vécu directement, passe à l'étape suivante.
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-page
+
+***Popup page 1: [Titres approprié]***
+
+Cette étape pose les fondations de tout l'échange. En décrivant la situation de manière factuelle, tu crées un terrain commun sur lequel vous pourrez vous rejoindre.
+
+**Pourquoi rester factuel est crucial :**
+
+Quand tu mélanges faits et interprétations dès le départ, l'autre se met immédiatement sur la défensive. "Tu m'as ignoré" provoque une réaction. "Tu regardais ton téléphone pendant que je te parlais" est un fait observable qui laisse place à la discussion.
+
+***Popup page 2:***
+
+**La différence entre fait et interprétation :**
+
+- ❌ Interprétation : "Tu ne m'écoutes jamais"
+- ✅ Fait : "Ce matin, pendant que je te parlais du rendez-vous, tu étais sur ton téléphone"
+- ❌ Interprétation : "Tu t'en fiches de ce que je ressens"
+- ✅ Fait : "Hier, quand j'ai pleuré, tu es sorti de la pièce"
+- ❌ Interprétation : "Tu es toujours en retard exprès"
+- ✅ Fait : "Tu es arrivé 30 minutes après l'heure prévue"
+
+***Popup page 3:***
+
+**Exemples de situations bien nommées :**
+
+- "Hier soir, on devait regarder un film ensemble. À 20h, tu m'as dit que tu devais travailler."
+- "Ce matin, je t'ai demandé si tu pouvais m'aider avec les courses. Tu as soupiré et tu n'as rien répondu."
+- "Samedi dernier, tu as annulé notre sortie une heure avant pour voir tes amis."
+
+Les émotions et interprétations viendront plus tard. Pour l'instant, tu nomme le déclencheur.
+
+### Bouton
+
+Étape suivante
+
+***Fin du popup***
+
+### Bouton
+
+Étape suivante
