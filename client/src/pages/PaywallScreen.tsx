@@ -56,8 +56,7 @@ export default function PaywallScreen({
               Accès Réservé
             </h1>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto px-4">
-              Cette application est réservée aux membres ayant souscrit à l'offre.
-              Obtenez votre accès pour profiter de tous les parcours de communication et de régulation émotionnelle.
+              Cette application est réservée aux membres ayant payé leur accès. Achetez votre accès pour commencer à utiliser Duo-Connecte.
             </p>
           </div>
 
