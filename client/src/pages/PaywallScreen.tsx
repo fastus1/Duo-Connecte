@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Lock, ShoppingCart, Info } from 'lucide-react';
+import { ShoppingCart, Info } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 
 interface PaywallScreenProps {
@@ -45,10 +45,6 @@ export default function PaywallScreen({
             <div className="text-base md:text-xl font-black italic text-primary" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               AVANCER SIMPLEMENT
             </div>
-          </div>
-
-          <div className="w-16 h-16 md:w-20 md:h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-            <Lock className="w-8 h-8 md:w-10 md:h-10 text-primary" />
           </div>
 
           <div className="space-y-3">
