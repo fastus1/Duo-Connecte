@@ -1,0 +1,121 @@
+## Page 17 - Transition 2 Duo (DuoTransition2.tsx)
+
+### Titre
+
+La base des besoins
+
+### Sous-titre
+
+Êtes-vous prêts à passer à l'étape suivante?
+
+### Texte
+
+Vous allez maintenant aborder vos besoins respectifs. C'est le moment d'exprimer ce qui pourrait améliorer votre situation et renforcer votre connexion.
+
+### Texte secondaire
+
+La différence entre un besoin, un désir et une demande transforme complètement la façon dont vous communiquez. Cette distinction remplace l'exigence par l'invitation et ouvre la porte à la collaboration.
+
+Cliquez pour en apprendre davantage (notions importantes)
+
+**Bouton: Plus d'infos: Théories**
+
+### **Popup multi-pages**
+
+**Popup page 1: *[Titres approprié]***
+
+Cette transition marque le passage de l'expression du vécu vers l'identification de vos besoins. C'est une étape délicate mais essentielle pour transformer votre compréhension mutuelle en pistes concrètes.
+
+**Pourquoi parler des besoins maintenant :**
+
+Vous venez de partager vos vécus et de vous valider mutuellement. Vous avez créé ensemble un espace de confiance où les besoins peuvent maintenant être identifiés, clarifiés, puis exprimés et accueillis.
+
+**Popup page 2:**
+
+**Deux phases distinctes : Introspection et Expression**
+
+Avant d'exprimer votre besoin à votre partenaire, vous allez d'abord faire un travail d'introspection rapide pour identifier ce dont vous avez besoin.
+
+**Phase 1 - Introspection (pour vous)**
+
+Besoin → Désir → Demande
+
+Cette progression interne vous aide à passer d'un malaise flou à une proposition claire.
+
+**Phase 2 - Expression (à votre partenaire)**
+
+"J'ai besoin de..." + "Pourrais-tu...?"
+
+Vous exprimez votre besoin et votre demande. Le désir reste dans votre réflexion.
+
+**Popup page 3:**
+
+**La structure d'introspection : Besoin → Désir → Demande**
+
+Comprendre cette progression change tout dans votre communication.
+
+**1. Le besoin (non négociable)**
+
+C'est ce qui nourrit votre bien-être fondamental. Le besoin est universel et légitime par nature. Personne ne peut vous dire "tu ne devrais pas avoir ce besoin".
+
+Exemples de besoins : respect, sécurité émotionnelle, connexion, reconnaissance, autonomie, être entendu.
+
+**Popup page 4:**
+
+**2. Le désir (une voie parmi d'autres)**
+
+Le désir est une façon possible de combler votre besoin. Il existe toujours de multiples voies pour répondre au même besoin. Le désir ouvre des possibilités, il n'impose pas une solution unique.
+
+**Popup page 5:**
+
+**3. La demande (manifestation concrète du désir)**
+
+La demande exprime votre désir de façon claire et actionnable. C'est votre proposition pour combler le besoin. Elle est négociable, adaptable, et peut être ajustée selon ce qui fonctionne pour vous deux.
+
+La demande, elle, sera exprimée clairement à votre partenaire.
+
+**Popup page 6:**
+
+**Exemple complet du processus**
+
+**Introspection (ce qui se passe en vous) :**
+
+- Besoin : "J'ai besoin de me sentir respecté et écouté"
+- Désir : "Je désire avoir son attention visuelle quand on se parle"
+- Demande : "Pourrais-tu me regarder quand je te parle?"
+
+**Expression (ce que vous dites à votre partenaire) :**
+
+"J'ai besoin de me sentir respecté et écouté. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
+
+**Popup page 7:**
+
+**Autres exemples**
+
+**Exemple 1 :**
+
+- Introspection : Besoin de sécurité émotionnelle → Désir de prévisibilité → Demande de communication
+- Expression : "J'ai besoin de sécurité émotionnelle. Pourrais-tu me prévenir si tu as besoin de temps seul, plutôt que de partir sans explication?"
+
+**Exemple 2 :**
+
+- Introspection : Besoin de connexion → Désir de moments réguliers → Demande de temps quotidien
+- Expression : "J'ai besoin de connexion. Est-ce qu'on pourrait prendre 20 minutes par jour pour parler, juste nous deux, sans téléphone?"
+
+**Popup page 8:**
+
+**Pourquoi cette distinction libère la conversation**
+
+Quand vous séparez le besoin (non négociable) de la demande (négociable), vous ouvrez un espace de collaboration. Votre partenaire peut accueillir votre besoin comme légitime, puis chercher avec vous des façons de le combler qui fonctionnent pour vous deux.
+
+Vous passez de "Tu dois faire ça" à "Voici ce dont j'ai besoin, voici ce qui pourrait m'aider — comment peut-on y répondre ensemble?"
+
+## Bouton
+
+On continue
+
+***Fin du popup***
+
+## Bouton
+
+On continue
