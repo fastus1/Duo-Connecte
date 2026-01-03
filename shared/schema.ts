@@ -148,8 +148,8 @@ export const sessionStateSchema = z.object({
   senderName: z.string().min(1),
   receiverName: z.string().min(1),
   currentStep: z.number().min(0).max(38),
-  // App type selection
-  appType: z.enum(['solo', 'duo']).optional(),
+  // App type (Duo only - Solo moved to separate app)
+  appType: z.literal('duo').optional(),
   // Checklist states (parcours normal)
   checklistSituation: z.boolean().optional(),
   checklistVecu: z.boolean().optional(),
@@ -208,8 +208,8 @@ export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit
 export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
 export type SupportTicket = typeof supportTickets.$inferSelect;
 
-// Flow configuration
-export type FlowType = 'solo' | 'duo';
+// Flow configuration (Solo moved to separate app)
+export type FlowType = 'duo';
 
 export interface FlowConfig {
   type: FlowType;
@@ -221,16 +221,6 @@ export interface FlowConfig {
     section: number;
   }>;
 }
-
-// Solo flow configuration (en cours de reconstruction)
-export const soloFlow: FlowConfig = {
-  type: 'solo',
-  label: 'Régulation émotionnelle',
-  progressColor: 'hsl(0, 84%, 60%)', // Red for solo
-  pages: [
-    { id: 0, path: "/solo/presentation", section: 0 },
-  ],
-};
 
 // Duo flow configuration (Welcome is now a separate landing page)
 export const duoFlow: FlowConfig = {
@@ -281,9 +271,9 @@ export const duoFlow: FlowConfig = {
   ],
 };
 
-// Helper to get flow configuration
-export function getFlow(appType?: FlowType): FlowConfig {
-  return appType === 'solo' ? soloFlow : duoFlow;
+// Helper to get flow configuration (always returns duoFlow now)
+export function getFlow(_appType?: FlowType): FlowConfig {
+  return duoFlow;
 }
 
 // Legacy pages export for backward compatibility (defaults to duo)
