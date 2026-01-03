@@ -1,0 +1,101 @@
+## Page 18 - Besoins émetteur Duo (DuoSenderNeeds.tsx)
+
+### Titre
+
+Exprime tes besoins
+
+### Bannière
+
+{receiverName}: écoute avec ouverture
+
+### Sous-titre
+
+{senderName}, de quoi aurais-tu besoin?
+
+### Texte
+
+Prends d'abord un moment d'introspection, puis exprime ton besoin et ta demande à {receiverName}.
+
+### Instructions (puces)
+
+- **Introspection :** Identifie ton besoin, puis réfléchis à ce qui pourrait y répondre (ton désir), puis formule mentalement ta demande
+- **Expression :** "J'ai besoin de..." puis "Pourrais-tu..."
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-pages
+
+***Popup page 1: [Titres approprié]***
+
+Maintenant que tu as partagé ton vécu et que {receiverName} l'a entendu, il est temps d'identifier ce dont tu as besoin, puis de l'exprimer clairement.
+
+**Comment procéder :**
+
+1. Prends un moment d'introspection silencieuse
+    1. Tu peux le faire par écrit si ça t’aide
+2. Identifie ton besoin fondamental
+3. Réfléchis à ce qui pourrait y répondre (ton désir)
+4. Formule mentalement une demande concrète
+5. Exprime ensuite ton besoin et ta demande à {receiverName}
+
+***Popup page 2:***
+
+**Exemples pour t'inspirer**
+
+**Exemple 1 :**
+
+"J'ai besoin de me sentir écouté et respecté. Pourrais-tu poser ton téléphone quand je te parle? Ça ferait une vraie différence pour moi."
+
+**Exemple 2 :**
+
+"J'ai besoin de sécurité émotionnelle. Pourrais-tu me prévenir si tu as besoin de temps seul, plutôt que de partir sans explication?"
+
+**Exemple 3 :**
+
+"J'ai besoin de connexion. Est-ce qu'on pourrait prendre 20 minutes chaque soir pour discuter, juste nous deux, sans distraction?"
+
+**Popup page 3:**
+
+**Critères d'une bonne demande**
+
+- **Spécifique :** "Pourrais-tu faire attention de me regarder quand je te parle?" plutôt que "J'ai besoin de plus d'attention"
+- **Réalisable :** Quelque chose que {receiverName} peut concrètement faire
+- **Ouverte :** "Pourrais-tu..." ou "Serais-tu d'accord pour..." au lieu de "Tu dois..."
+
+***Popup page 4:***
+
+**Ce qu'il faut éviter**
+
+❌ "Tu dois arrêter de..." (exigence)
+
+❌ "Tu ne devrais plus jamais..." (absolu)
+
+❌ "Si tu m'aimais vraiment, tu..." (manipulation)
+
+**Ce qui fonctionne**
+
+✅ "J'ai besoin de... Pourrais-tu...?"
+
+✅ "Ça me ferait du bien si..."
+
+✅ "Serais-tu d'accord pour...?"
+
+***Popup page 5:***
+
+**Pourquoi séparer besoin et demande dans ton expression**
+
+En nommant d'abord ton besoin, puis en proposant une demande, {receiverName} comprend que ta demande est une façon parmi d'autres de combler ton besoin.
+
+Ça ouvre la porte à la collaboration. Peut-être que {receiverName} proposera une autre façon de répondre à ton besoin qui fonctionne mieux pour vous deux.
+
+Ton besoin est légitime. Ta demande est une proposition. Ensemble, vous trouverez la voie.
+
+## Bouton
+
+J’ai terminé
+
+***Fin du popup***
+
+## Bouton
+
+J'ai terminé
