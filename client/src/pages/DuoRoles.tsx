@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { PageLayout } from '@/components/PageLayout';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
@@ -29,11 +30,15 @@ export default function Roles() {
 
         <div className="text-center space-y-4 max-w-2xl">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground">
-            Qui est qui?
+            Définir vos rôles
           </h1>
 
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-            Identifiez vos rôles pour cette conversation. Ces noms seront utilisés tout au long du processus pour personnaliser l'expérience.
+            Qui prendra la parole en premier?
+          </p>
+          
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+            Identifiez vos rôles pour que l'application puisse vous guider personnellement tout au long de l'échange.
           </p>
         </div>
 
@@ -48,17 +53,20 @@ export default function Roles() {
               </h3>
             </div>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-              La personne qui a besoin de s'exprimer
+              La personne qui souhaite partager son vécu
             </p>
-            <Input
-              type="text"
-              placeholder="Prénom ou surnom"
-              value={senderName}
-              onChange={(e) => setSenderName(e.target.value)}
-              className="text-base"
-              data-testid="input-sender-name"
-              aria-label="Nom de l'émetteur"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="sender-name">Nom de l'émetteur</Label>
+              <Input
+                id="sender-name"
+                type="text"
+                placeholder="Prénom de l'émetteur"
+                value={senderName}
+                onChange={(e) => setSenderName(e.target.value)}
+                className="text-base"
+                data-testid="input-sender-name"
+              />
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -71,17 +79,20 @@ export default function Roles() {
               </h3>
             </div>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-              La personne qui écoute avec attention et bienveillance
+              La personne qui offre son écoute bienveillante
             </p>
-            <Input
-              type="text"
-              placeholder="Prénom ou surnom"
-              value={receiverName}
-              onChange={(e) => setReceiverName(e.target.value)}
-              className="text-base"
-              data-testid="input-receiver-name"
-              aria-label="Nom du récepteur"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="receiver-name">Nom du récepteur</Label>
+              <Input
+                id="receiver-name"
+                type="text"
+                placeholder="Prénom du récepteur"
+                value={receiverName}
+                onChange={(e) => setReceiverName(e.target.value)}
+                className="text-base"
+                data-testid="input-receiver-name"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col items-center pt-4 space-y-4">
