@@ -12,6 +12,7 @@ export { ChoiceCards } from './ChoiceCards';
 export { StarRating } from './StarRating';
 export { TextQuestion } from './TextQuestion';
 export { ExplanationModal } from './ExplanationModal';
+export { MultiPageModal } from './MultiPageModal';
 export { QuoteBlock } from './QuoteBlock';
 export { TipCard } from './TipCard';
 export { Separator } from './Separator';
