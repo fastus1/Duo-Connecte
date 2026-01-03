@@ -1,0 +1,60 @@
+## Page 2 - Avertissements (DuoWarnings.tsx)
+
+### Titre
+
+Avant de commencer
+
+### Avertissements (liste)
+
+1. Cet outil n'est pas un substitut à une thérapie relationnelle
+2. Vous devez avoir des bases en communication et en gestion émotionnelle pour l'utiliser efficacement
+3. Duo-Connecte n'est pas un outil de gestion de crise. Si l'émotion est trop forte, prenez une pause chacun de votre côté avant de revenir.
+4. La lenteur est votre alliée. Prenez le temps de bien vivre chaque étape pour que le processus soit efficace.
+
+**Bouton: Plus d'infos: Théories comme à la page “**DuoPresentation.tsx”
+
+### Popup multi-pages
+
+***Popup page 1: [Titres approprié]***
+
+Ces précautions maximisent vos chances de réussite. Ce parcours fonctionne mieux quand certaines conditions sont réunies.
+
+**Pourquoi cet outil ne remplace pas une thérapie :**
+
+Un thérapeute adapte ses interventions en temps réel. Duo-Connecte offre une structure guidée, mais ne peut pas réagir à votre dynamique comme le ferait un professionnel.
+
+Si vous êtes en crise active (colère intense, menaces de rupture, détresse aiguë), vous avez besoin d'un accompagnement direct, pas d'un outil numérique.
+
+***Popup page 2:***
+
+**Ce que signifie "compétences de base" :**
+
+- Identifier vos émotions (même approximativement)
+- Assumer votre part de responsabilité
+- Écouter sans interrompre constamment
+- Accepter que l'autre voit les choses différemment
+
+***Popup page 3:***
+
+**Pourquoi la lenteur est essentielle :**
+
+Les conflits nous poussent à accélérer : réagir, se défendre, contre-attaquer. Ce parcours fait l'inverse. Chaque pause permet à votre système nerveux de se calmer et à votre cerveau de sortir du mode réactif.
+
+**Signes que ce n'est pas le bon moment :**
+
+- L'un de vous crie ou claque des portes
+- Vous avez eu une dispute intense il y a moins de 30 minutes
+- L'un de vous résiste à y participer
+- Vous êtes sous l'influence d'alcool ou de substances
+
+Dans ces cas, attendez. Revenez quand vous êtes disponibles émotionnellement.
+
+### Bouton
+
+J'ai compris, continuer
+
+***Fin du popup***
+
+### Bouton
+
+J'ai compris, continuer
