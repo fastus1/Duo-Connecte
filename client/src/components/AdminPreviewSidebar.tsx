@@ -1,7 +1,7 @@
 import { useLocation } from 'wouter';
 import { 
     Home, Shield, LogIn, Lock, Loader2, 
-    User, Users, RefreshCw, Heart, MessageSquare,
+    Users, RefreshCw, Heart,
     ChevronRight, HelpCircle
 } from 'lucide-react';
 import {
@@ -22,7 +22,7 @@ import {
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Logo } from '@/components/logo';
-import { soloFlow, duoFlow } from '@shared/schema';
+import { duoFlow } from '@shared/schema';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -41,35 +41,6 @@ const demoScreens = [
     { path: '/_demo/pin-creation', label: 'Création NIP (Bienvenue)', icon: Shield },
     { path: '/_demo/pin-login', label: 'Connexion NIP (Bon retour)', icon: LogIn },
 ];
-
-const soloPageLabels: Record<string, string> = {
-    '/solo/roles': 'Choix des rôles',
-    '/solo/warnings': 'Avertissements',
-    '/solo/intention': 'Intention',
-    '/solo/sender-grounding': 'Ancrage émetteur',
-    '/solo/receiver-grounding': 'Ancrage récepteur',
-    '/solo/transition-1': 'Transition 1',
-    '/solo/sender-situation': 'Situation',
-    '/solo/sender-experience': 'Vécu',
-    '/solo/sender-interpretation': 'Interprétation',
-    '/solo/sender-impact': 'Impact',
-    '/solo/sender-summary': 'Résumé émetteur',
-    '/solo/receiver-validation': 'Validation récepteur',
-    '/solo/sender-confirmation': 'Confirmation émetteur',
-    '/solo/sender-clarification': 'Clarification',
-    '/solo/receiver-experience': 'Vécu récepteur',
-    '/solo/sender-validation': 'Validation émetteur',
-    '/solo/receiver-confirmation': 'Confirmation récepteur',
-    '/solo/transition-2': 'Transition 2',
-    '/solo/sender-needs': 'Besoins émetteur',
-    '/solo/receiver-response': 'Réponse récepteur',
-    '/solo/transition-3': 'Transition 3',
-    '/solo/sender-closing': 'Clôture émetteur',
-    '/solo/receiver-closing': 'Clôture récepteur',
-    '/solo/thanks': 'Remerciements',
-    '/solo/feedback': 'Feedback',
-    '/solo/completion': 'Fin',
-};
 
 const duoPageLabels: Record<string, string> = {
     '/duo/roles': 'Choix des rôles',
@@ -198,23 +169,6 @@ export function AdminPreviewSidebar() {
                                 >
                                     <page.icon className="h-4 w-4" />
                                     <span>{page.label}</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        ))}
-                    </SidebarMenu>
-                </CollapsibleSection>
-
-                <CollapsibleSection title="Parcours Solo" icon={User} color="text-red-500">
-                    <SidebarMenu>
-                        {soloFlow.pages.map((page, index) => (
-                            <SidebarMenuItem key={`solo-${page.id}`}>
-                                <SidebarMenuButton
-                                    onClick={() => handleNavigate(page.path)}
-                                    isActive={isActive(page.path) && location.startsWith('/solo')}
-                                    data-testid={`sidebar-solo-${page.id}`}
-                                >
-                                    <span className="text-xs text-muted-foreground w-6">{index}.</span>
-                                    <span className="truncate">{soloPageLabels[page.path] || page.path}</span>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
