@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { ShoppingCart, Info } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 
@@ -29,56 +30,59 @@ export default function PaywallScreen({
     <div className="min-h-screen bg-background flex flex-col">
       <div className="flex items-center justify-center flex-1 p-4">
         <div className="max-w-lg mx-auto text-center space-y-6 md:space-y-8">
-          <div className="space-y-4">
-            <div className="inline-flex items-center justify-center w-[80px] h-[80px] md:w-[100px] md:h-[100px]">
+          <div className="space-y-3 pt-4 md:pt-8">
+            <div className="inline-flex items-center justify-center w-[100px] h-[100px] md:w-[140px] md:h-[140px]">
               <img
                 src="/logo-blue.png"
                 alt="Avancer Simplement Logo"
-                className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] dark:hidden"
+                className="w-[100px] h-[100px] md:w-[140px] md:h-[140px] dark:hidden"
               />
               <img
                 src="/logo-white.png"
                 alt="Avancer Simplement Logo"
-                className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] hidden dark:block"
+                className="w-[100px] h-[100px] md:w-[140px] md:h-[140px] hidden dark:block"
               />
             </div>
-            <div className="text-base md:text-xl font-black italic text-primary" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <div className="text-lg md:text-2xl font-black italic text-primary" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               AVANCER SIMPLEMENT
             </div>
           </div>
 
-          <div className="space-y-3">
-            <h1 className="text-2xl md:text-4xl font-bold text-foreground" style={{ fontFamily: 'Figtree, sans-serif' }}>
-              Accès Réservé
-            </h1>
-            <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto px-4">
-              Cette application est réservée aux membres ayant payé leur accès. Achetez votre accès pour commencer à utiliser Duo-Connecte.
-            </p>
-          </div>
+          <h1 className="text-lg md:text-xl font-semibold text-muted-foreground">
+            Accès Réservé
+          </h1>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4 px-4">
-            <Button
-              size="lg"
-              onClick={handleBuyClick}
-              className="flex items-center gap-2 w-full sm:w-auto"
-              data-testid="button-buy-access"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              Acheter maintenant
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={handleInfoClick}
-              className="flex items-center gap-2 w-full sm:w-auto"
-              data-testid="button-more-info"
-            >
-              <Info className="w-4 h-4" />
-              Plus d'informations
-            </Button>
-          </div>
+          <Card className="max-w-md mx-auto">
+            <CardContent className="p-6 md:p-8 space-y-6">
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                Cette application est réservée aux membres ayant payé leur accès. Achetez votre accès pour commencer à utiliser Duo-Connecte.
+              </p>
 
-          <p className="text-xs text-muted-foreground pt-4 px-4">
+              <div className="flex flex-col gap-3">
+                <Button
+                  size="lg"
+                  onClick={handleBuyClick}
+                  className="flex items-center gap-2 w-full"
+                  data-testid="button-buy-access"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  Acheter maintenant
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={handleInfoClick}
+                  className="flex items-center gap-2 w-full"
+                  data-testid="button-more-info"
+                >
+                  <Info className="w-4 h-4" />
+                  Plus d'informations
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <p className="text-xs text-muted-foreground pt-2 px-4">
             Vous avez déjà payé et vous voyez cet écran?<br />
             Contactez le support pour résoudre ce problème.
           </p>
