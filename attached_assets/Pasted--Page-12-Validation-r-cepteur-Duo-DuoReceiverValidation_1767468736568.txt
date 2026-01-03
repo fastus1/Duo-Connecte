@@ -1,0 +1,84 @@
+## Page 12 - Validation récepteur Duo (DuoReceiverValidation.tsx)
+
+### Titre
+
+Valide ce que tu as entendu
+
+### Bannière
+
+{receiverName}, reformule ce que tu as entendu
+
+### Sous-titre
+
+{receiverName}, nomme ce que tu as entendu...
+
+- Ne parle pas de toi ou de tes émotions à cette étape
+- Reformule simplement ce que {senderName} a partagé
+- Valide ta compréhension des 4 points ci-dessous
+- Sers-toi de la liste pour te guider si nécessaire
+
+### Texte avant checklist
+
+Coche les cases au fur et à mesure que tu reformules chaque point :
+
+### Checklist (interactive)
+
+- La situation (qu'est-ce qui s'est passé)
+- Le vécu (comment il/elle s'est senti)
+- L'interprétation (comment il/elle a perçu la situation)
+- L'impact (les conséquences pour lui/elle)
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-page
+
+***Popup page 1: [Titres approprié]***
+
+Ton rôle ici est de montrer à {senderName} que tu as vraiment écouté et compris. C'est l'une des étapes les plus puissantes du parcours.
+
+**Pourquoi reformuler :**
+
+Se sentir entendu apaise. Même si tu n'es pas d'accord avec l'interprétation de {senderName}, reformuler montre que tu reconnais son vécu. C'est la base de la connexion.
+
+***Popup page 2:***
+
+**Comment reformuler efficacement :**
+
+- Utilise tes propres mots (pas une répétition mot à mot)
+- Reste neutre, sans juger ni minimiser
+- N'ajoute pas ton point de vue ou tes justifications
+
+***Popup page 3:***
+
+**Où donner de l’importance :**
+
+La situation et l'interprétation aident à comprendre le contexte. Mais c'est le **vécu** (les émotions) et **l'impact** (les conséquences) qui ont besoin de ta présence la plus attentive. C'est là que {senderName} s'est montré le plus vulnérable.
+
+**Formules pour reformuler :**
+
+- **Situation :** "Si je comprends bien, ce qui s'est passé c'est..." *(Important)*
+- **Vécu :** "Face à ça, tu t'es senti..."
+- **Interprétation :** "Tu as eu l'impression que..."
+- **Impact :** "Et ça t'a amené à réagir en..." *(Important)*
+
+***Popup page 4:***
+
+**Ce qu'il faut éviter :**
+
+- "Oui mais moi aussi..." (c'est pas encore ton tour)
+- "C'est pas ce que je voulais dire..." (tu justifies au lieu d'écouter)
+- "Tu exagères..." (tu invalides)
+
+**Après ta reformulation :**
+
+{senderName} pourra confirmer que tu as bien compris ou clarifier si nécessaire. Coche chaque case pour suivre si tu en ressens le besoin.
+
+### Bouton
+
+Suivant
+
+***Fin du popup***
+
+### Bouton
+
+Suivant
