@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider, useSession } from '@/contexts/SessionContext';
 import { AccessProvider, useAccess } from '@/contexts/AccessContext';
-import { soloFlow, duoFlow, getFlow } from '@shared/schema';
+import { duoFlow, getFlow } from '@shared/schema';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { AdminPreviewSidebar } from '@/components/AdminPreviewSidebar';
 import { getSessionToken } from '@/lib/auth';
@@ -29,9 +29,6 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 // Duo Connecte Pages
 import Welcome from '@/pages/Welcome';
 import PaywallScreen from '@/pages/PaywallScreen';
-
-// Import Solo flow pages
-import SoloPresentation from '@/pages/SoloPresentation';
 
 // Import Duo flow pages
 import DuoRoles from '@/pages/DuoRoles';
@@ -77,10 +74,6 @@ import DuoInversionPage19a from '@/pages/DuoInversionPage19a';
 import DuoInversionPage20a from '@/pages/DuoInversionPage20a';
 import SupportPage from '@/pages/SupportPage';
 import BlockShowcase from '@/pages/BlockShowcase';
-
-const soloPageComponents = [
-  SoloPresentation,
-];
 
 const duoPageComponents = [
   DuoPresentation,
@@ -238,7 +231,6 @@ function SessionRouter() {
     '/admin-login',
     '/admin',
     '/support',
-    ...soloFlow.pages.map(p => p.path),
     ...duoFlow.pages.map(p => p.path),
   ], []);
 
@@ -267,8 +259,8 @@ function SessionRouter() {
 
     const currentPage = flow.pages[session.currentStep];
     if (currentPage && location !== currentPage.path) {
-      // Only redirect if we are in a flow path (starts with /solo or /duo)
-      if (location.startsWith('/solo') || location.startsWith('/duo')) {
+      // Only redirect if we are in a flow path (starts with /duo)
+      if (location.startsWith('/duo')) {
         setLocation(currentPage.path);
       }
     }
@@ -333,11 +325,6 @@ function SessionRouter() {
                     <Route path="/admin-login" component={AdminLogin} />
                     <Route path="/admin" component={Dashboard} />
                     <Route path="/support" component={SupportPage} />
-                    {soloFlow.pages.map((page, index) => (
-                      <Route key={`solo-${page.id}`} path={page.path}>
-                        {React.createElement(soloPageComponents[index] || NotFound)}
-                      </Route>
-                    ))}
                     {duoFlow.pages.map((page, index) => (
                       <Route key={`duo-${page.id}`} path={page.path}>
                         {React.createElement(duoPageComponents[index] || NotFound)}
@@ -369,13 +356,6 @@ function SessionRouter() {
           <Route path="/admin" component={Dashboard} />
           <Route path="/admin/blocks" component={BlockShowcase} />
           <Route path="/support" component={SupportPage} />
-
-          {/* Solo flow routes */}
-          {soloFlow.pages.map((page, index) => (
-            <Route key={`solo-${page.id}`} path={page.path}>
-              {React.createElement(soloPageComponents[index] || NotFound)}
-            </Route>
-          ))}
 
           {/* Duo flow routes */}
           {duoFlow.pages.map((page, index) => (
