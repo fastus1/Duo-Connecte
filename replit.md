@@ -33,6 +33,59 @@ The application is structured around a guided communication journey for two user
 -   **Backend:** Node.js 20, Express for the server, Drizzle ORM for database interaction, PostgreSQL (Neon) as the database, JWT for session management, bcrypt for password hashing, and express-rate-limit for security.
 -   **PWA:** Implemented with `manifest.json`, PWA icons, and Apple meta tags for iOS Safari, including an installation banner on mobile.
 
+### Reusable Components
+
+#### MultiPageModal (Popup multi-pages)
+Location: `client/src/components/flow/MultiPageModal.tsx`
+
+**Usage:** Pour tous les popups informatifs/théoriques avec plusieurs pages.
+
+**Design établi:**
+- Suit le mode light/dark automatiquement (bg-card)
+- Header avec icône dans un cercle coloré (bg-primary/10)
+- Indicateurs de page cliquables (points)
+- Contenu aéré avec padding généreux (p-6 → p-10)
+- Footer avec boutons Précédent/Suivant
+- Accents de couleur primaire
+
+**Exemple d'utilisation:**
+```tsx
+import { MultiPageModal, Subtitle, BulletList, Callout } from '@/components/flow';
+import { Sparkles, ListChecks, Shield } from 'lucide-react';
+
+const pages = [
+  {
+    title: "Titre de la page",
+    icon: Sparkles,  // Optionnel - icône Lucide
+    content: (
+      <div className="space-y-8">
+        <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+          Paragraphe aéré...
+        </p>
+        <Callout variant="primary">
+          Contenu important encadré
+        </Callout>
+      </div>
+    )
+  },
+  // ... autres pages
+];
+
+<MultiPageModal
+  triggerText="Plus d'infos: Théories"
+  pages={pages}
+  finalButtonText="Commencer le parcours"
+  onComplete={() => handleNavigation()}
+/>
+```
+
+**Règles de design pour le contenu:**
+- Utiliser `space-y-8` pour l'espacement principal
+- Paragraphes courts et séparés
+- Callouts pour les informations importantes
+- BulletList pour les listes
+- Subtitle pour les sous-titres
+
 ### Feature Specifications
 
 -   **Duo Mode:** 38 guided steps, including an inversion path, for structured dialogue between a sender and receiver. Progress is indicated by a blue color.
