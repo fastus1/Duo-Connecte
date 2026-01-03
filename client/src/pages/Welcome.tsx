@@ -74,7 +74,7 @@ export default function Welcome() {
           </h1>
 
           <p className="text-sm md:text-lg text-foreground leading-relaxed max-w-lg mx-auto pt-3 md:pt-4 px-4">
-            Un outil pour faciliter la communication authentique et se comprendre à deux
+            Un guide pour mieux communiquer dans les moments difficiles
           </p>
 
           <div className="pt-6 md:pt-8 max-w-md mx-auto px-4">
@@ -86,7 +86,7 @@ export default function Welcome() {
                 Communication authentique
               </h2>
               <p className="text-sm md:text-base text-muted-foreground text-center leading-relaxed">
-                Dialoguer et se comprendre à deux grâce à un parcours guidé
+                Dialoguer et se comprendre à deux
               </p>
               <Button
                 size="lg"
@@ -107,8 +107,8 @@ export default function Welcome() {
           )}
 
           <p className="text-xs md:text-sm text-muted-foreground pt-4 md:pt-6 max-w-lg mx-auto leading-relaxed px-4">
-            Cet outil s'utilise uniquement en présentiel pour l'instant.<br />
-            Assurez-vous d'être ensemble et disposés à vous connecter.
+            Chaque fois que vous utilisez cet outil, vous développez vos capacités de communication.<br />
+            Vous avez raison d'investir dans votre relation.
           </p>
         </div>
       </div>
