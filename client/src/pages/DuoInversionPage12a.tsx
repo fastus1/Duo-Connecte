@@ -39,7 +39,7 @@ export default function DuoInversionPage12a() {
           <Ear className="w-8 h-8 text-primary" />
         </div>
 
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground text-center">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
           Valide ce que tu as entendu
         </h1>
 

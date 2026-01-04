@@ -28,7 +28,7 @@ export default function Roles() {
         </div>
 
         <div className="text-center space-y-4 max-w-2xl">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground">
             Définir vos rôles
           </h1>
 

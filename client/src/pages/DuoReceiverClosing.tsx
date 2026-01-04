@@ -17,7 +17,7 @@ export default function ReceiverClosing() {
         </div>
 
         <div className="flex flex-col items-center gap-2">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground text-center">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
             Conclusion - Ici et maintenant
           </h1>
           <span className="text-sm text-muted-foreground">2/2</span>

@@ -17,7 +17,7 @@ export default function DuoInversionPage18a() {
           <Heart className="w-8 h-8 text-primary" />
         </div>
 
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground text-center">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
           {session.receiverName}, exprime tes besoins
         </h1>
 

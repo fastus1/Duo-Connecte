@@ -17,7 +17,7 @@ export default function DuoInversionPage10a() {
           <MessageSquare className="w-8 h-8 text-primary" />
         </div>
 
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-serif text-foreground text-center">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
           Nomme l'impact et ta réaction
         </h1>
 
