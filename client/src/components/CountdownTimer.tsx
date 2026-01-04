@@ -60,7 +60,7 @@ export function CountdownTimer({ duration, autoStart = false }: CountdownTimerPr
         </svg>
         {/* Time display */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-4xl md:text-5xl font-semibold font-serif" data-testid="timer-display">
+          <span className="text-4xl md:text-5xl font-semibold font-sans" data-testid="timer-display">
             {minutes}:{seconds.toString().padStart(2, '0')}
           </span>
         </div>

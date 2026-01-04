@@ -27,7 +27,7 @@ export default function Thanks() {
           <Award className="w-10 h-10 text-primary" />
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-semibold font-serif text-foreground">
+        <h1 className="text-3xl md:text-4xl font-semibold font-sans text-foreground">
           Félicitations!
         </h1>
 

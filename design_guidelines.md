@@ -12,16 +12,52 @@
 
 ## Typography
 
-**Font Family**: Inter (via Google Fonts CDN)
-- Primary: Inter (400, 500, 600 weights)
+### Police par défaut
+**Inter** (sans-serif, open source)
 
-**Hierarchy**:
-- Page titles/headers: text-2xl font-semibold (24px)
-- Section labels: text-sm font-medium uppercase tracking-wide (14px)
-- Form labels: text-base font-medium (16px)
-- Input text: text-base (16px)
-- Helper text: text-sm (14px)
-- Error messages: text-sm font-medium (14px)
+### Poids disponibles
+- 100 - Thin
+- 200 - Extra Light
+- 300 - Light
+- 400 - Regular
+- 500 - Medium
+- 600 - Semi Bold
+- 700 - Bold
+- 800 - Extra Bold
+- 900 - Black
+
+### Hiérarchie typographique
+
+| Élément | Taille Desktop | Taille Mobile | Poids | Line-height |
+|---------|---|---|---|---|
+| Hero Title | 48-56px | 32-40px | 700-800 | 1.2 |
+| H1 | 32-40px | 28-32px | 700 | 1.2 |
+| H2 | 28-32px | 24-28px | 700 | 1.3 |
+| H3 | 24-28px | 20-24px | 600 | 1.3 |
+| H4 | 20px | 20px | 600 | 1.4 |
+| H5 | 18px | 18px | 600 | 1.4 |
+| H6 | 16px | 16px | 600 | 1.5 |
+| Body (p) | 16-18px | 16px | 400 | 1.6 |
+| Small text | 14-15px | 14px | 400 | 1.5 |
+| Meta/Label | 12-14px | 12px | 400-500 | 1.4 |
+
+### CSS base
+```css
+font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+font-feature-settings: 'liga' 1, 'calt' 1;
+```
+
+### Variables CSS
+```css
+--font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+--font-serif: Georgia, serif;
+--font-mono: Menlo, monospace;
+```
+
+### Ressources Inter
+- Site officiel: https://rsms.me/inter/
+- GitHub: https://github.com/rsms/inter
+- Google Fonts: https://fonts.google.com/specimen/Inter
 
 ## Layout System
 
