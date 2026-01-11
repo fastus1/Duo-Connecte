@@ -4,8 +4,8 @@ import { Checklist } from '@/components/Checklist';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { Progress } from '@/components/ui/progress';
-import { Ear, MessageSquare, Heart, ListChecks, AlertTriangle } from 'lucide-react';
-import { MultiPageModal, Subtitle, BulletList, Callout } from '@/components/flow';
+import { Ear, MessageSquare, Heart, AlertTriangle } from 'lucide-react';
+import { MultiPageModal, BulletList } from '@/components/flow';
 
 export default function ReceiverValidation() {
   const { session, updateSession } = useSession();
@@ -24,7 +24,7 @@ export default function ReceiverValidation() {
     },
     {
       id: 'vecu',
-      label: 'Le vécu (comment il/elle s\'est senti)',
+      label: 'Le vécu (comment il/elle s\'est senti·e)',
       checked: session.checklistVecu || false,
       onChange: (checked: boolean) => updateSession({ checklistVecu: checked }),
     },
@@ -36,7 +36,7 @@ export default function ReceiverValidation() {
     },
     {
       id: 'impact',
-      label: 'L\'impact (les conséquences pour lui/elle)',
+      label: 'L\'impact et les réactions (les conséquences pour lui/elle)',
       checked: session.checklistImpact || false,
       onChange: (checked: boolean) => updateSession({ checklistImpact: checked }),
     },
@@ -53,7 +53,9 @@ export default function ReceiverValidation() {
           </p>
           
           <div className="space-y-4">
-            <Subtitle>Pourquoi reformuler</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Pourquoi reformuler :
+            </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
               Se sentir entendu apaise. Même si tu n'es pas d'accord avec l'interprétation de {session.senderName}, reformuler montre que tu reconnais son vécu. C'est la base de la connexion.
             </p>
@@ -66,8 +68,6 @@ export default function ReceiverValidation() {
       icon: MessageSquare,
       content: (
         <div className="space-y-8">
-          <Subtitle>Comment reformuler efficacement</Subtitle>
-          
           <BulletList
             variant="primary"
             items={[
@@ -84,14 +84,14 @@ export default function ReceiverValidation() {
       icon: Heart,
       content: (
         <div className="space-y-8">
-          <Subtitle>Où donner de l'importance</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             La situation et l'interprétation aident à comprendre le contexte. Mais c'est le <strong className="text-foreground">vécu</strong> (les émotions) et <strong className="text-foreground">l'impact</strong> (les conséquences) qui ont besoin de ta présence la plus attentive. C'est là que {session.senderName} s'est montré le plus vulnérable.
           </p>
           
           <div className="space-y-4">
-            <Subtitle>Formules pour reformuler</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Exemples de reformulations:
+            </p>
             <div className="space-y-3">
               <p className="text-base md:text-lg leading-relaxed">
                 <span className="font-medium text-foreground">Situation :</span>{" "}
@@ -107,8 +107,8 @@ export default function ReceiverValidation() {
                 <span className="text-muted-foreground">"Tu as eu l'impression que..."</span>
               </p>
               <p className="text-base md:text-lg leading-relaxed">
-                <span className="font-medium text-foreground">Impact :</span>{" "}
-                <span className="text-muted-foreground">"Et ça t'a amené à réagir en..."</span>{" "}
+                <span className="font-medium text-foreground">Impact et réactions :</span>{" "}
+                <span className="text-muted-foreground">"Tu as vécu ça… et ça t'a fait réagir…"</span>{" "}
                 <span className="text-primary text-sm">(Important)</span>
               </p>
             </div>
@@ -121,8 +121,6 @@ export default function ReceiverValidation() {
       icon: AlertTriangle,
       content: (
         <div className="space-y-8">
-          <Subtitle>Ce qu'il faut éviter</Subtitle>
-          
           <div className="space-y-3">
             <p className="text-base md:text-lg leading-relaxed">
               <span className="text-destructive">✗</span>{" "}
@@ -142,9 +140,11 @@ export default function ReceiverValidation() {
           </div>
           
           <div className="space-y-4">
-            <Subtitle>Après ta reformulation</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Après ta reformulation :
+            </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              {session.senderName} pourra confirmer que tu as bien compris ou clarifier si nécessaire. Coche chaque case pour suivre si tu en ressens le besoin.
+              {session.senderName} pourra confirmer que tu as bien compris ou clarifier si nécessaire.
             </p>
           </div>
         </div>
@@ -160,13 +160,13 @@ export default function ReceiverValidation() {
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-          Valide ce que tu as entendu
+          Validation du message
         </h1>
 
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10">
-          <MessageSquare className="w-5 h-5 text-primary" />
-          <p className="text-base md:text-lg text-foreground">
-            {session.receiverName}, reformule ce que tu as entendu
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
+          <Ear className="w-5 h-5 text-primary" />
+          <p className="text-base md:text-lg text-muted-foreground">
+            {session.senderName}, écoute bien pour valider si tu te sens bien entendu
           </p>
         </div>
 
@@ -201,10 +201,6 @@ export default function ReceiverValidation() {
               </span>
             </li>
           </ul>
-
-          <p className="text-base md:text-lg text-muted-foreground text-center">
-            Coche les cases au fur et à mesure que tu reformules chaque point :
-          </p>
 
           <Checklist items={checklistItems} />
 
