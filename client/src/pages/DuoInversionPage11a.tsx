@@ -77,14 +77,9 @@ export default function DuoInversionPage11a() {
       icon: MessageSquare,
       content: (
         <div className="space-y-8">
-          <div className="space-y-4">
-            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-              Exemple de résumé :
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
-              "Face à cette situation, je me suis senti·e préoccupé·e et distant·e <em>[vécu]</em>. J'ai eu l'impression que tu avais besoin d'espace et que je ne devais pas intervenir <em>[interprétation]</em>, et ça m'a poussé·e à me retirer et à éviter d'en parler <em>[impact]</em>."
-            </p>
-          </div>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
+            "Face à cette situation, je me suis senti·e préoccupé·e et distant·e <em>[vécu]</em>. J'ai eu l'impression que tu avais besoin d'espace et que je ne devais pas intervenir <em>[interprétation]</em>, et ça m'a poussé·e à me retirer et à éviter d'en parler <em>[impact]</em>."
+          </p>
           
           <div className="space-y-4">
             <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
