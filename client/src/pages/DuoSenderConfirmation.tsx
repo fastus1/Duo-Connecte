@@ -4,7 +4,7 @@ import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { CheckCheck, Ear, Target, MessageSquare, Shield } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { MultiPageModal, Subtitle, BulletList, Callout } from '@/components/flow';
+import { MultiPageModal, BulletList, Callout } from '@/components/flow';
 
 export default function SenderConfirmation() {
   const { session } = useSession();
@@ -25,9 +25,11 @@ export default function SenderConfirmation() {
           </p>
           
           <div className="space-y-4">
-            <Subtitle>Pourquoi clarifier</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Pourquoi clarifier :
+            </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Si tu passes à l'étape suivante avec l'impression que ton message n'a pas été compris, tu risques de te sentir frustré plus tard. Cette validation ferme la boucle de communication.
+              Si tu passes à l'étape suivante avec l'impression que ton message n'a pas été compris, tu risques de te sentir frustré·e plus tard. Cette validation assure que tu es bien compris·e avant de continuer.
             </p>
           </div>
         </div>
@@ -38,27 +40,14 @@ export default function SenderConfirmation() {
       icon: MessageSquare,
       content: (
         <div className="space-y-8">
-          <Subtitle>Exemples de clarifications utiles</Subtitle>
-          
-          <div className="space-y-4">
-            <Callout variant="neutral">
-              <p className="text-base leading-relaxed italic">
-                "Tu as bien compris, mais j'aimerais insister sur le fait que je me suis senti vraiment seul, pas juste un peu déçu."
-              </p>
-            </Callout>
-            
-            <Callout variant="neutral">
-              <p className="text-base leading-relaxed italic">
-                "Presque, mais quand tu dis 'fâché', c'est plutôt de la tristesse mêlée d'impuissance."
-              </p>
-            </Callout>
-            
-            <Callout variant="neutral">
-              <p className="text-base leading-relaxed italic">
-                "Oui, exactement. Merci d'avoir compris."
-              </p>
-            </Callout>
-          </div>
+          <BulletList
+            variant="primary"
+            items={[
+              "\"Oui, exactement. Merci d'avoir compris.\"",
+              "\"Tu as bien compris, mais j'aimerais insister sur le fait que je me suis senti·e vraiment seul·e, pas juste un peu déçu·e.\"",
+              "\"Presque, mais quand tu dis 'fâché', c'est plutôt de la tristesse mêlée d'impuissance.\""
+            ]}
+          />
         </div>
       )
     },
@@ -67,25 +56,25 @@ export default function SenderConfirmation() {
       icon: Shield,
       content: (
         <div className="space-y-8">
-          <Subtitle>Quand valider</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Si {session.receiverName} a saisi l'essentiel de ton vécu — la situation, tes émotions, ton interprétation, ton impact — alors tu peux valider et continuer. Pas besoin que ce soit parfait mot à mot.
           </p>
           
           <div className="space-y-4">
-            <Subtitle>Signes que tu dois clarifier</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Signes que tu dois clarifier :
+            </p>
             <BulletList
               variant="destructive"
               items={[
-                `${session.receiverName} a minimisé une émotion importante ("un peu triste" alors que tu étais "profondément blessé")`,
+                `${session.receiverName} a minimisé une émotion importante ("un peu triste" alors que tu étais "profondément blessé·e")`,
                 "Une partie de ton vécu n'a pas été mentionnée",
                 "L'interprétation reformulée change le sens de ton message"
               ]}
             />
           </div>
           
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-medium">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Cette étape protège la suite de votre échange. Prenez-la au sérieux.
           </p>
         </div>
@@ -101,7 +90,7 @@ export default function SenderConfirmation() {
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-          As-tu été bien entendu?
+          {session.senderName}, as-tu été bien entendu·e?
         </h1>
 
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
@@ -113,10 +102,16 @@ export default function SenderConfirmation() {
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <h2 className="text-xl md:text-2xl font-medium text-foreground text-center">
-            {session.senderName}, {session.receiverName} vient de reformuler ce que tu as partagé, est-ce que tu as bien été entendu?
+            {session.receiverName} vient de reformuler ce que tu as partagé, est-ce que tu as bien été entendu·e?
           </h2>
 
           <ul className="space-y-3">
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span className="text-base md:text-lg leading-relaxed">
+                Valide que {session.receiverName} t'as bien entendu·e si nécessaire
+              </span>
+            </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
@@ -132,13 +127,7 @@ export default function SenderConfirmation() {
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Ajoute un élément si nécessaire
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">•</span>
-              <span className="text-base md:text-lg leading-relaxed">
-                Valide que {session.receiverName} t'as bien entendu si nécessaire
+                Ajoute un élément qui a été oublié
               </span>
             </li>
           </ul>
@@ -153,7 +142,7 @@ export default function SenderConfirmation() {
             <MultiPageModal
               triggerText="Plus d'infos: Théories"
               pages={theoryPages}
-              finalButtonText="J'ai été entendu"
+              finalButtonText="J'ai été entendu·e"
               onComplete={handleContinue}
             />
           </div>
@@ -168,7 +157,7 @@ export default function SenderConfirmation() {
                 data-testid="button-confirm"
               >
                 <CheckCheck className="w-5 h-5 mr-2" />
-                J'ai été entendu
+                J'ai été entendu·e
               </Button>
             </div>
             
