@@ -142,7 +142,7 @@ export default function DuoInversionPage17a() {
             </h2>
 
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              Vous avez maintenant tous les deux partagé votre vécu et avez été validé·e·s dans votre perspective. C'est au tour de {session.receiverName} d'identifier ce dont tu as besoin pour améliorer la situation et renforcer votre connexion.
+              Vous avez maintenant tous les deux partagé votre vécu et avez été validé·e·s dans votre perspective. {session.receiverName}, c'est à ton tour d'identifier ce dont tu as besoin pour améliorer la situation et renforcer votre connexion.
             </p>
 
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
