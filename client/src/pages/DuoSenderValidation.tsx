@@ -4,7 +4,7 @@ import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { Ear, MessageSquare, Heart } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { MultiPageModal, Subtitle, Callout } from '@/components/flow';
+import { MultiPageModal, Callout } from '@/components/flow';
 
 export default function SenderValidation() {
   const { session } = useSession();
@@ -20,14 +20,14 @@ export default function SenderValidation() {
       icon: Heart,
       content: (
         <div className="space-y-8">
-          <Subtitle>Ce que signifie vraiment valider</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Reformuler est un acte de reconnaissance, pas d'approbation. Tu ne valides pas si sa perception est juste ou fausse, tu reconnais qu'il ou elle a vécu les émotions mentionnées.
           </p>
           
           <div className="space-y-4">
-            <Subtitle>Pourquoi c'est si puissant</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Pourquoi c'est si puissant :
+            </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
               Être entendu et validé apaise profondément. Ce n'est pas l'accord sur les faits qui importe ici, c'est la reconnaissance du vécu. C'est ça qui crée la connexion.
             </p>
@@ -45,12 +45,12 @@ export default function SenderValidation() {
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-          Valide {session.receiverName}
+          Validation du feedback de {session.receiverName}
         </h1>
 
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
           <MessageSquare className="w-5 h-5 text-primary" />
-          <p className="text-base md:text-lg text-foreground">
+          <p className="text-base md:text-lg text-muted-foreground">
             C'est au tour de {session.senderName} de parler
           </p>
         </div>
@@ -64,13 +64,13 @@ export default function SenderValidation() {
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Répète le vécu de {session.receiverName} dans tes mots
+                Répète le vécu de {session.receiverName}
               </span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Montre que tu as entendu ses émotions
+                Nomme ce que tu as entendu de ton mieux
               </span>
             </li>
             <li className="flex items-start gap-3">
