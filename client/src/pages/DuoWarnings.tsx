@@ -32,7 +32,7 @@ export default function Warnings() {
           <div className="space-y-4">
             <Subtitle>Pourquoi cet outil ne remplace pas une thérapie</Subtitle>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Un thérapeute adapte ses interventions en temps réel. Duo-Connecte offre une structure guidée, mais ne peut pas réagir à votre dynamique comme le ferait un professionnel.
+              Un·e thérapeute adapte ses interventions en temps réel. Duo-Connecte offre une structure guidée, mais ne peut pas réagir à votre dynamique comme le ferait un·e professionnel·le.
             </p>
           </div>
           
@@ -71,10 +71,7 @@ export default function Warnings() {
           <div className="space-y-4">
             <Subtitle>Pourquoi la lenteur est essentielle</Subtitle>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Les conflits nous poussent à accélérer : réagir, se défendre, contre-attaquer. Ce parcours fait l'inverse.
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Chaque pause permet à votre système nerveux de se calmer et à votre cerveau de sortir du mode réactif.
+              Les conflits nous poussent à accélérer : réagir, se défendre, contre-attaquer. Ce parcours fait l'inverse. Chaque pause permet à votre système nerveux de se calmer et à votre cerveau de sortir du mode réactif.
             </p>
           </div>
           
