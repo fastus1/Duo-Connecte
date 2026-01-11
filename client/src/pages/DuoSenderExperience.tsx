@@ -32,26 +32,30 @@ export default function SenderExperience() {
       content: (
         <div className="space-y-8">
           <div className="space-y-4">
-            <Subtitle>Pourquoi c'est difficile</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Pourquoi c'est difficile : La vulnérabilité
+            </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Nommer ses émotions demande de la vulnérabilité. C'est plus facile de dire "Tu m'as énervé" que "Je me sens blessé et impuissant". Par contre, c'est cette vulnérabilité qui crée la connexion.
+              Nommer ses émotions demande de la vulnérabilité. C'est plus facile de dire "Tu m'as énervé" que "Je me sens blessé·e et impuissant·e". Par contre, c'est cette vulnérabilité qui crée la connexion.
             </p>
           </div>
           
           <div className="space-y-4">
-            <Subtitle>La règle d'or : parler de TOI, pas de l'autre</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              La règle d'or : parler de TOI, pas de l'autre
+            </p>
             
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <span className="text-destructive text-xl">✗</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  "Tu m'as fait sentir ignoré" → Accusation
+                  "Tu m'as fait sentir ignoré·e" → Accusation
                 </span>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-primary text-xl">✓</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  "Je me sens ignoré" → Vulnérabilité
+                  "Je me sens ignoré·e" → Vulnérabilité
                 </span>
               </div>
               
@@ -77,18 +81,16 @@ export default function SenderExperience() {
       icon: Layers,
       content: (
         <div className="space-y-8">
-          <Subtitle>Il peut y avoir plusieurs émotions simultanées</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Tu n'es pas limité à une seule émotion. Souvent, plusieurs cohabitent. Par exemple :
+            Tu n'es pas limité·e à une seule émotion. Souvent, plusieurs cohabitent. Par exemple :
           </p>
           
           <BulletList
             variant="primary"
             items={[
-              "« Je me sens en colère, mais aussi blessé·e et découragé·e. »",
-              "« Je ressens de la frustration, de la tristesse, et aussi de la peur qu'on ne se comprenne jamais. »",
-              "« Je me sens déçu·e, fatigué·e de cette situation, et inquiet·e pour nous. »"
+              "\"Je me sens en colère, mais aussi blessé·e et découragé·e.\"",
+              "\"Je ressens de la frustration, de la tristesse, et aussi de la peur qu'on ne se comprenne jamais.\"",
+              "\"Je me sens déçu·e, fatigué·e de cette situation, et inquiet·ète pour nous.\""
             ]}
           />
         </div>
@@ -99,15 +101,13 @@ export default function SenderExperience() {
       icon: MessageCircle,
       content: (
         <div className="space-y-8">
-          <Subtitle>Exemples concrets</Subtitle>
-          
           <BulletList
             variant="primary"
             items={[
-              "« Quand tu as regardé ton téléphone pendant que je parlais, je me suis senti invisible et sans importance. »",
-              "« Quand tu as annulé notre sortie, je me suis senti·e déçu·e, puis en colère, puis triste. »",
-              "« Quand tu as soupiré sans répondre, je me suis senti·e rejeté·e et découragé·e. »",
-              "« Face à ton silence, je ressens de la solitude et de l'impuissance. »"
+              "\"Quand tu as regardé ton téléphone pendant que je parlais, je me suis senti invisible et sans importance.\"",
+              "\"Quand tu as annulé notre sortie, je me suis senti·e déçu·e, puis en colère, puis triste.\"",
+              "\"Quand tu as soupiré sans répondre, je me suis senti·e rejeté·e et découragé·e.\"",
+              "\"Face à ton silence, je ressens de la solitude et de l'impuissance.\""
             ]}
           />
           
@@ -152,7 +152,7 @@ export default function SenderExperience() {
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Reste centré sur toi et tes émotions, pas sur l'autre
+                Reste centré·e sur toi et tes émotions, pas sur l'autre
               </span>
             </li>
             <li className="flex items-start gap-3">
