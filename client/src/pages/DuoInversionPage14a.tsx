@@ -76,24 +76,18 @@ export default function DuoInversionPage14a() {
       title: "Exemples de partage",
       icon: MessageSquare,
       content: (
-        <div className="space-y-8">
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-            Exemples de partage authentique :
+        <div className="space-y-4 text-base md:text-lg leading-relaxed text-muted-foreground">
+          <p className="italic">
+            "Quand tu m'expliques que tu pensais que j'avais besoin d'espace, je me sens soulagé·e de comprendre ton intention. Je croyais que tu m'ignorais, mais maintenant je vois que ce n'était pas ça du tout."
           </p>
           
-          <div className="space-y-4 text-base md:text-lg leading-relaxed text-muted-foreground">
-            <p className="italic">
-              "Quand tu m'expliques que tu pensais que j'avais besoin d'espace, je me sens soulagé·e de comprendre ton intention. Je croyais que tu m'ignorais, mais maintenant je vois que ce n'était pas ça du tout."
-            </p>
-            
-            <p className="italic">
-              "Quand tu partages que tu te sentais dépassé·e à ce moment-là, je me sens moins seul·e. Je réalise qu'on vivait tous·tes les deux quelque chose de difficile, chacun·e de notre côté."
-            </p>
-            
-            <p className="italic">
-              "Entendre que tu ne voulais pas me blesser, ça me touche. Je me sens compris·e et j'ai moins l'impression d'avoir imaginé des choses."
-            </p>
-          </div>
+          <p className="italic">
+            "Quand tu partages que tu te sentais dépassé·e à ce moment-là, je me sens moins seul·e. Je réalise qu'on vivait tous·tes les deux quelque chose de difficile, chacun·e de notre côté."
+          </p>
+          
+          <p className="italic">
+            "Entendre que tu ne voulais pas me blesser, ça me touche. Je me sens compris·e et j'ai moins l'impression d'avoir imaginé des choses."
+          </p>
         </div>
       )
     },
@@ -129,14 +123,9 @@ export default function DuoInversionPage14a() {
       icon: Lightbulb,
       content: (
         <div className="space-y-8">
-          <div className="space-y-4">
-            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-              Pourquoi ne pas te justifier maintenant :
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Se justifier maintenant casserait le lien qui vient de se créer. {session.senderName} a pris un risque en se montrant vulnérable. Si tu réponds par une défensive, tu invalides son vécu. Tu auras ton tour pour partager ta perspective plus tard.
-            </p>
-          </div>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Se justifier maintenant casserait le lien qui vient de se créer. {session.senderName} a pris un risque en se montrant vulnérable. Si tu réponds par une défensive, tu invalides son vécu. Tu auras ton tour pour partager ta perspective plus tard.
+          </p>
           
           <div className="space-y-4">
             <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
