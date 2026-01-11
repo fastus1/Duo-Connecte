@@ -60,10 +60,6 @@ export default function DuoInversionPage9a() {
       icon: Lightbulb,
       content: (
         <div className="space-y-8">
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-            Formulations qui aident :
-          </p>
-          
           <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
