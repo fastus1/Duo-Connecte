@@ -1,0 +1,67 @@
+## Page 8 - Vécu émetteur Duo (DuoSenderExperience.tsx)
+
+### Titre
+
+Nomme ton vécu
+
+### Bannière
+
+{receiverName}: écoute attentive et bienveillante
+
+### Sous-titre
+
+{senderName}, parle de ce que tu as vécu face à cette situation
+
+### Instructions (puces)
+
+- Face à cette situation, je me sens...
+- Reste centré·e sur toi et tes émotions, pas sur l'autre
+- Prends ton temps pour identifier et nommer ce que tu ressens
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-page
+
+***Popup page 1: Titres:* Le cœur de l'échange**
+
+Maintenant que le déclencheur est nommé, c'est le moment de partager ton expérience intérieure. Cette étape est le cœur de la communication authentique : révéler ce qui se passe en toi.
+
+***Popup page 2:***
+
+**Pourquoi c'est difficile : La vulnérabilité**
+
+Nommer ses émotions demande de la vulnérabilité. C'est plus facile de dire "Tu m'as énervé" que "Je me sens blessé·e et impuissant·e". Par contre, c'est cette vulnérabilité qui crée la connexion.
+
+**La règle d'or : parler de TOI, pas de l'autre**
+
+- ❌ "Tu m'as fait sentir ignoré·e" → Accusation
+- ✅ "Je me sens ignoré·e" → Vulnérabilité
+- ❌ "Tu me rends triste quand tu fais ça" → Responsabilise l'autre
+- ✅ "Je me sens triste" → Partage ton expérience
+
+***Popup page 3:* Plusieurs émotions**
+
+Tu n'es pas limité·e à une seule émotion. Souvent, plusieurs cohabitent. Par exemple :
+
+- "Je me sens en colère, mais aussi blessé·e et découragé·e."
+- "Je ressens de la frustration, de la tristesse, et aussi de la peur qu'on ne se comprenne jamais."
+- "Je me sens déçu·e, fatigué·e de cette situation, et inquiet·ète pour nous."
+
+***Popup page 4:* Exemples concrets**
+
+- "Quand tu as regardé ton téléphone pendant que je parlais, je me suis senti invisible et sans importance."
+- "Quand tu as annulé notre sortie, je me suis senti·e déçu·e, puis en colère, puis triste."
+- "Quand tu as soupiré sans répondre, je me suis senti·e rejeté·e et découragé·e."
+- "Face à ton silence, je ressens de la solitude et de l'impuissance."
+
+Prends le temps de creuser. La première émotion qui vient n'est pas toujours la plus profonde.
+
+### Bouton
+
+Étape suivante
+
+***Fin du popup***
+
+### Bouton
+
+Étape suivante
