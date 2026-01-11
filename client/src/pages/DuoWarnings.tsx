@@ -68,12 +68,9 @@ export default function Warnings() {
       icon: Clock,
       content: (
         <div className="space-y-8">
-          <div className="space-y-4">
-            <Subtitle>Pourquoi la lenteur est essentielle</Subtitle>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Les conflits nous poussent à accélérer : réagir, se défendre, contre-attaquer. Ce parcours fait l'inverse. Chaque pause permet à votre système nerveux de se calmer et à votre cerveau de sortir du mode réactif.
-            </p>
-          </div>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Les conflits nous poussent à accélérer : réagir, se défendre, contre-attaquer. Ce parcours fait l'inverse. Chaque pause permet à votre système nerveux de se calmer et à votre cerveau de sortir du mode réactif.
+          </p>
           
           <div className="space-y-4">
             <Subtitle>Signes que ce n'est pas le bon moment</Subtitle>
@@ -88,11 +85,9 @@ export default function Warnings() {
             />
           </div>
           
-          <Callout variant="primary">
-            <p>
-              Dans ces cas, attendez. Revenez quand vous êtes disponibles émotionnellement.
-            </p>
-          </Callout>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Dans ces cas, attendez. Revenez quand vous êtes disponibles émotionnellement.
+          </p>
         </div>
       )
     }
