@@ -25,7 +25,7 @@ export default function Intention() {
           <div className="space-y-4">
             <Subtitle>Pourquoi "être bien ensemble" est le vrai objectif</Subtitle>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Dans une conversation tendue, votre cerveau cherche à se protéger. Il veut prouver que vous avez raison, que l'autre a tort. Ce réflexe sabote la connexion.
+              Dans une conversation tendue, votre cerveau cherche à se défendre. Il veut prouver que vous avez raison, que l'autre a tort. Ce réflexe sabote la connexion.
             </p>
           </div>
           
@@ -49,15 +49,13 @@ export default function Intention() {
       icon: Shield,
       content: (
         <div className="space-y-8">
-          <div className="space-y-4">
-            <Subtitle>Accepter le malaise au lieu de le fuir</Subtitle>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              L'inconfort est inévitable. Ne pas l'accepter consciemment et le prendre de face nous pousse à minimiser, contre-attaquer ou fuir.
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Accepter le malaise, c'est choisir d'y faire face avec l'autre.
-            </p>
-          </div>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            L'inconfort est inévitable. Ne pas l'accepter consciemment et le prendre de face nous pousse à minimiser, contre-attaquer ou fuir.
+          </p>
+          
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Accepter le malaise, c'est choisir d'y faire face avec l'autre.
+          </p>
           
           <div className="space-y-4">
             <Subtitle>Postures à éviter</Subtitle>
@@ -75,7 +73,7 @@ export default function Intention() {
             <BulletList
               variant="primary"
               items={[
-                "Croire que le vécu de l'autre est vrai pour lui",
+                "Croire que le vécu de l'autre est vrai pour lui/elle",
                 "Se soucier de l'autre",
                 "Vouloir se rapprocher"
               ]}
@@ -96,7 +94,7 @@ export default function Intention() {
           </Callout>
           
           <p className="text-xl md:text-2xl leading-relaxed text-foreground font-medium text-center">
-            Vous êtes une équipe, pas des opposants.
+            Vous êtes une équipe, pas des opposant·e·s.
           </p>
         </div>
       )
