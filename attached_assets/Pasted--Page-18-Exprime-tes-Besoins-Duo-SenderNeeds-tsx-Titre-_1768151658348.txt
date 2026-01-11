@@ -1,0 +1,142 @@
+# Page 18 - Exprime tes Besoins (Duo/SenderNeeds.tsx)
+
+## Titre
+
+Exprime tes besoins
+
+## Bannière
+
+{receiverName}: écoute avec ouverture
+
+## Sous-titre
+
+{senderName}, de quoi aurais-tu besoin?
+
+## Instructions étape par étape
+
+**Prends un moment pour identifier et préciser ton besoin, ton désir et ta demande, puis exprime-toi à {receiverName}.**
+
+**Étape 1 - Identifie ton besoin**
+Demande-toi: "Qu'est-ce qui me manque vraiment dans cette situation? Quel besoin humain fondamental n'est pas comblé?"
+
+**Étape 2 - Réfléchis à ce qui pourrait aider (désir)**
+"Qu'est-ce qui comblerait ce besoin? Comment j'aimerais que les choses se passent?"
+
+**Étape 3 - Formule ta demande**
+"Quelle action concrète et réalisable pourrais-je proposer à {receiverName}?"
+
+**Étape 4 - Exprime clairement**
+"J'ai besoin de [ton besoin]. Pourrais-tu [ta demande concrète]? Ça m'aiderait vraiment."
+
+## Encadré important
+
+**Rappel:** Ton besoin est légitime, pas négociable.
+Ta demande est une proposition, négociable.
+Vous trouverez ensemble une voie qui fonctionne.
+
+**Bouton: Besoin d'aide? Voir des exemples**
+
+## Popup: Exemples concrets progressifs
+
+### Popup Page 1: Exemple 1 - Le besoin d'être écouté·e
+
+**La situation de départ:**
+Quand tu parles, {receiverName} regarde son téléphone.
+
+**Ton introspection:**
+
+1. **Besoin:** "J'ai besoin de me sentir respecté·e et écouté·e"
+2. **Désir:** "Je désire son attention quand on se parle"
+3. **Demande:** "Pourrais-tu poser ton téléphone quand je te parle?"
+
+**Ce que tu dis:**
+"J'ai besoin de me sentir respecté·e et écouté·e. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
+
+**Ce qui peut se passer ensuite:**
+{receiverName} peut accepter, proposer des ajustements, ou proposer une autre façon de combler ton besoin.
+
+### Popup Page 2: Exemple 2 - Le besoin de sécurité
+
+**La situation de départ:**
+{receiverName} part subitement sans explication, et tu te sens anxieux·se.
+
+**Ton introspection:**
+
+1. **Besoin:** "J'ai besoin de sécurité émotionnelle"
+2. **Désir:** "Je désire savoir ce qui se passe"
+3. **Demande:** "Pourrais-tu me prévenir si tu as besoin de temps seul, plutôt que de partir sans explication?"
+
+**Ce que tu dis:**
+"J'ai besoin de sécurité émotionnelle. Pourrais-tu me prévenir quand tu as besoin de temps seul? L'incertitude me fait de l'anxiété."
+
+### Popup Page 3: Exemple 3 - Le besoin de connexion
+
+**La situation de départ:**
+Vous avez peu de moments pour vraiment discuter ensemble.
+
+**Ton introspection:**
+
+1. **Besoin:** "J'ai besoin de connexion"
+2. **Désir:** "Je désire des moments de qualité ensemble"
+3. **Demande:** "Pourrais-tu prendre 20 minutes chaque soir pour discuter, sans téléphone?"
+
+**Ce que tu dis:**
+"J'ai besoin de connexion. Est-ce qu'on pourrait prendre 20 minutes chaque soir pour discuter juste nous deux, sans distraction? Ça m'aiderait à me sentir proche de toi."
+
+### Popup Page 4: Critique commune - Comment l'éviter
+
+**Ce qui NE fonctionne pas:**
+
+❌ "Tu dois arrêter de..."
+❌ "Tu ne devrais jamais..."
+❌ "Si tu m'aimais, tu..."
+❌ "Tu fais toujours..."
+
+**Pourquoi?** Ça place {receiverName} sur la défensive.
+
+**Ce qui fonctionne:**
+
+✅ "J'ai besoin de... Pourrais-tu...?"
+✅ "Ça m'aiderait si..."
+✅ "Serais-tu d'accord pour...?"
+
+**La différence?** Vous énoncez un besoin et une invitation, pas une exigence ou un jugement.
+
+### Popup Page 5: Si tu n'arrives pas à identifier ton besoin
+
+C'est normal. Identifier ses besoins demande de la pratique.
+
+**Refais le processus du début:**
+
+Face à… [déclencheur, la situation], je me suis senti… [vécu, émotions] 
+
+- Qu'est-ce qui m'aiderait à me sentir mieux dans cette situation?
+- Qu'est-ce qui est important pour moi ici?
+- Qu'est-ce que je cherche à protéger ou à obtenir?
+- Comment j'aimerais que ce soit différent?
+
+**Si tu ne trouves pas:**
+C'est acceptable de dire à {receiverName}: "J'ai de la difficulté à identifier mon besoin exact, mais ce que je sais, c'est que quelque chose me manque ici."
+
+### Popup Page 6: Rappel final
+
+**Structure simple à utiliser:**
+
+"J'ai besoin de [ton besoin légitime]. Pourrais-tu [ta demande concrète]?"
+
+**Rappelle-toi:**
+
+- Ton besoin est légitime et mérite d'être entendu
+- Ta demande est une proposition créative, pas une exigence
+- {receiverName} peut y répondre de plusieurs façons
+- Vous cherchez ensemble, vous ne vous opposez pas
+
+## Bouton
+
+J'ai terminé
+
+### Fin du popup
+
+## Bouton
+
+J'ai terminé
