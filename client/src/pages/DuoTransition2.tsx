@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { Heart, Lightbulb, Layers, Target, Gift, FileText, MessageSquare, Sparkles } from 'lucide-react';
+import { Heart, Target, Gift, MessageSquare, Sparkles, FileText } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { MultiPageModal, Subtitle, BulletList, Callout } from '@/components/flow';
+import { MultiPageModal } from '@/components/flow';
 
 export default function Transition2() {
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
@@ -21,180 +21,279 @@ export default function Transition2() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Cette transition marque le passage de l'expression du vécu vers l'identification de vos besoins. C'est une étape délicate mais essentielle pour transformer votre compréhension mutuelle en pistes concrètes.
+            Sans cette étape claire, vous risquez de rester dans le flou sur vos besoins réels et sur la façon de les combler. Cela conduit souvent à une insatisfaction grandissante et à des malentendus répétés.
           </p>
-          
-          <div className="space-y-4">
-            <Subtitle>Pourquoi parler des besoins maintenant</Subtitle>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Vous venez de partager vos vécus et de vous valider mutuellement. Vous avez créé ensemble un espace de confiance où les besoins peuvent maintenant être identifiés, clarifiés, puis exprimés et accueillis.
-            </p>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "Deux phases distinctes",
-      icon: Layers,
-      content: (
-        <div className="space-y-8">
-          <Subtitle>Deux phases distinctes : Introspection et Expression</Subtitle>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Avant d'exprimer votre besoin à votre partenaire, vous allez d'abord faire un travail d'introspection rapide pour identifier ce dont vous avez besoin.
+            De plus, chaque personne perçoit les situations différemment. S'attendre à ce que votre partenaire devine vos besoins sans les exprimer clairement relève de la pensée magique.
           </p>
           
           <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="font-medium text-foreground mb-2">Phase 1 - Introspection (pour vous)</p>
-              <p className="text-muted-foreground">Besoin → Désir → Demande</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Cette progression interne vous aide à passer d'un malaise flou à une proposition claire.
-              </p>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="font-medium text-foreground mb-2">Phase 2 - Expression (à votre partenaire)</p>
-              <p className="text-muted-foreground">"J'ai besoin de..." + "Pourrais-tu...?"</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Vous exprimez votre besoin et votre demande. Le désir reste dans votre réflexion.
-              </p>
-            </div>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Pourquoi cette étape est cruciale :
+            </p>
+            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Elle transforme les insatisfactions en demandes claires et actionnables</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Elle crée un espace de dialogue et de collaboration au lieu de l'affrontement</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Elle permet de distinguer ce qui est fondamental (le besoin) de ce qui peut être adapté (la demande)</span>
+              </li>
+            </ul>
           </div>
         </div>
       )
     },
     {
-      title: "Le besoin",
+      title: "Le Besoin (non négociable)",
       icon: Target,
       content: (
         <div className="space-y-8">
-          <Subtitle>La structure d'introspection : Besoin → Désir → Demande</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            C'est ce qui nourrit votre bien-être fondamental.
+          </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Comprendre cette progression change tout dans votre communication.
+            Un besoin est universel et légitime par nature. Personne ne peut vous dire "tu ne devrais pas avoir ce besoin".
           </p>
           
           <div className="space-y-4">
-            <Subtitle>1. Le besoin (non négociable)</Subtitle>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              C'est ce qui nourrit votre bien-être fondamental. Le besoin est universel et légitime par nature. Personne ne peut vous dire "tu ne devrais pas avoir ce besoin".
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Exemples de besoins :
             </p>
-            <p className="text-base md:text-lg leading-relaxed text-foreground font-medium">
-              Exemples de besoins : respect, sécurité émotionnelle, connexion, reconnaissance, autonomie, être entendu.
-            </p>
+            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Respect</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Sécurité émotionnelle</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Connexion</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Reconnaissance</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Autonomie</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Être entendu</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Confiance</span>
+              </li>
+            </ul>
           </div>
+          
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Un même besoin peut exister chez les deux partenaires. Ce n'est pas un débat.
+          </p>
         </div>
       )
     },
     {
-      title: "Le désir",
+      title: "Le Désir (une proposition)",
       icon: Gift,
       content: (
         <div className="space-y-8">
-          <Subtitle>2. Le désir (une voie parmi d'autres)</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Le désir est une façon possible de combler votre besoin.
+          </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Le désir est une façon possible de combler votre besoin. Il existe toujours de multiples voies pour répondre au même besoin. Le désir ouvre des possibilités, il n'impose pas une solution unique.
+            C'est important : il existe toujours plusieurs voies pour répondre au même besoin.
+          </p>
+          
+          <div className="space-y-4">
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Exemple :
+            </p>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+              Si votre besoin est <span className="text-foreground font-medium">la connexion</span>, votre désir pourrait être :
+            </p>
+            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Des conversations profondes</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Du temps ensemble sans téléphone</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Des moments physiques</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Partager vos pensées</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>Faire des activités ensemble</span>
+              </li>
+            </ul>
+          </div>
+          
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Le désir ouvre des possibilités. Il n'impose pas UNE solution unique.
           </p>
         </div>
       )
     },
     {
-      title: "La demande",
+      title: "La Demande (action concrète)",
       icon: MessageSquare,
       content: (
         <div className="space-y-8">
-          <Subtitle>3. La demande (manifestation concrète du désir)</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            La demande exprime votre désir de façon claire et actionnable.
+          </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            La demande exprime votre désir de façon claire et actionnable. C'est votre proposition pour combler le besoin. Elle est négociable, adaptable, et peut être ajustée selon ce qui fonctionne pour vous deux.
+            C'est votre proposition pour combler le besoin. Elle est :
           </p>
           
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-medium">
-            La demande, elle, sera exprimée clairement à votre partenaire.
-          </p>
-        </div>
-      )
-    },
-    {
-      title: "Exemple complet",
-      icon: FileText,
-      content: (
-        <div className="space-y-8">
-          <Subtitle>Exemple complet du processus</Subtitle>
+          <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>Spécifique</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>Réalisable</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span><span className="text-foreground font-medium">Négociable. C'est une proposition</span> (c'est la clé)</span>
+            </li>
+          </ul>
           
           <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-muted">
-              <p className="font-medium text-foreground mb-3">Introspection (ce qui se passe en vous) :</p>
-              <div className="space-y-2 text-muted-foreground">
-                <p><span className="text-primary font-medium">Besoin :</span> "J'ai besoin de me sentir respecté et écouté"</p>
-                <p><span className="text-primary font-medium">Désir :</span> "Je désire avoir son attention visuelle quand on se parle"</p>
-                <p><span className="text-primary font-medium">Demande :</span> "Pourrais-tu me regarder quand je te parle?"</p>
-              </div>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="font-medium text-foreground mb-3">Expression (ce que vous dites à votre partenaire) :</p>
-              <p className="text-muted-foreground italic">
-                "J'ai besoin de me sentir respecté et écouté. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
-              </p>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Exemple :
+            </p>
+            <div className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+              <p>Besoin : <span className="text-foreground font-medium">Connexion</span></p>
+              <p>Désir : <span className="text-foreground font-medium">Des moments de qualité ensemble</span></p>
+              <p>Demande : <span className="text-foreground font-medium">"Pourrais-tu poser ton téléphone quand on discute le soir?"</span></p>
             </div>
           </div>
-        </div>
-      )
-    },
-    {
-      title: "Autres exemples",
-      icon: Lightbulb,
-      content: (
-        <div className="space-y-8">
-          <Subtitle>Autres exemples</Subtitle>
           
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <p className="font-medium text-foreground">Exemple 1 :</p>
-              <p className="text-sm text-muted-foreground">
-                Introspection : Besoin de sécurité émotionnelle → Désir de prévisibilité → Demande de communication
-              </p>
-              <Callout variant="neutral">
-                <p className="text-base italic">
-                  "J'ai besoin de sécurité émotionnelle. Pourrais-tu me prévenir si tu as besoin de temps seul, plutôt que de partir sans explication?"
-                </p>
-              </Callout>
-            </div>
-            
-            <div className="space-y-2">
-              <p className="font-medium text-foreground">Exemple 2 :</p>
-              <p className="text-sm text-muted-foreground">
-                Introspection : Besoin de connexion → Désir de moments réguliers → Demande de temps quotidien
-              </p>
-              <Callout variant="neutral">
-                <p className="text-base italic">
-                  "J'ai besoin de connexion. Est-ce qu'on pourrait prendre 20 minutes par jour pour parler, juste nous deux, sans téléphone?"
-                </p>
-              </Callout>
-            </div>
-          </div>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            La demande peut être ajustée. Peut-être que votre partenaire proposera autre chose qui fonctionne aussi bien.
+          </p>
         </div>
       )
     },
     {
-      title: "Pourquoi ça libère",
+      title: "Pourquoi cette distinction libère",
       icon: Sparkles,
       content: (
         <div className="space-y-8">
-          <Subtitle>Pourquoi cette distinction libère la conversation</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Quand vous séparez le besoin (non négociable) de la demande (négociable), vous ouvrez un espace de collaboration. Votre partenaire peut accueillir votre besoin comme légitime, puis chercher avec vous des façons de le combler qui fonctionnent pour vous deux.
+            Quand vous séparez le besoin (non négociable) de la demande (négociable), vous ouvrez un espace de collaboration.
           </p>
           
-          <Callout variant="primary">
-            <p className="text-base">
-              Vous passez de <span className="font-medium">"Tu dois faire ça"</span> à <span className="font-medium">"Voici ce dont j'ai besoin, voici ce qui pourrait m'aider — comment peut-on y répondre ensemble?"</span>
+          <div className="space-y-4">
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Avant (sans distinction) :
             </p>
-          </Callout>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
+              "Tu dois me donner plus d'attention!"
+            </p>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+              → L'autre se sent contrôlé, se défend, refuse.
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Après (avec distinction) :
+            </p>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
+              "J'ai besoin de me sentir importante pour toi. Pourrais-tu poser ton téléphone quand je te parle?"
+            </p>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+              → L'autre comprend le besoin et peut proposer : "Je peux faire ça les soirs de semaine, mais pas les fins de semaine. Comment c'est pour toi?"
+            </p>
+          </div>
+          
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Vous devenez une équipe.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: "Processus complet",
+      icon: FileText,
+      content: (
+        <div className="space-y-8">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Face à la situation de départ où l'autre regarde souvent son téléphone quand vous discutez.
+          </p>
+          
+          <div className="space-y-4">
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              L'introspection :
+            </p>
+            <ol className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground list-decimal list-inside">
+              <li>Besoin : "J'ai besoin de me sentir respecté et écouté"</li>
+              <li>Désir : "Je désire son attention visuelle quand on parle"</li>
+              <li>Demande : "Pourrais-tu me regarder quand je te parle?"</li>
+            </ol>
+          </div>
+          
+          <div className="space-y-4">
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Ce que vous dites à votre partenaire (expression) :
+            </p>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
+              "J'ai besoin de me sentir respecté et écouté. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Ce qui devient possible :
+            </p>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+              Votre partenaire peut dire :
+            </p>
+            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>"Oui, je comprends pourquoi c'est important. Je vais faire attention."</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>"Je comprends, mais je ne peux pas tous les jours. Et si je le faisais les soirs?"</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>"C'est difficile pour moi, mais je désire vraiment répondre à ton besoin de respect. Peut-être qu'on pourrait démarrer le téléphone dans une autre pièce?"</span>
+              </li>
+            </ul>
+          </div>
+          
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            C'est la collaboration, pas l'exigence.
+          </p>
         </div>
       )
     }
@@ -214,20 +313,24 @@ export default function Transition2() {
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <div className="space-y-4 text-center">
             <h2 className="text-xl md:text-2xl font-medium text-foreground">
-              Êtes-vous prêts à passer à l'étape suivante?
+              Étape théorique pour comprendre les besoins, les désirs et comment formuler une demande claire.
             </h2>
 
             <p className="text-base md:text-lg text-foreground leading-relaxed">
-              Vous allez maintenant aborder vos besoins respectifs. C'est le moment d'exprimer ce qui pourrait améliorer votre situation et renforcer votre connexion.
+              Vous avez maintenant partagé votre vécu et avez été validé·e·s dans votre perspective. C'est maintenant le moment d'identifier ce dont vous avez besoin pour améliorer la situation et renforcer votre connexion.
             </p>
 
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              La différence entre un besoin, un désir et une demande transforme complètement la façon dont vous communiquez. Cette distinction remplace l'exigence par l'invitation et ouvre la porte à la collaboration.
+              Cette étape vous aidera à transformer votre vécu en besoin, puis en pistes d'action concrètes.
+            </p>
+
+            <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+              Pour y arriver, vous devez d'abord comprendre la différence entre un <span className="text-foreground font-medium">besoin</span>, un <span className="text-foreground font-medium">désir</span> et une <span className="text-foreground font-medium">demande</span>.
             </p>
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="text-base text-primary font-medium hover:underline cursor-pointer"
+              className="text-base text-primary font-semibold hover:underline cursor-pointer"
               data-testid="link-open-theory"
             >
               Cliquez pour en apprendre davantage (notions importantes)
