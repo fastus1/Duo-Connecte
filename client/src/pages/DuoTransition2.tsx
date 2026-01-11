@@ -267,29 +267,32 @@ export default function Transition2() {
               "J'ai besoin de me sentir respecté et écouté. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
             </p>
           </div>
+        </div>
+      )
+    },
+    {
+      title: "Ce qui devient possible",
+      icon: Heart,
+      content: (
+        <div className="space-y-8">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Votre partenaire peut dire :
+          </p>
           
-          <div className="space-y-4">
-            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-              Ce qui devient possible :
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Votre partenaire peut dire :
-            </p>
-            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>"Oui, je comprends pourquoi c'est important. Je vais faire attention."</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>"Je comprends, mais je ne peux pas tous les jours. Et si je le faisais les soirs?"</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>"C'est difficile pour moi, mais je désire vraiment répondre à ton besoin de respect. Peut-être qu'on pourrait démarrer le téléphone dans une autre pièce?"</span>
-              </li>
-            </ul>
-          </div>
+          <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>"Oui, je comprends pourquoi c'est important. Je vais faire attention."</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>"Je comprends, mais je ne peux pas tous les jours. Et si je le faisais les soirs?"</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>"C'est difficile pour moi, mais je désire vraiment répondre à ton besoin de respect. Peut-être qu'on pourrait démarrer le téléphone dans une autre pièce?"</span>
+            </li>
+          </ul>
           
           <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
             C'est la collaboration, pas l'exigence.
