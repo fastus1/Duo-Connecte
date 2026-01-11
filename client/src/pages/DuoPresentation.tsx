@@ -29,15 +29,12 @@ export default function DuoPresentation() {
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            La plupart des conflits ne viennent pas d'opinions différentes, mais d'une mauvaise compréhension ou d'émotions mal exprimées.
+            La plupart des conflits ne proviennent pas d'opinions différentes, mais d'une difficulté à communiquer adéquatement.
           </p>
           
           <Callout variant="primary">
-            <p className="mb-3">
-              <strong className="text-foreground">Ce parcours de communication n'est pas une thérapie de couple</strong>
-            </p>
             <p>
-              C'est un guide pour naviguer une conversation difficile ensemble. Il vous aide à ralentir, à sortir des automatismes, et à vraiment vous écouter.
+              <strong className="text-foreground">Ce parcours de communication est différent d'une thérapie de couple.</strong> C'est un guide pour aider à naviguer une conversation difficile ou délicate. Il vous aide à ralentir, à sortir des automatismes, et à vraiment vous écouter.
             </p>
           </Callout>
         </div>
@@ -48,23 +45,21 @@ export default function DuoPresentation() {
       icon: ListChecks,
       content: (
         <div className="space-y-8">
-          <div className="space-y-4">
-            <Subtitle>Pourquoi cet outil fonctionne</Subtitle>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Cet outil vous offre une structure claire qui réduit l'improvisation émotionnelle.
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Chaque étape a un objectif : ancrage, expression, écoute, validation, puis inversion. Cette approche évite les spirales de conflit où personne ne se sent entendu.
-            </p>
-          </div>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Cet outil vous offre une structure claire qui réduit l'impulsivité et la réactivité, ce qui évite les spirales de conflit où personne ne se sent entendu·e.
+          </p>
+          
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Chaque étape a un objectif et une structure claire.
+          </p>
           
           <div className="space-y-4">
-            <Subtitle>Exemples de situations</Subtitle>
+            <Subtitle>Exemples de situations où cet outil pourra vous être utile</Subtitle>
             <BulletList
               variant="primary"
               items={[
                 "Un malentendu qui traîne depuis plusieurs jours",
-                "Une tension que vous n'arrivez pas à nommer",
+                "Un non-dit que vous n'arrivez pas à nommer",
                 "Un sujet délicat que vous évitez d'aborder",
                 "Un moment où vous sentez que la connexion s'est perdue"
               ]}
@@ -74,16 +69,12 @@ export default function DuoPresentation() {
       )
     },
     {
-      title: "Conditions de réussite",
+      title: "Conditions pour réussir",
       icon: Shield,
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Les deux personnes doivent ralentir et suivre le processus.
-          </p>
-          
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Si l'une des deux résiste à y participer ou est fortement déclenchée, reportez la conversation.
+            Prenez le temps de ralentir et de suivre chaque étape du processus. S'il y a de la résistance à y participer ou si l'une des personnes est fortement déclenchée, reportez la conversation.
           </p>
           
           <Callout variant="primary">
@@ -131,7 +122,7 @@ export default function DuoPresentation() {
               Conseil
             </p>
             <p className="text-sm md:text-base text-muted-foreground mt-1">
-              Prévoyez 45 à 60 minutes dans un endroit calme, sans distractions, où vous vous sentez en sécurité.
+              Prévoyez 45 à 60 minutes dans un endroit calme, sans distractions, où vous vous sentez à l'aise.
             </p>
           </div>
 
