@@ -1,0 +1,74 @@
+## Page 12 - Validation récepteur Duo (DuoReceiverValidation.tsx)
+
+### Titre
+
+Validation du message
+
+### Bannière
+
+{senderName}, écoute bien pour valider si tu te sens bien entendu
+
+### Sous-titre
+
+{receiverName}, nomme ce que tu as entendu...
+
+- Ne parle pas de toi ou de tes émotions à cette étape
+- Reformule simplement ce que {senderName} a partagé
+- Valide ta compréhension des 4 points ci-dessous
+- Sers-toi de la liste pour te guider si nécessaire
+
+### Checklist (coches permanentes (icones))
+
+- La situation (qu'est-ce qui s'est passé)
+- Le vécu (comment il/elle s'est senti·e)
+- L'interprétation (comment il/elle a perçu la situation)
+- L'impact et les réactions (les conséquences pour lui/elle)
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-page
+
+***Popup page 1: Titres:* L'écoute active**
+
+Ton rôle ici est de montrer à {senderName} que tu as vraiment écouté et compris. C'est l'une des étapes les plus puissantes du parcours.
+
+**Pourquoi reformuler :**
+
+Se sentir entendu apaise. Même si tu n'es pas d'accord avec l'interprétation de {senderName}, reformuler montre que tu reconnais son vécu. C'est la base de la connexion.
+
+***Popup page 2:* Comment reformuler**
+
+- Utilise tes propres mots (pas une répétition mot à mot)
+- Reste neutre, sans juger ni minimiser
+- N'ajoute pas ton point de vue ou tes justifications
+
+***Popup page 3:* Où mettre l'importance**
+
+La situation et l'interprétation aident à comprendre le contexte. Mais c'est le **vécu** (les émotions) et **l'impact** (les conséquences) qui ont besoin de ta présence la plus attentive. C'est là que {senderName} s'est montré le plus vulnérable.
+
+**Exemples de reformulations:**
+
+- **Situation :** "Si je comprends bien, ce qui s'est passé c'est..." *(Important)*
+- **Vécu :** "Face à ça, tu t'es senti..."
+- **Interprétation :** "Tu as eu l'impression que..."
+- **Impact et réactions :** "Tu as vécu ça… et ça t’a fait réagir…" *(Important)*
+
+***Popup page 4:* Ce qu'il faut éviter**
+
+- "Oui mais moi aussi..." (c'est pas encore ton tour)
+- "C'est pas ce que je voulais dire..." (tu justifies au lieu d'écouter)
+- "Tu exagères..." (tu invalides)
+
+**Après ta reformulation :**
+
+{senderName} pourra confirmer que tu as bien compris ou clarifier si nécessaire.
+
+### Bouton
+
+Suivant
+
+***Fin du popup***
+
+### Bouton
+
+Suivant
