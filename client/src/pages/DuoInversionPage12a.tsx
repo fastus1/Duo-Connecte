@@ -1,14 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
-import { Checklist } from '@/components/Checklist';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { Progress } from '@/components/ui/progress';
-import { Ear, MessageSquare } from 'lucide-react';
+import { Ear, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { MultiPageModal } from '@/components/flow';
 
 export default function DuoInversionPage12a() {
-  const { session, updateSession } = useSession();
+  const { session } = useSession();
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
 
   const handleContinue = () => {
@@ -16,24 +15,9 @@ export default function DuoInversionPage12a() {
   };
 
   const checklistItems = [
-    {
-      id: 'vecu-inverse',
-      label: 'Le vécu (comment il/elle s\'est senti·e)',
-      checked: session.checklistVecuInverse || false,
-      onChange: (checked: boolean) => updateSession({ checklistVecuInverse: checked }),
-    },
-    {
-      id: 'interpretation-inverse',
-      label: 'L\'interprétation (comment il/elle a perçu la situation)',
-      checked: session.checklistInterpretationInverse || false,
-      onChange: (checked: boolean) => updateSession({ checklistInterpretationInverse: checked }),
-    },
-    {
-      id: 'impact-inverse',
-      label: 'L\'impact (les conséquences pour lui/elle)',
-      checked: session.checklistImpactInverse || false,
-      onChange: (checked: boolean) => updateSession({ checklistImpactInverse: checked }),
-    },
+    "Le vécu (comment il/elle s'est senti·e)",
+    "L'interprétation (comment il/elle a perçu la situation)",
+    "L'impact (les conséquences pour lui/elle)",
   ];
 
   const theoryPages = [
@@ -105,7 +89,17 @@ export default function DuoInversionPage12a() {
           </div>
 
           <div className="space-y-3">
-            <Checklist items={checklistItems} />
+            {checklistItems.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-start gap-3 p-4 rounded-lg bg-card border border-card-border"
+              >
+                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-base md:text-lg leading-relaxed">
+                  {item}
+                </span>
+              </div>
+            ))}
           </div>
 
           <div className="pt-4 flex flex-col items-center space-y-3">
