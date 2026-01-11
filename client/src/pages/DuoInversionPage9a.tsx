@@ -1,14 +1,91 @@
 import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
-import { ExpandableSection } from '@/components/ExpandableSection';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { MessageSquare, VolumeX } from 'lucide-react';
+import { MessageSquare, Ear, Eye, Lightbulb } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { MultiPageModal } from '@/components/flow';
 
 export default function DuoInversionPage9a() {
   const { session } = useSession();
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
+
+  const handleContinue = () => {
+    transitionToStep(28);
+  };
+
+  const theoryPages = [
+    {
+      title: "Ta vision des choses",
+      icon: Eye,
+      content: (
+        <div className="space-y-8">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Ta vision de la situation a créé tes émotions. Comment tu as interprété ce qui s'est passé explique ce que tu as ressenti.
+          </p>
+          
+          <div className="space-y-4">
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Pourquoi c'est important
+            </p>
+            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+              Vos deux interprétations peuvent être complètement différentes. Nommer la tienne comme <em>ta</em> lecture (pas <em>la</em> vérité) permet à {session.senderName} de comprendre ton point de vue.
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Exemples :
+            </p>
+            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>"Quand tu es parti·e sans dire au revoir, j'ai pensé que tu avais besoin d'espace."</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>"Quand tu n'as pas répondu, j'ai eu l'impression que c'était pas si important pour toi."</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span>"Pour moi, ton silence voulait dire que tu réfléchissais."</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "Formulations qui aident",
+      icon: Lightbulb,
+      content: (
+        <div className="space-y-8">
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Formulations qui aident :
+          </p>
+          
+          <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>J'ai eu l'impression que...</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>Je me suis dit que...</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>Pour moi, ça signifiait que...</span>
+            </li>
+          </ul>
+          
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Ces formules reconnaissent que c'est ton interprétation.
+          </p>
+        </div>
+      )
+    }
+  ];
 
   return (
     <PageLayout>
@@ -21,8 +98,8 @@ export default function DuoInversionPage9a() {
           Nomme ta vision des choses
         </h1>
 
-        <div className="flex items-center gap-2">
-          <VolumeX className="w-5 h-5 text-destructive" />
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
+          <Ear className="w-5 h-5 text-primary" />
           <p className="text-base md:text-lg text-muted-foreground">
             {session.senderName} : écoute attentive et bienveillante
           </p>
@@ -30,11 +107,10 @@ export default function DuoInversionPage9a() {
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <div className="space-y-4">
-            <h2 className="text-xl md:text-2xl font-medium text-foreground">
+            <h2 className="text-xl md:text-2xl font-medium text-foreground text-center">
               {session.receiverName}, parle de comment tu as perçu la situation
             </h2>
 
-            <div className="space-y-3 md:space-y-4">
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
@@ -55,25 +131,21 @@ export default function DuoInversionPage9a() {
                 </span>
               </li>
             </ul>
+          </div>
 
-            <ExpandableSection>
-              <p className="mb-4">
-                Nos émotions sont créées par notre interprétation personnelle des situations. Ce que tu as ressenti découle de comment tu as interprété ce qui s'est passé.
-              </p>
-              <p className="mb-4">
-                Par exemple : si quelqu'un ne te salue pas le matin, tu pourrais interpréter que cette personne est fâchée contre toi (ce qui pourrait créer de l'anxiété), ou qu'elle est préoccupée par quelque chose (ce qui créerait de l'empathie).
-              </p>
-              <p>
-                Partage maintenant comment TOI tu as interprété la situation. Utilise des formules comme "J'ai eu l'impression que...", "Je me suis dit que...", "Pour moi, ça signifiait que...". Reconnais que c'est ton interprétation, pas nécessairement la réalité.
-              </p>
-            </ExpandableSection>
-            </div>
+          <div className="flex justify-center">
+            <MultiPageModal
+              triggerText="Plus d'infos: Théories"
+              pages={theoryPages}
+              finalButtonText="Étape suivante"
+              onComplete={handleContinue}
+            />
           </div>
 
           <div className="pt-4 flex flex-col items-center space-y-3">
             <Button
               size="lg"
-              onClick={() => transitionToStep(28)}
+              onClick={handleContinue}
               className="w-full md:w-auto px-8 min-w-48"
               disabled={isTransitioning}
               data-testid="button-next"
