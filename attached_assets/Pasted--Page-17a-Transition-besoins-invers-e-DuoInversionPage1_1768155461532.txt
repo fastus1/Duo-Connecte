@@ -1,0 +1,74 @@
+## **Page 17a - Transition besoins inversée (DuoInversionPage17a.tsx)**
+
+## Titre
+
+La base des besoins
+
+## Sous-titre
+
+C'est maintenant ton tour, {receiverName}
+
+## Texte principal
+
+Vous avez maintenant tous les deux partagé votre vécu et avez été validé·e·s dans votre perspective. C'est au tour de {receiverName} d'identifier ce dont tu as besoin pour améliorer la situation et renforcer votre connexion.
+
+Cette étape t'aidera à transformer ton vécu en besoin, puis en pistes d'action concrètes.
+
+## Texte secondaire
+
+**Rappel :** La différence entre un **besoin**, un **désir** et une **demande** est essentielle pour formuler une proposition claire.
+
+**Bouton: Revoir les concepts**
+
+## Popup multi-pages
+
+### Popup Page 1: Rappel - Besoin, Désir, Demande
+
+**Le Besoin (non négociable)**
+C'est ce qui nourrit ton bien-être fondamental. Un besoin est universel et légitime par nature.
+
+*Exemples : Respect, sécurité émotionnelle, connexion, reconnaissance, autonomie, être entendu·e, confiance.*
+
+**Le Désir (une voie parmi d'autres)**
+Une façon possible de combler ton besoin. Il existe toujours plusieurs voies pour répondre au même besoin.
+
+**La Demande (action concrète)**
+Ta proposition pour combler le besoin. Elle est spécifique, réalisable et **négociable**.
+
+### Popup Page 2: Pourquoi cette distinction est importante
+
+Quand tu sépares le besoin (non négociable) de la demande (négociable), tu ouvres un espace de collaboration.
+
+**Avant (sans distinction):**
+"Tu dois me donner plus d'attention!"
+→ L'autre se sent contrôlé, se défend, refuse.
+
+**Après (avec distinction):**
+"J'ai besoin de me sentir important·e pour toi. Pourrais-tu poser ton téléphone quand je te parle?"
+→ L'autre comprend le besoin et peut proposer des ajustements.
+
+**Vous devenez une équipe.**
+
+### Popup Page 3: Processus complet - Exemple
+
+**L'introspection:**
+
+1. Besoin: "J'ai besoin de me sentir respecté·e et écouté·e"
+2. Désir: "Je désire son attention quand on parle"
+3. Demande: "Pourrais-tu me regarder quand je te parle?"
+
+**Ce que tu dis à {senderName}:**
+
+"J'ai besoin de me sentir respecté·e et écouté·e. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
+
+**C'est la collaboration, pas l'exigence.**
+
+## Bouton
+
+On continue
+
+### Fin du popup
+
+## Bouton
+
+On continue
