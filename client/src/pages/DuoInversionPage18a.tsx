@@ -196,7 +196,7 @@ export default function DuoInversionPage18a() {
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-          Exprime tes besoins
+          {session.receiverName}, exprime tes besoins
         </h1>
 
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
@@ -207,12 +207,6 @@ export default function DuoInversionPage18a() {
         </div>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-xl md:text-2xl font-medium text-foreground text-center">
-              {session.receiverName}, de quoi aurais-tu besoin?
-            </h2>
-          </div>
-
           <div className="space-y-6">
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed font-semibold">
               Prends un moment pour identifier et préciser ton besoin, ton désir et ta demande, puis exprime-toi à {session.senderName}.
