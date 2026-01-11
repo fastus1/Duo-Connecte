@@ -21,7 +21,7 @@ export default function DuoInversionPage8a() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            C'est ton tour de partager ton vécu émotionnel face à cette même situation. Même si vous parlez du même événement, ton expérience peut être complètement différente. C'est normal.
+            C'est ton tour de partager ton vécu face à cette même situation. Même si vous parlez du même événement, ton expérience peut être complètement différente. C'est normal.
           </p>
           
           <div className="space-y-4">
