@@ -1,0 +1,110 @@
+## **Page 18a - Besoins inversés (DuoInversionPage18a.tsx)**
+
+## Titre
+
+Exprime tes besoins
+
+## Bannière
+
+{senderName}: écoute avec ouverture
+
+## Sous-titre
+
+{receiverName}, de quoi aurais-tu besoin?
+
+## Instructions étape par étape
+
+**Prends un moment pour identifier et préciser ton besoin, ton désir et ta demande, puis exprime-toi à {senderName}.**
+
+**Étape 1 - Identifie ton besoin**
+Demande-toi: "Qu'est-ce qui me manque vraiment dans cette situation? Quel besoin humain fondamental n'est pas comblé?"
+
+**Étape 2 - Réfléchis à ce qui pourrait aider (désir)**
+"Qu'est-ce qui comblerait ce besoin? Comment j'aimerais que les choses se passent?"
+
+**Étape 3 - Formule ta demande**
+"Quelle action concrète et réalisable pourrais-je proposer à {senderName}?"
+
+**Étape 4 - Exprime clairement**
+"J'ai besoin de [ton besoin]. Pourrais-tu [ta demande concrète]? Ça m'aiderait vraiment."
+
+## Encadré important
+
+**Rappel:** Ton besoin est légitime, pas négociable.
+Ta demande est une proposition, négociable.
+Vous trouverez ensemble une voie qui fonctionne.
+
+**Bouton: Besoin d'aide? Voir des exemples**
+
+## Popup: Exemples concrets
+
+### Popup Page 1: Exemple 1 - Le besoin d'être écouté·e
+
+**Ton introspection:**
+
+1. **Besoin:** "J'ai besoin de me sentir respecté·e et écouté·e"
+2. **Désir:** "Je désire son attention quand on se parle"
+3. **Demande:** "Pourrais-tu poser ton téléphone quand je te parle?"
+
+**Ce que tu dis:**
+"J'ai besoin de me sentir respecté·e et écouté·e. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
+
+### Popup Page 2: Exemple 2 - Le besoin de confiance
+
+**Ton introspection:**
+
+1. **Besoin:** "J'ai besoin de savoir que tu me fais confiance"
+2. **Désir:** "Je désire de l'autonomie dans mes décisions"
+3. **Demande:** "Pourrais-tu me laisser gérer certaines choses à ma façon?"
+
+**Ce que tu dis:**
+"J'ai besoin de savoir que tu me fais confiance. Pourrais-tu me laisser gérer certaines choses à ma façon, même si c'est différent de ce que tu ferais?"
+
+### Popup Page 3: Si ton besoin était simplement d'être entendu·e
+
+**Peut-être que ton seul besoin était de partager ta perspective.** Si c'est le cas, c'est parfaitement légitime.
+
+**Ce que tu peux dire:**
+"Mon besoin principal était de partager ma perspective avec toi. Maintenant que c'est fait, je me sens mieux."
+
+C'est une réponse valide. Tu n'as pas toujours besoin d'une demande d'action.
+
+### Popup Page 4: Ce qui fonctionne vs ce qui ne fonctionne pas
+
+**Ce qui NE fonctionne pas:**
+
+❌ "Tu dois arrêter de..."
+❌ "Tu ne devrais jamais..."
+❌ "Si tu m'aimais, tu..."
+❌ "Tu fais toujours..."
+
+**Ce qui fonctionne:**
+
+✅ "J'ai besoin de... Pourrais-tu...?"
+✅ "Ça m'aiderait si..."
+✅ "Serais-tu d'accord pour...?"
+
+**La différence?** Tu énonces un besoin et une invitation, pas une exigence ou un jugement.
+
+### Popup Page 5: Rappel final
+
+**Structure simple à utiliser:**
+
+"J'ai besoin de [ton besoin légitime]. Pourrais-tu [ta demande concrète]?"
+
+**Rappelle-toi:**
+
+- Ton besoin est légitime et mérite d'être entendu
+- Ta demande est une proposition créative, pas une exigence
+- {senderName} peut y répondre de plusieurs façons
+- Vous cherchez ensemble, vous ne vous opposez pas
+
+## Bouton
+
+J'ai terminé
+
+### Fin du popup
+
+## Bouton
+
+J'ai terminé
