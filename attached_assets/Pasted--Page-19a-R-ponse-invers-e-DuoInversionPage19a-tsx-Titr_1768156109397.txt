@@ -1,0 +1,78 @@
+## Page 19a - Réponse inversée (DuoInversionPage19a.tsx)
+
+### Titre
+
+On peut s'entendre?
+
+### Bannière
+
+{receiverName}: écoute avec ouverture
+
+### Sous-titre
+
+{senderName}, est-ce que la demande de {receiverName} fait du sens pour toi?
+
+### Texte
+
+Est-ce que tu es capable et volontaire pour répondre à la demande de {senderName}?
+
+### Instructions (puces)
+
+- Nomme ce que tu peux ou ne peux pas offrir
+- Propose des alternatives si nécessaire
+- Sois honnête sur tes limites et tes capacités
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-pages
+
+***Popup page 1: [Titres approprié]***
+
+Si {receiverName} a formulé une demande, ton rôle maintenant est d'y répondre avec authenticité et respect.
+
+Si son besoin principal était d'être entendu·e, tu peux simplement reconnaître ça.
+
+**Les quatre types de réponses possibles :**
+
+**1. Accepter complètement** — C'est réalisable pour toi et tu es volontaire.
+
+**2. Accepter partiellement** — Tu ne peux pas tout offrir, mais tu peux répondre en partie.
+
+**3. Proposer une alternative** — La demande est difficile, mais tu veux combler le besoin d'une autre façon.
+
+**4. Refuser avec respect** — Tu ne peux pas répondre à la demande, mais tu reconnais le besoin comme légitime.
+
+***Popup page 2: [Titres approprié]***
+
+**Exemples de réponses honnêtes :**
+
+- "Oui, je peux faire ça. Je comprends pourquoi c'est important pour toi."
+- "Je ne peux pas m'engager sur tous les soirs, mais je peux le faire les mardis et jeudis. Est-ce que ça pourrait aider?"
+- "Ce que tu demandes me met mal à l'aise, mais je pourrais plutôt... Est-ce que ça répondrait à ton besoin?"
+- "Je ne peux pas promettre ça, mais je veux qu'on trouve une solution ensemble."
+
+**Si le besoin était d'être entendu :**
+
+"Je comprends maintenant ta perspective. Merci de l'avoir partagée avec moi."
+
+***Popup page 3: [Titres approprié]***
+
+**Rappel crucial : le besoin est légitime, la demande est négociable.**
+
+Même si tu ne peux pas répondre à la demande exacte de {receiverName}, son besoin reste valide et important. Ton refus ou ta limite ne nie pas son besoin.
+
+**Pourquoi l'honnêteté est essentielle**
+
+Une fausse promesse crée plus de problèmes qu'une limite clairement exprimée. {receiverName} préfère connaître tes vraies limites maintenant plutôt que d'être déçu plus tard.
+
+Ton honnêteté respectueuse ouvre la porte à une vraie négociation, pas à un compromis forcé.
+
+### Bouton
+
+J'ai terminé
+
+***Fin du popup***
+
+### Bouton
+
+J'ai terminé
