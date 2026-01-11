@@ -201,7 +201,7 @@ export default function Transition2() {
       )
     },
     {
-      title: "Pourquoi cette distinction libère",
+      title: "Pourquoi ça libère",
       icon: Sparkles,
       content: (
         <div className="space-y-8">
