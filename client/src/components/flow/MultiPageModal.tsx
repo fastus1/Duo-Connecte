@@ -14,16 +14,24 @@ interface MultiPageModalProps {
   pages: ModalPage[];
   finalButtonText?: string;
   onComplete?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function MultiPageModal({ 
   triggerText = "En savoir plus",
   pages,
   finalButtonText = "J'ai compris",
-  onComplete
+  onComplete,
+  open,
+  onOpenChange
 }: MultiPageModalProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
+
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+  const setIsOpen = isControlled ? (onOpenChange || (() => {})) : setInternalOpen;
 
   const handleOpen = () => {
     setIsOpen(true);

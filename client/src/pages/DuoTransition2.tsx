@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
 import { usePageTransition } from '@/hooks/usePageTransition';
@@ -7,6 +8,7 @@ import { MultiPageModal, Subtitle, BulletList, Callout } from '@/components/flow
 
 export default function Transition2() {
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleContinue = () => {
     transitionToStep(18);
@@ -223,9 +225,13 @@ export default function Transition2() {
               La différence entre un besoin, un désir et une demande transforme complètement la façon dont vous communiquez. Cette distinction remplace l'exigence par l'invitation et ouvre la porte à la collaboration.
             </p>
 
-            <p className="text-base text-primary font-medium">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="text-base text-primary font-medium hover:underline cursor-pointer"
+              data-testid="link-open-theory"
+            >
               Cliquez pour en apprendre davantage (notions importantes)
-            </p>
+            </button>
           </div>
 
           <div className="flex justify-center">
@@ -234,6 +240,8 @@ export default function Transition2() {
               pages={theoryPages}
               finalButtonText="On continue"
               onComplete={handleContinue}
+              open={isModalOpen}
+              onOpenChange={setIsModalOpen}
             />
           </div>
 
