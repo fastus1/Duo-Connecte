@@ -31,18 +31,16 @@ export default function SenderGrounding() {
       icon: Brain,
       content: (
         <div className="space-y-8">
-          <Subtitle>Pourquoi c'est important</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Quand tu nommes ton état émotionnel, ton système nerveux se calme. Tu sors du mode réactif et tu deviens plus présent. Ça crée une pause entre ce que tu ressens et ce que tu vas dire.
+            Quand tu exprimes ce que tu vis, ton système nerveux se calme. Tu sors du mode réactif et tu deviens plus présent·e. Ça te permet d'être plus déposé·e.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Pour {session.receiverName}, entendre ce que tu vis change tout. Ça désarme. Au lieu de se préparer à se défendre, il/elle peut t'accueillir. Ça baisse les défenses des deux côtés.
+            Pour {session.receiverName}, ça risque de l'aider à se déposer également. Au lieu de se préparer à se défendre, il/elle peut t'accueillir. Ça baisse les défenses des deux côtés.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Sans nommer ton état, ce que tu ressens peut être mal interprété. Nommer ton émotion la rend acceptable et met la table pour une conversation authentique plutôt que défensive.
+            Quand on vit des émotions non exprimées, notre non-verbal parle sans qu'on s'en rende compte, ce qui peut être mal interprété. La communication authentique vient réduire ce risque et permet à la personne qui s'exprime d'être congruente.
           </p>
         </div>
       )
@@ -52,7 +50,9 @@ export default function SenderGrounding() {
       icon: MessageCircle,
       content: (
         <div className="space-y-8">
-          <Subtitle>Voici quelques exemples de ce que tu pourrais dire</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Voici quelques exemples de ce que tu pourrais dire :
+          </p>
           
           <BulletList
             variant="primary"
@@ -77,13 +77,13 @@ export default function SenderGrounding() {
 
         <div className="flex flex-col items-center gap-2">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-            Ici et maintenant - 1/2
+            Ici et maintenant - {session.senderName}
           </h1>
         </div>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <h2 className="text-xl md:text-2xl font-medium text-foreground text-center">
-            {session.senderName}, prends un moment pour te déposer…
+            Prends un moment pour te déposer…
           </h2>
 
           <div className="space-y-3 md:space-y-4">
@@ -92,6 +92,12 @@ export default function SenderGrounding() {
                 <span className="text-primary text-xl">•</span>
                 <span className="text-base md:text-lg leading-relaxed">
                   Identifie ce que tu ressens en ce moment (nervosité, confiance, hésitation...)
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary text-xl">•</span>
+                <span className="text-base md:text-lg leading-relaxed">
+                  Accueille tes émotions sans les juger
                 </span>
               </li>
               <li className="flex items-start gap-3">
