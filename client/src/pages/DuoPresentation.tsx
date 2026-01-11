@@ -34,7 +34,7 @@ export default function DuoPresentation() {
           
           <Callout variant="primary">
             <p className="mb-4 text-base md:text-lg">
-              <strong className="text-foreground">Ce parcours de communication est différent d'une thérapie de couple.</strong>
+              <span className="text-foreground font-semibold">Ce parcours de communication est différent d'une thérapie de couple.</span>
             </p>
             <p className="text-base md:text-lg">
               C'est un guide pour aider à naviguer une conversation difficile ou délicate. Il vous aide à ralentir, à sortir des automatismes, et à vraiment vous écouter.
