@@ -68,7 +68,7 @@ export function MultiPageModal({
         className="text-primary hover:text-primary/80 gap-2"
         data-testid="button-open-theory"
       >
-        <BookOpen className="w-5 h-5" />
+        <BookOpen className="w-7 h-7" />
         {triggerText}
       </Button>
 
