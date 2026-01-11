@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { Handshake, VolumeX, ListChecks, ArrowRightLeft, MessageSquare, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Handshake, Ear, ListChecks, ArrowRightLeft, MessageSquare, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { MultiPageModal, Subtitle, Callout } from '@/components/flow';
+import { MultiPageModal } from '@/components/flow';
 
 export default function ReceiverResponse() {
   const { session } = useSession();
@@ -24,31 +24,43 @@ export default function ReceiverResponse() {
             {session.senderName} vient de formuler une demande. Ton rôle maintenant est d'y répondre avec authenticité et respect.
           </p>
           
-          <Subtitle>Les quatre types de réponses possibles</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Les quatre types de réponses possibles :
+          </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Tu peux répondre de plusieurs façons, toutes légitimes si elles sont honnêtes :
           </p>
           
           <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="font-medium text-foreground mb-2">1. Accepter complètement</p>
-              <p className="text-muted-foreground text-sm mb-2">
+            <div className="space-y-2">
+              <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+                1. Accepter complètement
+              </p>
+              <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
                 Tu peux répondre à la demande telle quelle. C'est réalisable pour toi et tu es volontaire.
               </p>
-              <p className="text-primary text-sm italic">
-                Exemple : "Oui, je peux poser mon téléphone quand tu me parles. Ça fait du sens."
-              </p>
+              <ul className="text-base md:text-lg leading-relaxed text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <span className="text-primary text-xl">•</span>
+                  <span>Exemple : "Oui, je peux poser mon téléphone quand tu me parles. Ça fait du sens."</span>
+                </li>
+              </ul>
             </div>
             
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="font-medium text-foreground mb-2">2. Accepter partiellement</p>
-              <p className="text-muted-foreground text-sm mb-2">
+            <div className="space-y-2">
+              <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+                2. Accepter partiellement
+              </p>
+              <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
                 Tu ne peux pas tout offrir, mais tu peux répondre en partie à la demande.
               </p>
-              <p className="text-primary text-sm italic">
-                Exemple : "Je ne peux pas promettre tous les soirs, mais je peux m'engager à te donner mon attention pleine trois fois par semaine."
-              </p>
+              <ul className="text-base md:text-lg leading-relaxed text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <span className="text-primary text-xl">•</span>
+                  <span>Exemple : "Je ne peux pas promettre tous les soirs, mais je peux m'engager à te donner mon attention pleine trois fois par semaine."</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -60,32 +72,40 @@ export default function ReceiverResponse() {
       content: (
         <div className="space-y-8">
           <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="font-medium text-foreground mb-2">3. Proposer une alternative</p>
-              <p className="text-muted-foreground text-sm mb-2">
+            <div className="space-y-2">
+              <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+                3. Proposer une alternative
+              </p>
+              <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
                 La demande spécifique est difficile pour toi, mais tu veux combler le besoin d'une autre façon.
               </p>
-              <p className="text-primary text-sm italic">
-                Exemple : "Ce que tu demandes est difficile pour moi, mais je pourrais plutôt te prévenir quand j'ai besoin d'espace. Est-ce que ça répondrait à ton besoin?"
-              </p>
+              <ul className="text-base md:text-lg leading-relaxed text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <span className="text-primary text-xl">•</span>
+                  <span>Exemple : "Ce que tu demandes est difficile pour moi, mais je pourrais plutôt te prévenir quand j'ai besoin d'espace. Est-ce que ça répondrait à ton besoin?"</span>
+                </li>
+              </ul>
             </div>
             
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="font-medium text-foreground mb-2">4. Refuser avec respect</p>
-              <p className="text-muted-foreground text-sm mb-2">
+            <div className="space-y-2">
+              <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+                4. Refuser avec respect
+              </p>
+              <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
                 Tu ne peux pas répondre à la demande, mais tu reconnais le besoin comme légitime.
               </p>
-              <p className="text-primary text-sm italic">
-                Exemple : "Je ne peux pas faire ça parce que ça me met trop de pression. Par contre, je comprends que c'est important pour toi et je veux qu'on trouve une autre solution ensemble."
-              </p>
+              <ul className="text-base md:text-lg leading-relaxed text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <span className="text-primary text-xl">•</span>
+                  <span>Exemple : "Je ne peux pas faire ça parce que ça me met trop de pression. Par contre, je comprends que c'est important pour toi et je veux qu'on trouve une autre solution ensemble."</span>
+                </li>
+              </ul>
             </div>
           </div>
           
-          <Callout variant="primary">
-            <p className="text-base font-medium">
-              Rappel crucial : le besoin est légitime, la demande est négociable!
-            </p>
-          </Callout>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Rappel crucial : le besoin est légitime, la demande est négociable!
+          </p>
         </div>
       )
     },
@@ -98,33 +118,28 @@ export default function ReceiverResponse() {
             Même si tu ne peux pas répondre à la demande exacte de {session.senderName}, son <em>besoin</em> reste valide et important. Ton refus ou ta limite ne nie pas son besoin.
           </p>
           
-          <Subtitle>Exemples concrets de réponses honnêtes</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Exemples concrets de réponses honnêtes :
+          </p>
           
-          <div className="space-y-3">
-            <Callout variant="neutral">
-              <p className="text-base italic">
-                "Oui, je peux faire ça. Je comprends pourquoi c'est important pour toi."
-              </p>
-            </Callout>
-            
-            <Callout variant="neutral">
-              <p className="text-base italic">
-                "Je ne peux pas m'engager sur tous les soirs, mais je peux le faire les mardis et jeudis. Est-ce que ça pourrait aider?"
-              </p>
-            </Callout>
-            
-            <Callout variant="neutral">
-              <p className="text-base italic">
-                "Ce que tu demandes me met mal à l'aise, mais je pourrais plutôt... Est-ce que ça répondrait à ton besoin?"
-              </p>
-            </Callout>
-            
-            <Callout variant="neutral">
-              <p className="text-base italic">
-                "Je ne peux pas promettre ça parce que je ne sais pas si je suis capable de tenir cet engagement. Mais je veux vraiment qu'on trouve une solution qui fonctionne pour nous deux."
-              </p>
-            </Callout>
-          </div>
+          <ul className="space-y-3 text-base md:text-lg leading-relaxed text-muted-foreground">
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>"Oui, je peux faire ça. Je comprends pourquoi c'est important pour toi."</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>"Je ne peux pas m'engager sur tous les soirs, mais je peux le faire les mardis et jeudis. Est-ce que ça pourrait aider?"</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>"Ce que tu demandes me met mal à l'aise, mais je pourrais plutôt... Est-ce que ça répondrait à ton besoin?"</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">•</span>
+              <span>"Je ne peux pas promettre ça parce que je ne sais pas si je suis capable de tenir cet engagement. Mais je veux vraiment qu'on trouve une solution qui fonctionne pour nous deux."</span>
+            </li>
+          </ul>
         </div>
       )
     },
@@ -133,28 +148,36 @@ export default function ReceiverResponse() {
       icon: AlertTriangle,
       content: (
         <div className="space-y-8">
-          <Subtitle>Pourquoi l'honnêteté est essentielle</Subtitle>
-          
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Une fausse promesse crée plus de problèmes qu'une limite clairement exprimée. Si tu acceptes quelque chose que tu ne peux pas tenir, tu prépares une future déception. {session.senderName} préfère connaître tes vraies limites maintenant plutôt que d'être déçu plus tard.
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Pourquoi l'honnêteté est essentielle :
           </p>
           
-          <Subtitle>Ce qu'il faut éviter</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Une fausse promesse crée plus de problèmes qu'une limite clairement exprimée. Si tu acceptes quelque chose que tu ne peux pas tenir, tu prépares une future déception. Il est préférable de connaître tes vraies limites maintenant plutôt que d'être déçu plus tard.
+          </p>
           
-          <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-destructive">Accepter sans conviction (tu ne tiendras pas)</p>
-            </div>
-            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-destructive">Refuser de façon défensive ("C'est ridicule comme demande")</p>
-            </div>
-            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-destructive">Minimiser le besoin ("Tu exagères, c'est pas si important")</p>
-            </div>
-            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-destructive">Contre-attaquer ("Toi aussi tu fais ça!")</p>
-            </div>
-          </div>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Ce qu'il faut éviter :
+          </p>
+          
+          <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+            <li className="flex items-start gap-3">
+              <span className="text-destructive text-xl">✗</span>
+              <span>Accepter sans conviction (c'est voué à l'échec, s'engager authentiquement, ou pas)</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-destructive text-xl">✗</span>
+              <span>Refuser de façon défensive ("C'est ridicule comme demande")</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-destructive text-xl">✗</span>
+              <span>Minimiser le besoin ("Tu exagères, c'est pas si important")</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-destructive text-xl">✗</span>
+              <span>Contre-attaquer ("Toi aussi tu fais ça!")</span>
+            </li>
+          </ul>
         </div>
       )
     },
@@ -163,28 +186,32 @@ export default function ReceiverResponse() {
       icon: CheckCircle,
       content: (
         <div className="space-y-8">
-          <Subtitle>Ce qui fonctionne</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Ce qui fonctionne :
+          </p>
           
-          <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="text-primary font-medium">Reconnaître le besoin même si tu refuses la demande</p>
-            </div>
-            <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="text-primary font-medium">Proposer des alternatives créatives</p>
-            </div>
-            <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="text-primary font-medium">Être clair sur ce que tu peux vraiment offrir</p>
-            </div>
-            <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
-              <p className="text-primary font-medium">Exprimer ta volonté de trouver une solution ensemble</p>
-            </div>
-          </div>
+          <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">✓</span>
+              <span>Reconnaître le besoin même si tu refuses la demande</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">✓</span>
+              <span>Proposer des alternatives créatives</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">✓</span>
+              <span>Être clair sur ce que tu peux vraiment offrir</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-primary text-xl">✓</span>
+              <span>Exprimer ta volonté de trouver une solution ensemble</span>
+            </li>
+          </ul>
           
-          <Callout variant="primary">
-            <p className="text-base">
-              Ton honnêteté respectueuse ouvre la porte à une vraie négociation, pas à un compromis forcé.
-            </p>
-          </Callout>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Ton honnêteté respectueuse ouvre la porte à une vraie négociation, pas à un compromis forcé.
+          </p>
         </div>
       )
     }
@@ -201,8 +228,8 @@ export default function ReceiverResponse() {
           On peut s'entendre?
         </h1>
 
-        <div className="flex items-center gap-2">
-          <VolumeX className="w-5 h-5 text-destructive" />
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
+          <Ear className="w-5 h-5 text-primary" />
           <p className="text-base md:text-lg text-muted-foreground">
             {session.senderName}: écoute avec ouverture
           </p>
