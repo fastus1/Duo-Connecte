@@ -31,13 +31,8 @@ export default function Transition1() {
       icon: MessageSquare,
       content: (
         <div className="space-y-8">
-          <Subtitle>Pour {session.senderName} (émetteur)</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Tu vas prendre la parole. Rappelle-toi que ton objectif n'est pas de convaincre, mais de partager ton vécu authentique.
-          </p>
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            {session.receiverName} est là pour t'écouter, pas pour te juger.
+            Tu vas prendre la parole. Rappelle-toi que ton objectif n'est pas de convaincre, mais de partager ton vécu authentique. {session.receiverName} est là pour t'écouter, pas pour te juger.
           </p>
         </div>
       )
@@ -47,13 +42,8 @@ export default function Transition1() {
       icon: Ear,
       content: (
         <div className="space-y-8">
-          <Subtitle>Pour {session.receiverName} (récepteur)</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Ton seul travail maintenant est d'écouter. Pas de solutions, pas de contre-arguments, pas de justifications.
-          </p>
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Juste une écoute présente et ouverte. Ce sera ton tour plus tard de partager ton point de vue.
+            Ton seul travail maintenant est d'écouter. Pas de solutions, pas de contre-arguments, pas de justifications. Juste une écoute présente et ouverte. Ce sera ton tour plus tard de partager ton point de vue.
           </p>
         </div>
       )
@@ -68,7 +58,7 @@ export default function Transition1() {
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-          Prêts à continuer
+          Prêt·e·s à continuer
         </h1>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
