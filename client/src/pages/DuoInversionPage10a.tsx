@@ -70,10 +70,6 @@ export default function DuoInversionPage10a() {
       icon: FileText,
       content: (
         <div className="space-y-8">
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-            Exemples concrets :
-          </p>
-          
           <ul className="space-y-3 text-base md:text-lg leading-relaxed text-muted-foreground">
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
