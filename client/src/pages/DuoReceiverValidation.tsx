@@ -1,14 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
-import { Checklist } from '@/components/Checklist';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { Progress } from '@/components/ui/progress';
-import { Ear, MessageSquare, Heart, AlertTriangle } from 'lucide-react';
+import { Ear, MessageSquare, Heart, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { MultiPageModal, BulletList } from '@/components/flow';
 
 export default function ReceiverValidation() {
-  const { session, updateSession } = useSession();
+  const { session } = useSession();
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
 
   const handleContinue = () => {
@@ -16,30 +15,10 @@ export default function ReceiverValidation() {
   };
 
   const checklistItems = [
-    {
-      id: 'situation',
-      label: 'La situation (qu\'est-ce qui s\'est passé)',
-      checked: session.checklistSituation || false,
-      onChange: (checked: boolean) => updateSession({ checklistSituation: checked }),
-    },
-    {
-      id: 'vecu',
-      label: 'Le vécu (comment il/elle s\'est senti·e)',
-      checked: session.checklistVecu || false,
-      onChange: (checked: boolean) => updateSession({ checklistVecu: checked }),
-    },
-    {
-      id: 'interpretation',
-      label: 'L\'interprétation (comment il/elle a perçu la situation)',
-      checked: session.checklistInterpretation || false,
-      onChange: (checked: boolean) => updateSession({ checklistInterpretation: checked }),
-    },
-    {
-      id: 'impact',
-      label: 'L\'impact et les réactions (les conséquences pour lui/elle)',
-      checked: session.checklistImpact || false,
-      onChange: (checked: boolean) => updateSession({ checklistImpact: checked }),
-    },
+    "La situation (qu'est-ce qui s'est passé)",
+    "Le vécu (comment il/elle s'est senti·e)",
+    "L'interprétation (comment il/elle a perçu la situation)",
+    "L'impact et les réactions (les conséquences pour lui/elle)",
   ];
 
   const theoryPages = [
@@ -202,7 +181,19 @@ export default function ReceiverValidation() {
             </li>
           </ul>
 
-          <Checklist items={checklistItems} />
+          <div className="space-y-3">
+            {checklistItems.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-start gap-3 p-4 rounded-lg bg-card border border-card-border"
+              >
+                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-base md:text-lg leading-relaxed">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <div className="flex justify-center">
             <MultiPageModal
