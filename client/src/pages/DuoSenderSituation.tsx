@@ -70,7 +70,7 @@ export default function SenderSituation() {
             <div className="flex items-start gap-3">
               <span className="text-destructive text-xl">✗</span>
               <span className="text-base md:text-lg leading-relaxed">
-                <span className="text-muted-foreground">Interprétation :</span> "Tu es toujours en retard exprès"
+                <span className="text-muted-foreground">Interprétation :</span> "Tu fais exprès, tu es toujours en retard"
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -100,7 +100,7 @@ export default function SenderSituation() {
           />
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Les émotions et interprétations viendront plus tard. Pour l'instant, tu nommes le déclencheur.
+            Les émotions et interprétations viendront plus tard. Pour l'instant, tu nomme le déclencheur.
           </p>
         </div>
       )
@@ -134,7 +134,7 @@ export default function SenderSituation() {
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Décris les faits observables, comme une caméra filmait la scène
+                Décris les faits observables, comme un·e témoin neutre qui raconte ce qu'il/elle a vu
               </span>
             </li>
             <li className="flex items-start gap-3">
@@ -146,7 +146,7 @@ export default function SenderSituation() {
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Reste bref : environ 1 minute
+                Reste bref·ve : environ 1 minute
               </span>
             </li>
           </ul>
