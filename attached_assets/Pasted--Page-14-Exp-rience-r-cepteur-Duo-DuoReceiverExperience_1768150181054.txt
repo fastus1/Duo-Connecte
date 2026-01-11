@@ -1,0 +1,85 @@
+## Page 14 - Expérience récepteur Duo (DuoReceiverExperience.tsx)
+
+### Titre
+
+Ton vécu après l'écoute
+
+### Bannière
+
+{senderName}: offre ta présence attentive et ton ouverture
+
+### Sous-titre
+
+{receiverName}, comment te sens-tu maintenant?
+
+### Texte
+
+Parle de ce que tu vis en lien avec ce que tu viens d'entendre de la part de {senderName}
+
+Prends le temps de te déposer.
+
+### Instructions (puces)
+
+- Face à ce que tu viens de me dire, je me sens...
+- Nomme tes émotions sans te justifier
+- Plusieurs émotions peuvent cohabiter
+- Reste dans le moment présent
+- Reste en lien avec ton vécu face à celui de {senderName}
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-page
+
+***Popup page 1: Titres:* Résiste à l'automatisme**
+
+C'est l'une des étapes les plus difficiles du parcours. Après avoir écouté {senderName}, ton instinct te pousse peut-être à te défendre, à expliquer ton intention, à corriger sa perception.
+
+Résiste à cet automatisme. Tu vas pouvoir parler de ta perception plus tard.
+
+**Ton seul travail maintenant : nommer ton vécu**
+
+***Popup page 2:* Émotions diverses**
+
+Tu peux ressentir un mélange d'émotions diverses :
+
+- **Tristesse :** "Je me sens triste de réaliser l'impact que ça a eu sur toi"
+- **Culpabilité :** "Je me sens coupable de t'avoir blessé·e sans le vouloir"
+- **Incompréhension :** "Je me sens désorienté·e parce que je ne percevais pas la situation comme ça"
+- **Malaise :** "Je me sens inconfortable face à ce que tu me partages"
+- **Empathie :** "Je me sens touché·e de voir à quel point c'était difficile pour toi"
+
+***Popup page 3:* Exemples de partage**
+
+"Quand tu dis que tu t'es senti·e ignoré·e, ça m'attriste, je n'avais aucune idée que tu pouvais vivre ça, je suis content·e que tu m'en parles."
+
+"Quand tu me dis que tu t'es senti·e jugé·e par mes commentaires, je me sens mal et coupable. Je réalise que mes paroles t'ont blessé·e, et ça me fait de la peine."
+
+***Popup page 4:* Ce qui rend l'étape difficile**
+
+Entendre le vécu de {senderName} peut déclencher tes mécanismes de défense. 
+
+Tu veux peut-être dire "Mais ce n'était pas mon intention!" ou "Tu interprètes mal!". 
+
+C'est normal. 
+
+Reconnais cette réaction défensive et demande-toi quelle émotion se cache derrière : de la culpabilité? De la honte? De la peur d'être une mauvaise personne?
+
+***Popup page 5:* Pourquoi ne pas te justifier**
+
+Se justifier maintenant casserait le lien qui vient de se créer. {senderName} a pris un risque en se montrant vulnérable. Si tu réponds par une défensive, tu invalides son vécu. Tu auras ton tour pour partager ta perspective plus tard.
+
+**La nuance importante :**
+
+Tu peux reconnaître tes réaction défensives et même te dénoncer : "Je me sens sur la défensive et j'ai envie de me justifier" est une expression honnête de ton vécu, pas une justification.
+
+Reste avec tes émotions. Laisse ton point de vue pour plus tard.
+
+## Bouton
+
+J'ai terminé
+
+***Fin du popup***
+
+## Bouton
+
+J'ai terminé

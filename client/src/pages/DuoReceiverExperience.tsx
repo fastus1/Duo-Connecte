@@ -4,7 +4,7 @@ import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { Heart, Ear, AlertCircle, Layers, MessageSquare, Shield, Lightbulb } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { MultiPageModal, Subtitle, Callout } from '@/components/flow';
+import { MultiPageModal } from '@/components/flow';
 
 export default function ReceiverExperience() {
   const { session } = useSession();
@@ -24,23 +24,23 @@ export default function ReceiverExperience() {
             C'est l'une des étapes les plus difficiles du parcours. Après avoir écouté {session.senderName}, ton instinct te pousse peut-être à te défendre, à expliquer ton intention, à corriger sa perception.
           </p>
           
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-medium">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Résiste à cet automatisme. Tu vas pouvoir parler de ta perception plus tard.
           </p>
           
-          <Callout variant="primary">
-            <p className="font-medium">Ton seul travail maintenant : nommer ton vécu</p>
-          </Callout>
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Ton seul travail maintenant : nommer ton vécu
+          </p>
         </div>
       )
     },
     {
-      title: "Émotions complexes",
+      title: "Émotions diverses",
       icon: Layers,
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Tu peux ressentir un mélange d'émotions complexes :
+            Tu peux ressentir un mélange d'émotions diverses :
           </p>
           
           <div className="space-y-3">
@@ -50,11 +50,11 @@ export default function ReceiverExperience() {
             </p>
             <p className="text-base md:text-lg leading-relaxed">
               <span className="font-medium text-foreground">Culpabilité :</span>{" "}
-              <span className="text-muted-foreground">"Je me sens coupable de t'avoir blessé sans le vouloir"</span>
+              <span className="text-muted-foreground">"Je me sens coupable de t'avoir blessé·e sans le vouloir"</span>
             </p>
             <p className="text-base md:text-lg leading-relaxed">
               <span className="font-medium text-foreground">Incompréhension :</span>{" "}
-              <span className="text-muted-foreground">"Je me sens désorienté parce que je ne percevais pas la situation comme ça"</span>
+              <span className="text-muted-foreground">"Je me sens désorienté·e parce que je ne percevais pas la situation comme ça"</span>
             </p>
             <p className="text-base md:text-lg leading-relaxed">
               <span className="font-medium text-foreground">Malaise :</span>{" "}
@@ -73,19 +73,13 @@ export default function ReceiverExperience() {
       icon: MessageSquare,
       content: (
         <div className="space-y-8">
-          <Subtitle>Exemple de partage authentique</Subtitle>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
+            "Quand tu dis que tu t'es senti·e ignoré·e, ça m'attriste, je n'avais aucune idée que tu pouvais vivre ça, je suis content·e que tu m'en parles."
+          </p>
           
-          <Callout variant="neutral">
-            <p className="text-base leading-relaxed italic">
-              "Quand tu dis que tu t'es senti·e ignoré·e, ça m'attriste, je n'avais aucune idée que tu pouvais vivre ça, je suis content·e que tu m'en parles."
-            </p>
-          </Callout>
-          
-          <Callout variant="neutral">
-            <p className="text-base leading-relaxed italic">
-              "Quand tu me dis que tu t'es senti·e jugé·e par mes commentaires, je me sens mal et coupable. Je réalise que mes paroles t'ont blessé·e, et ça me fait de la peine."
-            </p>
-          </Callout>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
+            "Quand tu me dis que tu t'es senti·e jugé·e par mes commentaires, je me sens mal et coupable. Je réalise que mes paroles t'ont blessé·e, et ça me fait de la peine."
+          </p>
         </div>
       )
     },
@@ -94,8 +88,6 @@ export default function ReceiverExperience() {
       icon: Shield,
       content: (
         <div className="space-y-8">
-          <Subtitle>Ce qui rend cette étape difficile</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Entendre le vécu de {session.senderName} peut déclencher tes mécanismes de défense.
           </p>
@@ -104,7 +96,7 @@ export default function ReceiverExperience() {
             Tu veux peut-être dire "Mais ce n'était pas mon intention!" ou "Tu interprètes mal!".
           </p>
           
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-medium">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             C'est normal.
           </p>
           
@@ -119,20 +111,20 @@ export default function ReceiverExperience() {
       icon: Lightbulb,
       content: (
         <div className="space-y-8">
-          <Subtitle>Pourquoi ne pas te justifier maintenant</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Se justifier maintenant casserait le lien qui vient de se créer. {session.senderName} a pris un risque en se montrant vulnérable. Si tu réponds par une défensive, tu invalides son vécu. Tu auras ton tour pour partager ta perspective plus tard.
           </p>
           
           <div className="space-y-4">
-            <Subtitle>La nuance importante</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              La nuance importante :
+            </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Tu peux reconnaître tes réactions défensives et même te dénoncer : <span className="text-foreground font-medium">"Je me sens sur la défensive et j'ai envie de me justifier"</span> est une expression honnête de ton vécu, pas une justification.
+              Tu peux reconnaître tes réaction défensives et même te dénoncer : "Je me sens sur la défensive et j'ai envie de me justifier" est une expression honnête de ton vécu, pas une justification.
             </p>
           </div>
           
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-medium">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Reste avec tes émotions. Laisse ton point de vue pour plus tard.
           </p>
         </div>
@@ -154,7 +146,7 @@ export default function ReceiverExperience() {
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
           <Ear className="w-5 h-5 text-primary" />
           <p className="text-base md:text-lg text-muted-foreground">
-            {session.senderName}: écoute attentive et bienveillante
+            {session.senderName}: offre ta présence attentive et ton ouverture
           </p>
         </div>
 
