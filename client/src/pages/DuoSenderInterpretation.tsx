@@ -27,7 +27,7 @@ export default function SenderInterpretation() {
           </Callout>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Ce que tu as ressenti vient de comment tu as lu la situation, pas nécessairement de ce qui s'est réellement passé.
+            Ce que tu as ressenti découle de ta lecture de la situation, pas nécessairement de ce qui s'est réellement passé.
           </p>
         </div>
       )
@@ -37,10 +37,8 @@ export default function SenderInterpretation() {
       icon: Lightbulb,
       content: (
         <div className="space-y-8">
-          <Subtitle>Exemple concret</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Si quelqu'un ne te salue pas le matin, tu pourrais penser "Il est fâché contre moi" (ce qui créerait de l'anxiété) ou "Il semble préoccupé" (ce qui créerait de l'empathie).
+            Si quelqu'un ne te salue pas le matin, tu pourrais penser "Il/elle est fâché·e contre moi" ou "Il/elle semble préoccupé·e" ce qui pourrait réveiller certaines émotions désagréables.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-foreground font-medium">
@@ -54,8 +52,6 @@ export default function SenderInterpretation() {
       icon: MessageSquare,
       content: (
         <div className="space-y-8">
-          <Subtitle>Comment exprimer ton interprétation</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Utilise des formules qui reconnaissent que c'est ta lecture des événements :
           </p>
@@ -63,9 +59,9 @@ export default function SenderInterpretation() {
           <BulletList
             variant="primary"
             items={[
-              "« J'ai eu l'impression que... »",
-              "« Je me suis dit que... »",
-              "« Pour moi, ça voulait dire que... »"
+              "\"J'ai eu l'impression que...\"",
+              "\"Je me suis dit que...\"",
+              "\"Pour moi, ça voulait dire que...\""
             ]}
           />
         </div>
@@ -76,19 +72,19 @@ export default function SenderInterpretation() {
       icon: FileText,
       content: (
         <div className="space-y-8">
-          <Subtitle>Pourquoi c'est important</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            En nommant ton interprétation comme <em>ton</em> interprétation (et non comme <em>la</em> vérité), tu laisses de l'espace pour que l'autre partage sa perspective.
+            En nommant ton interprétation comme une interprétation (et non comme <em>la</em> vérité), tu laisses de l'espace pour que l'autre partage sa perspective.
           </p>
           
           <div className="space-y-4">
-            <Subtitle>Exemples de situations</Subtitle>
+            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+              Exemples de situations :
+            </p>
             <BulletList
               variant="primary"
               items={[
-                "« Quand tu es parti sans dire au revoir, j'ai pensé que tu étais fâché contre moi. »",
-                "« Quand tu as ri, j'ai cru que tu te moquais de moi. »"
+                "\"Quand tu es parti sans dire au revoir, j'ai pensé que tu étais fâché contre moi.\"",
+                "\"Quand tu as ri, j'ai cru que tu te moquais de moi.\""
               ]}
             />
           </div>
@@ -111,7 +107,7 @@ export default function SenderInterpretation() {
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
           <Ear className="w-5 h-5 text-primary" />
           <p className="text-base md:text-lg text-muted-foreground">
-            {session.receiverName}: écoute attentive et bienveillante
+            {session.receiverName}: continue d'écouter
           </p>
         </div>
 
