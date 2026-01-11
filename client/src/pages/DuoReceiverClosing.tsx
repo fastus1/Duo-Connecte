@@ -16,17 +16,15 @@ export default function ReceiverClosing() {
           <Heart className="w-8 h-8 text-primary" />
         </div>
 
-        <div className="flex flex-col items-center gap-2">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-            Conclusion - Ici et maintenant
-          </h1>
-          <span className="text-sm text-muted-foreground">2/2</span>
-        </div>
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
+          Conclusion - Ici et maintenant 2/2
+        </h1>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
-          <h2 className="text-xl md:text-2xl font-medium text-foreground">
-            {session.receiverName} comment te sens-tu alors qu'on arrive à la fin?
+          <h2 className="text-xl md:text-2xl font-medium text-foreground text-center">
+            {session.senderName}, comment te sens-tu maintenant?
           </h2>
+
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
@@ -43,20 +41,20 @@ export default function ReceiverClosing() {
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Nomme ce qui est présent pour toi maintenant, pas seulement ce qui s'est passé pendant l'échange
+                Nomme ce qui est présent pour toi en ce moment, au-delà de ce qui s'est passé pendant l'échange
               </span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Accueille et exprime tes émotions sans jugement
+                Accueille tes émotions sans les juger
               </span>
             </li>
           </ul>
 
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-            <p className="text-sm text-foreground">
-              Cette étape te permet de te déposer après l'échange et de reconnaître l'effort accompli. C'est le moment d'accueillir ce qui reste de cette conversation dans l'ici et maintenant, sans jugement. Prends le temps d'apprécier l'engagement qu'il t'a fallu pour être authentique et vulnérable avec {session.senderName}.
+            <p className="text-base text-foreground">
+              Cette étape te permet de te déposer après l'échange et de reconnaître le chemin parcouru. Accueille simplement ce qui reste en toi maintenant, sans jugement. Prends le temps d'apprécier l'engagement et la vulnérabilité que tu as offerts à {session.receiverName}.
             </p>
           </div>
 
@@ -68,7 +66,7 @@ export default function ReceiverClosing() {
               disabled={isTransitioning}
               data-testid="button-next"
             >
-              Suivant
+              Étape suivante
             </Button>
             {isTransitioning && (
               <Progress value={progress} className="w-full md:w-48" />
