@@ -351,9 +351,10 @@ export default function Feedback() {
             <p className="text-base md:text-lg text-foreground">
               Quelle est la probabilité que vous utilisiez Duo-Connecte régulièrement?
             </p>
-            <ScaleRating10
+            <ScaleRating
               value={feedbackData.continuedUseLikelihood}
               onChange={(val) => updateFeedback('continuedUseLikelihood', val)}
+              labels={['Très improbable', 'Improbable', 'Neutre', 'Probable', 'Très probable']}
             />
           </div>
         );
