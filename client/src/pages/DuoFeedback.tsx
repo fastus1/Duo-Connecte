@@ -419,7 +419,10 @@ export default function Feedback() {
 
         <div className="space-y-6">
           {/* Rating avec demi-étoiles */}
-          <div className={`space-y-3 flex flex-col items-center p-4 rounded-lg ${!rating ? 'ring-2 ring-primary/50 bg-primary/5' : ''}`}>
+          <div className={`space-y-4 flex flex-col items-center p-6 rounded-xl transition-all ${!rating ? 'ring-2 ring-primary bg-primary/5' : 'bg-card border'}`}>
+            <p className="text-base font-medium text-foreground">
+              {!rating ? 'Cliquez sur les étoiles pour noter votre expérience' : `Votre note: ${rating}/5`}
+            </p>
             <div 
               className="flex gap-2"
               onMouseLeave={() => setHoverRating(null)}
@@ -430,8 +433,8 @@ export default function Feedback() {
                 const displayRating = hoverRating ?? rating ?? 0;
                 
                 return (
-                  <div key={starIndex} className="relative w-10 h-10">
-                    <Star className="w-10 h-10 text-muted-foreground stroke-muted-foreground" />
+                  <div key={starIndex} className="relative w-12 h-12">
+                    <Star className="w-12 h-12 text-muted-foreground stroke-muted-foreground" />
                     <div 
                       className="absolute inset-0 overflow-hidden transition-all duration-150"
                       style={{
@@ -442,19 +445,19 @@ export default function Feedback() {
                           : 'inset(0 100% 0 0)'
                       }}
                     >
-                      <Star className="w-10 h-10 fill-yellow-400 text-yellow-400" />
+                      <Star className="w-12 h-12 fill-yellow-400 text-yellow-400" />
                     </div>
                     <button
                       onClick={() => setRating(halfStarValue)}
                       onMouseEnter={() => setHoverRating(halfStarValue)}
-                      className="absolute left-0 top-0 w-5 h-10 cursor-pointer"
+                      className="absolute left-0 top-0 w-6 h-12 cursor-pointer"
                       data-testid={`rating-${halfStarValue}`}
                       aria-label={`Note ${halfStarValue}`}
                     />
                     <button
                       onClick={() => setRating(fullStarValue)}
                       onMouseEnter={() => setHoverRating(fullStarValue)}
-                      className="absolute right-0 top-0 w-5 h-10 cursor-pointer"
+                      className="absolute right-0 top-0 w-6 h-12 cursor-pointer"
                       data-testid={`rating-${fullStarValue}`}
                       aria-label={`Note ${fullStarValue}`}
                     />
@@ -462,32 +465,35 @@ export default function Feedback() {
                 );
               })}
             </div>
-            {!rating && (
-              <p className="text-sm text-primary font-medium">
-                Donnez votre feedback maintenant
-              </p>
+            
+            {/* Bouton principal visible après la sélection d'une note */}
+            {rating && (
+              <div className="pt-2 w-full flex flex-col items-center gap-3">
+                <p className="text-sm text-muted-foreground">
+                  Aidez-nous à nous améliorer en répondant à quelques questions
+                </p>
+                <Button
+                  size="lg"
+                  onClick={handleOpenModal}
+                  className="px-8 w-full sm:w-auto animate-pulse hover:animate-none"
+                  data-testid="button-open-feedback"
+                >
+                  Continuer avec le feedback détaillé
+                </Button>
+              </div>
             )}
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 pt-2 justify-center">
           <Button
             size="lg"
-            variant="outline"
+            variant="ghost"
             onClick={handleSkip}
+            className="text-muted-foreground"
             data-testid="button-skip"
           >
-            Passer
-          </Button>
-
-          <Button
-            size="lg"
-            onClick={handleOpenModal}
-            disabled={!rating}
-            className="px-8"
-            data-testid="button-open-feedback"
-          >
-            Envoyer le feedback
+            Passer cette étape
           </Button>
         </div>
       </div>
