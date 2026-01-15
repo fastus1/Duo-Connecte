@@ -1,0 +1,30 @@
+# Page **Aide & Contact** (SupportPage.tsx)
+
+## Questions fréquentes
+
+Consultez les réponses aux questions les plus courantes.
+
+**À quoi sert Duo-Connecte?**
+Duo-Connecte est un guide qui vous accompagne pas à pas dans une conversation difficile ou délicate avec votre partenaire. L'application structure l'échange pour vous aider à vous exprimer et à vous écouter mutuellement.
+
+**Puis-je reprendre un parcours plus tard?**
+Les parcours sont conçus pour être complétés en une seule session. Si vous devez interrompre, vous devrez recommencer depuis le début. Prévoyez environ 45 à 60 minutes dans un endroit calme.
+
+**L'application ne fonctionne pas correctement, que faire?**
+Essayez d'abord de rafraîchir la page. Si le problème persiste, assurez-vous d'utiliser un navigateur récent (Chrome, Firefox, Safari, Edge). Si ça ne fonctionne toujours pas, contactez-nous via le formulaire ci-dessous.
+
+**Comment accéder à l'application?**
+L'accès se fait automatiquement si vous êtes connecté à la plateforme Avancer Simplement et que vous avez acheté l'application. Aucune inscription supplémentaire n'est requise.
+
+**Mes données sont-elles collectées?**
+Non. Aucune donnée personnelle n'est collectée par l'application. Vos conversations ne sont pas enregistrées sur nos serveurs. L'authentification fonctionne uniquement par synchronisation avec votre compte Avancer Simplement.
+
+**Est-ce que Duo-Connecte remplace une thérapie de couple?**
+Non. Duo-Connecte est un outil d'accompagnement pour des conversations ponctuelles. Il ne remplace pas un suivi avec un thérapeute, surtout en cas de crise ou de conflits récurrents.
+
+**Puis-je utiliser l'application seul?**
+Non, Duo-Connecte est conçu pour être utilisé à deux, en même temps. Les deux partenaires doivent être présents et disponibles pour que le parcours fonctionne.
+
+Si vous souhaitez travailler la gestion de vos émotions en solo, découvrez Solo-Connecte, notre application d'accompagnement individuel.
+
+[lien : Essayer Solo-Connecte]

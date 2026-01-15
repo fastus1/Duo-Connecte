@@ -24,24 +24,32 @@ type SupportFormValues = z.infer<typeof supportFormSchema>;
 
 const faqItems = [
   {
-    question: "Comment fonctionne l'application ?",
-    answer: "L'application vous guide à travers un parcours structuré de communication authentique à deux. Suivez simplement les étapes affichées à l'écran pour dialoguer et vous comprendre."
+    question: "À quoi sert Duo-Connecte?",
+    answer: "Duo-Connecte est un guide qui vous accompagne pas à pas dans une conversation difficile ou délicate avec votre partenaire. L'application structure l'échange pour vous aider à vous exprimer et à vous écouter mutuellement."
   },
   {
-    question: "Puis-je reprendre un parcours plus tard ?",
-    answer: "Les parcours sont conçus pour être complétés en une seule session. Si vous devez interrompre, vous devrez recommencer depuis le début. Prévoyez environ 15-30 minutes pour compléter un parcours."
+    question: "Puis-je reprendre un parcours plus tard?",
+    answer: "Les parcours sont conçus pour être complétés en une seule session. Si vous devez interrompre, vous devrez recommencer depuis le début. Prévoyez environ 45 à 60 minutes dans un endroit calme."
   },
   {
-    question: "Comment puis-je changer mon NIP ?",
-    answer: "Pour des raisons de sécurité, le changement de NIP n'est pas disponible en libre-service. Veuillez nous contacter via le formulaire ci-dessous pour demander une réinitialisation."
+    question: "L'application ne fonctionne pas correctement, que faire?",
+    answer: "Essayez d'abord de rafraîchir la page. Si le problème persiste, assurez-vous d'utiliser un navigateur récent (Chrome, Firefox, Safari, Edge). Si ça ne fonctionne toujours pas, contactez-nous via le formulaire ci-dessous."
   },
   {
-    question: "L'application ne fonctionne pas correctement, que faire ?",
-    answer: "Essayez d'abord de rafraîchir la page. Si le problème persiste, assurez-vous d'utiliser un navigateur récent (Chrome, Firefox, Safari, Edge). Si le problème continue, contactez-nous via le formulaire ci-dessous."
+    question: "Comment accéder à l'application?",
+    answer: "L'accès se fait automatiquement si vous êtes connecté à la plateforme Avancer Simplement et que vous avez acheté l'application. Aucune inscription supplémentaire n'est requise."
   },
   {
-    question: "Mes données sont-elles sécurisées ?",
-    answer: "Oui, vos données sont protégées. L'application utilise un système d'authentification sécurisé et vos informations personnelles ne sont jamais partagées avec des tiers. Les conversations ne sont pas enregistrées sur nos serveurs."
+    question: "Mes données sont-elles collectées?",
+    answer: "Non. Aucune donnée personnelle n'est collectée par l'application. Vos conversations ne sont pas enregistrées sur nos serveurs. L'authentification fonctionne uniquement par synchronisation avec votre compte Avancer Simplement."
+  },
+  {
+    question: "Est-ce que Duo-Connecte remplace une thérapie de couple?",
+    answer: "Non. Duo-Connecte est un outil d'accompagnement pour des conversations ponctuelles. Il ne remplace pas un suivi avec un thérapeute, surtout en cas de crise ou de conflits récurrents."
+  },
+  {
+    question: "Puis-je utiliser l'application seul·e?",
+    answer: "Non, Duo-Connecte est conçu pour être utilisé à deux, en même temps. Les deux partenaires doivent être présents et disponibles pour que le parcours fonctionne."
   },
 ];
 
@@ -138,6 +146,23 @@ export default function SupportPage() {
               {faqItems.map((item, index) => (
                 <FAQItem key={index} question={item.question} answer={item.answer} />
               ))}
+            </div>
+            
+            <div className="mt-6 p-4 rounded-lg border border-primary/20 bg-primary/5">
+              <p className="text-sm text-foreground leading-relaxed">
+                Si vous souhaitez travailler la gestion de vos émotions en solo, découvrez <strong>Solo-Connecte</strong>, notre application d'accompagnement individuel.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                asChild
+                data-testid="button-solo-connecte"
+              >
+                <a href="https://avancersimplement.com/solo-connecte" target="_blank" rel="noopener noreferrer">
+                  Essayer Solo-Connecte
+                </a>
+              </Button>
             </div>
           </CardContent>
         </Card>
