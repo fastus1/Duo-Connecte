@@ -229,6 +229,16 @@ export class MemStorage implements IStorage {
       rating: insertFeedback.rating,
       helpfulAspect: insertFeedback.helpfulAspect ?? null,
       improvementSuggestion: insertFeedback.improvementSuggestion ?? null,
+      purchaseEase: insertFeedback.purchaseEase ?? null,
+      experienceRating: insertFeedback.experienceRating ?? null,
+      instructionsClarity: insertFeedback.instructionsClarity ?? null,
+      perceivedUtility: insertFeedback.perceivedUtility ?? null,
+      difficulties: insertFeedback.difficulties ?? null,
+      confusingElements: insertFeedback.confusingElements ?? null,
+      technicalIssues: insertFeedback.technicalIssues ?? null,
+      missingFeatures: insertFeedback.missingFeatures ?? null,
+      durationFeedback: insertFeedback.durationFeedback ?? null,
+      continuedUseLikelihood: insertFeedback.continuedUseLikelihood ?? null,
       archived: false,
       createdAt: new Date(),
     };
@@ -443,6 +453,16 @@ export class DbStorage implements IStorage {
         rating: insertFeedback.rating,
         helpfulAspect: insertFeedback.helpfulAspect ?? null,
         improvementSuggestion: insertFeedback.improvementSuggestion ?? null,
+        purchaseEase: insertFeedback.purchaseEase ?? null,
+        experienceRating: insertFeedback.experienceRating ?? null,
+        instructionsClarity: insertFeedback.instructionsClarity ?? null,
+        perceivedUtility: insertFeedback.perceivedUtility ?? null,
+        difficulties: insertFeedback.difficulties ?? null,
+        confusingElements: insertFeedback.confusingElements ?? null,
+        technicalIssues: insertFeedback.technicalIssues ?? null,
+        missingFeatures: insertFeedback.missingFeatures ?? null,
+        durationFeedback: insertFeedback.durationFeedback ?? null,
+        continuedUseLikelihood: insertFeedback.continuedUseLikelihood ?? null,
       })
       .returning();
     return feedback;
