@@ -233,13 +233,42 @@ export default function Feedback() {
             <p className="text-base md:text-lg text-foreground">
               Qu'est-ce qui a été le plus utile pour vous?
             </p>
-            <Textarea
-              placeholder="Par exemple la structure étape par étape, les explications détaillées"
+            <RadioGroup
               value={feedbackData.helpfulAspect || ''}
-              onChange={(e) => updateFeedback('helpfulAspect', e.target.value || null)}
-              className="min-h-24"
-              data-testid="input-helpful"
-            />
+              onValueChange={(val) => updateFeedback('helpfulAspect', val)}
+              className="flex flex-col gap-3"
+            >
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="structure" id="helpful-structure" className="mt-1" />
+                <Label htmlFor="helpful-structure" className="text-base leading-relaxed">
+                  La structure étape par étape du parcours
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="cadre" id="helpful-cadre" className="mt-1" />
+                <Label htmlFor="helpful-cadre" className="text-base leading-relaxed">
+                  Le cadre sécurisant pour aborder un sujet difficile
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="theorie" id="helpful-theorie" className="mt-1" />
+                <Label htmlFor="helpful-theorie" className="text-base leading-relaxed">
+                  Les explications théoriques (popups "Plus d'infos")
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="roles" id="helpful-roles" className="mt-1" />
+                <Label htmlFor="helpful-roles" className="text-base leading-relaxed">
+                  La séparation claire des rôles (émetteur/récepteur)
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="intention" id="helpful-intention" className="mt-1" />
+                <Label htmlFor="helpful-intention" className="text-base leading-relaxed">
+                  Le rappel de l'intention ("être bien ensemble")
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
         );
       case 5:
