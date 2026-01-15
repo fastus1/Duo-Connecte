@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { PageLayout } from '@/components/PageLayout';
 import { usePageTransition } from '@/hooks/usePageTransition';
@@ -21,7 +20,7 @@ import { Label } from '@/components/ui/label';
 interface FeedbackData {
   rating: number;
   purchaseEase: number | null;
-  experienceDescription: string | null;
+  experienceRating: number | null;
   instructionsClarity: number | null;
   perceivedUtility: number | null;
   helpfulAspect: string | null;
@@ -45,7 +44,7 @@ export default function Feedback() {
   // Feedback data state
   const [feedbackData, setFeedbackData] = useState<Omit<FeedbackData, 'rating'>>({
     purchaseEase: null,
-    experienceDescription: null,
+    experienceRating: null,
     instructionsClarity: null,
     perceivedUtility: null,
     helpfulAspect: null,
@@ -193,13 +192,12 @@ export default function Feedback() {
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              Rapidement, comment décririez-vous votre expérience?
+              Comment décririez-vous votre expérience?
             </p>
-            <Input
-              placeholder='Par exemple: "Transformatrice", "Éclairante", "Utile"'
-              value={feedbackData.experienceDescription || ''}
-              onChange={(e) => updateFeedback('experienceDescription', e.target.value || null)}
-              data-testid="input-experience"
+            <ScaleRating
+              value={feedbackData.experienceRating}
+              onChange={(val) => updateFeedback('experienceRating', val)}
+              labels={['Désagréable', '', 'Neutre', '', 'Agréable']}
             />
           </div>
         );
