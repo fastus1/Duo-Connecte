@@ -49,11 +49,22 @@ const faqItems = [
   },
   {
     question: "Puis-je utiliser l'application seul·e?",
-    answer: "Non, Duo-Connecte est conçu pour être utilisé à deux, en même temps. Les deux partenaires doivent être présents et disponibles pour que le parcours fonctionne."
+    answer: "Non, Duo-Connecte est conçu pour être utilisé à deux, en même temps. Les deux partenaires doivent être présents et disponibles pour que le parcours fonctionne.\n\nSi vous souhaitez travailler la gestion de vos émotions en solo, découvrez Solo-Connecte, notre application d'accompagnement individuel.",
+    hasLink: true,
+    linkText: "Essayer Solo-Connecte",
+    linkUrl: "https://avancersimplement.com/solo-connecte"
   },
 ];
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
+interface FAQItemProps {
+  question: string;
+  answer: string;
+  hasLink?: boolean;
+  linkText?: string;
+  linkUrl?: string;
+}
+
+function FAQItem({ question, answer, hasLink, linkText, linkUrl }: FAQItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   
   return (
@@ -74,7 +85,21 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         "overflow-hidden transition-all duration-200",
         isOpen ? "max-h-96 pb-4" : "max-h-0"
       )}>
-        <p className="text-muted-foreground px-2">{answer}</p>
+        <p className="text-muted-foreground px-2 whitespace-pre-line">{answer}</p>
+        {hasLink && linkUrl && linkText && (
+          <div className="px-2 mt-3">
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              data-testid="button-solo-connecte"
+            >
+              <a href={linkUrl} target="_blank" rel="noopener noreferrer">
+                {linkText}
+              </a>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -144,25 +169,15 @@ export default function SupportPage() {
           <CardContent>
             <div className="divide-y">
               {faqItems.map((item, index) => (
-                <FAQItem key={index} question={item.question} answer={item.answer} />
+                <FAQItem 
+                  key={index} 
+                  question={item.question} 
+                  answer={item.answer}
+                  hasLink={item.hasLink}
+                  linkText={item.linkText}
+                  linkUrl={item.linkUrl}
+                />
               ))}
-            </div>
-            
-            <div className="mt-6 p-4 rounded-lg border border-primary/20 bg-primary/5">
-              <p className="text-sm text-foreground leading-relaxed">
-                Si vous souhaitez travailler la gestion de vos émotions en solo, découvrez <strong>Solo-Connecte</strong>, notre application d'accompagnement individuel.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-3"
-                asChild
-                data-testid="button-solo-connecte"
-              >
-                <a href="https://avancersimplement.com/solo-connecte" target="_blank" rel="noopener noreferrer">
-                  Essayer Solo-Connecte
-                </a>
-              </Button>
             </div>
           </CardContent>
         </Card>
