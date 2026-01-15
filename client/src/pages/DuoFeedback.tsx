@@ -411,7 +411,7 @@ export default function Feedback() {
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              Quelle est la probabilité que vous utilisiez Duo-Connecte régulièrement?
+              Quelle est la probabilité que vous utilisiez Duo-Connecte de nouveau?
             </p>
             <ScaleRating
               value={feedbackData.continuedUseLikelihood}
