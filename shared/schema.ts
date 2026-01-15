@@ -170,9 +170,20 @@ export type SessionState = z.infer<typeof sessionStateSchema>;
 // Feedback table for anonymous user feedback
 export const feedbacks = pgTable("feedbacks", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  rating: integer("rating").notNull(), // 1-5
-  helpfulAspect: text("helpful_aspect"),
-  improvementSuggestion: text("improvement_suggestion"),
+  rating: integer("rating").notNull(), // 0.5-5 (demi-étoiles)
+  // Popup questions
+  purchaseEase: integer("purchase_ease"), // 1-5
+  experienceDescription: text("experience_description"), // texte court
+  instructionsClarity: integer("instructions_clarity"), // 1-5
+  perceivedUtility: integer("perceived_utility"), // 1-5
+  helpfulAspect: text("helpful_aspect"), // texte libre
+  improvementSuggestion: text("improvement_suggestion"), // texte libre
+  difficulties: text("difficulties"), // texte libre
+  confusingElements: text("confusing_elements"), // texte libre
+  technicalIssues: text("technical_issues"), // texte libre
+  missingFeatures: text("missing_features"), // texte libre
+  durationFeedback: text("duration_feedback"), // "too_short" | "adequate" | "too_long"
+  continuedUseLikelihood: integer("continued_use_likelihood"), // 1-10
   archived: boolean("archived").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
