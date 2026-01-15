@@ -77,7 +77,7 @@ export default function Completion() {
                   className="text-xs md:text-sm px-4 w-full mt-auto"
                   data-testid="button-therapy-individual"
                 >
-                  <a href="https://www.gorendezvous.com/en/yannickdelormetherapeute" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.gorendezvous.com/fr/yannickdelormetherapeute" target="_blank" rel="noopener noreferrer">
                     Prendre rendez-vous
                   </a>
                 </Button>
