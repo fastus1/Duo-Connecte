@@ -1,21 +1,62 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { PageLayout } from '@/components/PageLayout';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { Star } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import type { InsertFeedback } from '@shared/schema';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+
+interface FeedbackData {
+  rating: number;
+  purchaseEase: number | null;
+  experienceDescription: string | null;
+  instructionsClarity: number | null;
+  perceivedUtility: number | null;
+  helpfulAspect: string | null;
+  improvementSuggestion: string | null;
+  difficulties: string | null;
+  confusingElements: string | null;
+  technicalIssues: string | null;
+  missingFeatures: string | null;
+  durationFeedback: string | null;
+  continuedUseLikelihood: number | null;
+}
 
 export default function Feedback() {
   const { transitionToStep } = usePageTransition();
   const { toast } = useToast();
   const [rating, setRating] = useState<number | null>(null);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
-  const [helpfulAspect, setHelpfulAspect] = useState('');
-  const [improvementSuggestion, setImprovementSuggestion] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  // Feedback data state
+  const [feedbackData, setFeedbackData] = useState<Omit<FeedbackData, 'rating'>>({
+    purchaseEase: null,
+    experienceDescription: null,
+    instructionsClarity: null,
+    perceivedUtility: null,
+    helpfulAspect: null,
+    improvementSuggestion: null,
+    difficulties: null,
+    confusingElements: null,
+    technicalIssues: null,
+    missingFeatures: null,
+    durationFeedback: null,
+    continuedUseLikelihood: null,
+  });
 
   const submitFeedbackMutation = useMutation({
     mutationFn: async (feedback: InsertFeedback) => {
@@ -26,6 +67,7 @@ export default function Feedback() {
         title: 'Merci!',
         description: 'Votre feedback a été enregistré avec succès.',
       });
+      setShowModal(false);
       transitionToStep(24);
     },
     onError: () => {
@@ -37,12 +79,18 @@ export default function Feedback() {
     },
   });
 
+  const handleOpenModal = () => {
+    if (rating) {
+      setShowModal(true);
+      setCurrentPage(0);
+    }
+  };
+
   const handleSubmit = () => {
     if (rating) {
       submitFeedbackMutation.mutate({
-        rating,
-        helpfulAspect: helpfulAspect.trim() || null,
-        improvementSuggestion: improvementSuggestion.trim() || null,
+        rating: Math.round(rating * 10), // Store as integer (0.5 -> 5, 5 -> 50)
+        ...feedbackData,
       });
     }
   };
@@ -51,10 +99,291 @@ export default function Feedback() {
     transitionToStep(24);
   };
 
+  const totalPages = 12;
+
+  const updateFeedback = <K extends keyof Omit<FeedbackData, 'rating'>>(
+    key: K,
+    value: Omit<FeedbackData, 'rating'>[K]
+  ) => {
+    setFeedbackData(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Scale component for 1-5 ratings
+  const ScaleRating = ({
+    value,
+    onChange,
+    labels,
+  }: {
+    value: number | null;
+    onChange: (val: number) => void;
+    labels: string[];
+  }) => (
+    <div className="flex flex-col gap-2">
+      <div className="flex justify-between gap-1">
+        {[1, 2, 3, 4, 5].map((num) => (
+          <button
+            key={num}
+            onClick={() => onChange(num)}
+            className={`flex-1 py-3 px-2 rounded-lg border-2 transition-all text-sm font-medium ${
+              value === num
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-border bg-card hover-elevate'
+            }`}
+            data-testid={`scale-${num}`}
+          >
+            {num}
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-between text-xs text-muted-foreground px-1">
+        <span>{labels[0]}</span>
+        <span>{labels[4]}</span>
+      </div>
+    </div>
+  );
+
+  // Scale component for 1-10 ratings
+  const ScaleRating10 = ({
+    value,
+    onChange,
+  }: {
+    value: number | null;
+    onChange: (val: number) => void;
+  }) => (
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-5 gap-1">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+          <button
+            key={num}
+            onClick={() => onChange(num)}
+            className={`py-3 px-2 rounded-lg border-2 transition-all text-sm font-medium ${
+              value === num
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-border bg-card hover-elevate'
+            }`}
+            data-testid={`scale10-${num}`}
+          >
+            {num}
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-between text-xs text-muted-foreground px-1">
+        <span>Très improbable</span>
+        <span>Très probable</span>
+      </div>
+    </div>
+  );
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 0:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Comment évaluez-vous la facilité du processus d'achat de l'application?
+            </p>
+            <ScaleRating
+              value={feedbackData.purchaseEase}
+              onChange={(val) => updateFeedback('purchaseEase', val)}
+              labels={['Très difficile', 'Difficile', 'Neutre', 'Facile', 'Très facile']}
+            />
+          </div>
+        );
+      case 1:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Rapidement, comment décririez-vous votre expérience?
+            </p>
+            <Input
+              placeholder='Par exemple: "Transformatrice", "Éclairante", "Utile"'
+              value={feedbackData.experienceDescription || ''}
+              onChange={(e) => updateFeedback('experienceDescription', e.target.value || null)}
+              data-testid="input-experience"
+            />
+          </div>
+        );
+      case 2:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Les instructions et explications étaient-elles claires?
+            </p>
+            <ScaleRating
+              value={feedbackData.instructionsClarity}
+              onChange={(val) => updateFeedback('instructionsClarity', val)}
+              labels={['Très confuses', 'Confuses', 'Adéquates', 'Claires', 'Très claires']}
+            />
+          </div>
+        );
+      case 3:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              L'application vous a-t-elle aidé à améliorer votre communication de couple?
+            </p>
+            <ScaleRating
+              value={feedbackData.perceivedUtility}
+              onChange={(val) => updateFeedback('perceivedUtility', val)}
+              labels={['Pas du tout', 'Un peu', 'Moyennement', 'Beaucoup', 'Énormément']}
+            />
+          </div>
+        );
+      case 4:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Qu'est-ce qui a été le plus utile pour vous?
+            </p>
+            <Textarea
+              placeholder="Par exemple la structure étape par étape, les explications détaillées"
+              value={feedbackData.helpfulAspect || ''}
+              onChange={(e) => updateFeedback('helpfulAspect', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-helpful"
+            />
+          </div>
+        );
+      case 5:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Qu'est-ce qui pourrait être amélioré?
+            </p>
+            <Textarea
+              placeholder="Vos suggestions pour rendre cet outil encore plus efficace"
+              value={feedbackData.improvementSuggestion || ''}
+              onChange={(e) => updateFeedback('improvementSuggestion', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-improvement"
+            />
+          </div>
+        );
+      case 6:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Avez-vous rencontré des difficultés avec certaines fonctionnalités? Si oui, lesquelles?
+            </p>
+            <Textarea
+              placeholder="Décrivez les obstacles ou blocages rencontrés"
+              value={feedbackData.difficulties || ''}
+              onChange={(e) => updateFeedback('difficulties', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-difficulties"
+            />
+          </div>
+        );
+      case 7:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Y a-t-il des éléments de l'interface qui vous ont semblé confus ou difficiles à utiliser?
+            </p>
+            <Textarea
+              placeholder="Par exemple: boutons, textes, navigation, disposition"
+              value={feedbackData.confusingElements || ''}
+              onChange={(e) => updateFeedback('confusingElements', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-confusing"
+            />
+          </div>
+        );
+      case 8:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Avez-vous rencontré des bugs ou des problèmes techniques?
+            </p>
+            <Textarea
+              placeholder="Décrivez le problème (ex: crash, gel, affichage incorrect, etc.)"
+              value={feedbackData.technicalIssues || ''}
+              onChange={(e) => updateFeedback('technicalIssues', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-technical"
+            />
+          </div>
+        );
+      case 9:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Quelles fonctionnalités aimeriez-vous voir ajoutées?
+            </p>
+            <Textarea
+              placeholder="Par exemple: nouvelles étapes, outils supplémentaires, ressources additionnelles"
+              value={feedbackData.missingFeatures || ''}
+              onChange={(e) => updateFeedback('missingFeatures', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-features"
+            />
+          </div>
+        );
+      case 10:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              La durée du parcours était-elle appropriée?
+            </p>
+            <RadioGroup
+              value={feedbackData.durationFeedback || ''}
+              onValueChange={(val) => updateFeedback('durationFeedback', val)}
+              className="flex flex-col gap-3"
+            >
+              <div className="flex items-center space-x-3">
+                <RadioGroupItem value="too_short" id="too_short" />
+                <Label htmlFor="too_short" className="text-base">Trop courte</Label>
+              </div>
+              <div className="flex items-center space-x-3">
+                <RadioGroupItem value="adequate" id="adequate" />
+                <Label htmlFor="adequate" className="text-base">Adéquate</Label>
+              </div>
+              <div className="flex items-center space-x-3">
+                <RadioGroupItem value="too_long" id="too_long" />
+                <Label htmlFor="too_long" className="text-base">Trop longue</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        );
+      case 11:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Quelle est la probabilité que vous utilisiez Duo-Connecte régulièrement?
+            </p>
+            <ScaleRating10
+              value={feedbackData.continuedUseLikelihood}
+              onChange={(val) => updateFeedback('continuedUseLikelihood', val)}
+            />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const getPageTitle = () => {
+    const titles = [
+      "Processus d'achat",
+      "Votre expérience",
+      "Clarté des Instructions",
+      "Utilité Perçue",
+      "Ce qui a été le plus utile",
+      "Ce qui pourrait être amélioré",
+      "Difficultés Rencontrées",
+      "Éléments Confus",
+      "Bugs ou Problèmes Techniques",
+      "Fonctionnalités Manquantes",
+      "Durée du Parcours",
+      "Probabilité d'Utilisation Continue",
+    ];
+    return titles[currentPage];
+  };
+
   return (
     <PageLayout>
       <div className="space-y-6 text-center">
-        {/* Logo et texte Avancer Simplement - même design que page 0 */}
+        {/* Logo et texte Avancer Simplement */}
         <div className="space-y-1">
           <div className="inline-flex items-center justify-center w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
             <img 
@@ -78,19 +407,19 @@ export default function Feedback() {
           Vous remercie d'avoir choisi
         </div>
 
-        {/* Titre Duo-Connecte - même style que page 0 */}
+        {/* Titre Duo-Connecte */}
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground pt-2 md:pt-6 tracking-tight text-center" style={{ fontFamily: 'Figtree, sans-serif', textShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
           Duo-Connecte
         </h1>
 
         {/* Texte explicatif */}
         <p className="text-base text-foreground leading-relaxed text-center">
-          Nous avons besoin de votre feedback pour nous aider à améliorer cet outil. Tout est anonyme. Merci
+          Votre feedback nous aide à améliorer cet outil. Tout est anonyme. Merci de prendre un instant.
         </p>
 
         <div className="space-y-6">
-          {/* Rating avec demi-étoiles - CENTRÉ */}
-          <div className="space-y-3 flex flex-col items-center">
+          {/* Rating avec demi-étoiles */}
+          <div className={`space-y-3 flex flex-col items-center p-4 rounded-lg ${!rating ? 'ring-2 ring-primary/50 bg-primary/5' : ''}`}>
             <div 
               className="flex gap-2"
               onMouseLeave={() => setHoverRating(null)}
@@ -102,10 +431,7 @@ export default function Feedback() {
                 
                 return (
                   <div key={starIndex} className="relative w-10 h-10">
-                    {/* Étoile de fond (grise) */}
                     <Star className="w-10 h-10 text-muted-foreground stroke-muted-foreground" />
-                    
-                    {/* Étoile jaune avec clip-path pour l'effet demi-étoile */}
                     <div 
                       className="absolute inset-0 overflow-hidden transition-all duration-150"
                       style={{
@@ -118,8 +444,6 @@ export default function Feedback() {
                     >
                       <Star className="w-10 h-10 fill-yellow-400 text-yellow-400" />
                     </div>
-                    
-                    {/* Zone cliquable gauche (demi-étoile) */}
                     <button
                       onClick={() => setRating(halfStarValue)}
                       onMouseEnter={() => setHoverRating(halfStarValue)}
@@ -127,8 +451,6 @@ export default function Feedback() {
                       data-testid={`rating-${halfStarValue}`}
                       aria-label={`Note ${halfStarValue}`}
                     />
-                    
-                    {/* Zone cliquable droite (étoile complète) */}
                     <button
                       onClick={() => setRating(fullStarValue)}
                       onMouseEnter={() => setHoverRating(fullStarValue)}
@@ -140,43 +462,15 @@ export default function Feedback() {
                 );
               })}
             </div>
-          </div>
-
-          {/* Espace supplémentaire après les étoiles */}
-          <div className="pt-4"></div>
-
-          {/* Helpful aspect - ALIGNÉ À GAUCHE */}
-          <div className="space-y-2 text-left">
-            <label htmlFor="helpful" className="text-base font-medium text-foreground">
-              Qu'est-ce qui a été le plus utile? (optionnel)
-            </label>
-            <Textarea
-              id="helpful"
-              placeholder="Par exemple: la structure étape par étape, les explications détaillées, le temps de pause..."
-              value={helpfulAspect}
-              onChange={(e) => setHelpfulAspect(e.target.value)}
-              className="min-h-24"
-              data-testid="input-helpful"
-            />
-          </div>
-
-          {/* Improvement suggestion - ALIGNÉ À GAUCHE */}
-          <div className="space-y-2 text-left">
-            <label htmlFor="improvement" className="text-base font-medium text-foreground">
-              Qu'est-ce qui pourrait être amélioré? (optionnel)
-            </label>
-            <Textarea
-              id="improvement"
-              placeholder="Vos suggestions pour rendre cet outil encore plus efficace..."
-              value={improvementSuggestion}
-              onChange={(e) => setImprovementSuggestion(e.target.value)}
-              className="min-h-24"
-              data-testid="input-improvement"
-            />
+            {!rating && (
+              <p className="text-sm text-primary font-medium">
+                Donnez votre feedback maintenant
+              </p>
+            )}
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 justify-center">
           <Button
             size="lg"
             variant="outline"
@@ -188,15 +482,85 @@ export default function Feedback() {
 
           <Button
             size="lg"
-            onClick={handleSubmit}
-            disabled={!rating || submitFeedbackMutation.isPending}
+            onClick={handleOpenModal}
+            disabled={!rating}
             className="px-8"
-            data-testid="button-submit-feedback"
+            data-testid="button-open-feedback"
           >
-            {submitFeedbackMutation.isPending ? 'Envoi...' : 'Envoyer le feedback'}
+            Envoyer le feedback
           </Button>
         </div>
       </div>
+
+      {/* Modal multipage */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-xl font-semibold">
+                {getPageTitle()}
+              </DialogTitle>
+              <button
+                onClick={() => setShowModal(false)}
+                className="rounded-full p-1 hover-elevate"
+                data-testid="button-close-modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {/* Page indicators */}
+            <div className="flex justify-center gap-1.5 pt-2">
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentPage(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    idx === currentPage
+                      ? 'bg-primary w-4'
+                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                  }`}
+                  data-testid={`page-indicator-${idx}`}
+                />
+              ))}
+            </div>
+          </DialogHeader>
+
+          <div className="py-6">
+            {renderPage()}
+          </div>
+
+          {/* Navigation buttons */}
+          <div className="flex justify-between items-center pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+              disabled={currentPage === 0}
+              data-testid="button-prev"
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Précédent
+            </Button>
+
+            {currentPage === totalPages - 1 ? (
+              <Button
+                onClick={handleSubmit}
+                disabled={submitFeedbackMutation.isPending}
+                data-testid="button-submit-feedback"
+              >
+                {submitFeedbackMutation.isPending ? 'Envoi...' : 'Envoyer le feedback'}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                data-testid="button-next"
+              >
+                Suivant
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }

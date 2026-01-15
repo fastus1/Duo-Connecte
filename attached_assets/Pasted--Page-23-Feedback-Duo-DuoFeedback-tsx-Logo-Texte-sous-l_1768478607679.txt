@@ -1,0 +1,151 @@
+## Page 23 - Feedback Duo (DuoFeedback.tsx)
+
+### Logo
+
+- Texte sous logo: **AVANCER SIMPLEMENT**
+- Texte de présentation: **Vous remercie d'avoir choisi**
+
+### Titre principal
+
+**Duo-Connecte**
+
+### Description
+
+Votre feedback nous aide à améliorer cet outil. Tout est anonyme. Merci de prendre un instant.
+
+### Étoiles
+
+[Système de notation avec demi-étoiles de 0.5 à 5] [mettre en évidence le besoin de remplir]
+
+Donnez votre feedback maintenant
+
+## Popup multipage (nouveau modal)
+
+***Popup page 1: Processus d’achat***
+
+**Question:** Comment évaluez-vous la facilité du processus d’achat de l’application?
+
+**Type:** Échelle 1-5
+
+**Libellés:**
+
+- 1: Très difficile
+- 2: Difficile
+- 3: Neutre
+- 4: Facile
+- 5: Très facile
+
+***Popup page 2: Votre expérience***
+
+**Question:** Rapidement, comment décririez-vous votre expérience?
+
+**Type:** Texte court (une ligne)
+
+**Placeholder:** Par exemple: "Transformatrice", "Éclairante", "Utile"
+
+***Popup page 3:*** Clarté des Instructions
+
+**Question:** Les instructions et explications étaient-elles claires?
+
+**Type:** Échelle 1-5
+
+**Libellés:**
+
+- 1: Très confuses
+- 2: Confuses
+- 3: Adéquates
+- 4: Claires
+- 5: Très claires
+
+***Popup page 4:*** Utilité Perçue
+
+**Question:** L'application vous a-t-elle aidé à améliorer votre communication de couple?
+
+**Type:** Échelle 1-5
+
+**Libellés:**
+
+- 1: Pas du tout
+- 2: Un peu
+- 3: Moyennement
+- 4: Beaucoup
+- 5: Énormément
+
+***Popup page 5:*** Ce qui a été le plus utile
+
+**Question:** Qu'est-ce qui a été le plus utile pour vous?
+
+**Type:** Texte libre (plusieurs lignes)
+
+**Placeholder:** Par exemple la structure étape par étape, les explications détaillées
+
+***Popup page 6:*** Ce qui pourrait être amélioré
+
+**Question:** Qu'est-ce qui pourrait être amélioré?
+
+**Type:** Texte libre (plusieurs lignes)
+
+**Placeholder:** Vos suggestions pour rendre cet outil encore plus efficace
+
+***Popup page 7:*** Difficultés Rencontrées
+
+**Question:** Avez-vous rencontré des difficultés avec certaines fonctionnalités? Si oui, lesquelles?
+
+**Type:** Texte libre (plusieurs lignes)
+
+**Placeholder:** Décrivez les obstacles ou blocages rencontrés
+
+***Popup page 8:*** Éléments Confus
+
+**Question:** Y a-t-il des éléments de l'interface qui vous ont semblé confus ou difficiles à utiliser?
+
+**Type:** Texte libre (plusieurs lignes)
+
+**Placeholder:** Par exemple: boutons, textes, navigation, disposition
+
+***Popup page 9:*** Bugs ou Problèmes Techniques
+
+**Question:** Avez-vous rencontré des bugs ou des problèmes techniques?
+
+**Type:** Texte libre (plusieurs lignes)
+
+**Placeholder:** Décrivez le problème (ex: crash, gel, affichage incorrect, etc.)
+
+***Popup page 10:*** Fonctionnalités Manquantes
+
+**Question:** Quelles fonctionnalités aimeriez-vous voir ajoutées?
+
+**Type:** Texte libre (plusieurs lignes)
+
+**Placeholder:** Par exemple: nouvelles étapes, outils supplémentaires, ressources additionnelles
+
+***Popup page 11:*** Durée du Parcours
+
+**Question:** La durée du parcours était-elle appropriée?
+
+**Type:** Choix unique (3 options)
+
+**Options:**
+
+- Trop courte
+- Adéquate
+- Trop longue
+
+***Popup page 12:*** Probabilité d'Utilisation Continue
+
+**Question:** Quelle est la probabilité que vous utilisiez Duo-Connecte régulièrement?
+
+**Type:** Échelle 1-10
+
+**Libellés:**
+
+- Très improbable
+- Peu probable
+- Neutre
+- Probable
+- Très probable
+
+### Boutons
+
+- Passer
+- Envoyer le feedback (ou "Envoi..." si en cours)
