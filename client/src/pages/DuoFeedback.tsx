@@ -466,26 +466,21 @@ export default function Feedback() {
               })}
             </div>
             
-            {/* Bouton principal visible après la sélection d'une note */}
-            {rating && (
-              <div className="pt-2 w-full flex flex-col items-center gap-3">
-                <p className="text-sm text-muted-foreground">
-                  Aidez-nous à nous améliorer en répondant à quelques questions
-                </p>
-                <Button
-                  size="lg"
-                  onClick={handleOpenModal}
-                  className="px-8 w-full sm:w-auto animate-pulse hover:animate-none"
-                  data-testid="button-open-feedback"
-                >
-                  Continuer avec le feedback détaillé
-                </Button>
-              </div>
-            )}
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-2 justify-center">
+        {/* Boutons toujours visibles */}
+        <div className="flex flex-col gap-4 pt-4">
+          <Button
+            size="lg"
+            onClick={handleOpenModal}
+            disabled={!rating}
+            className={`px-8 w-full ${rating ? 'animate-pulse hover:animate-none' : ''}`}
+            data-testid="button-open-feedback"
+          >
+            {rating ? 'Continuer avec le feedback détaillé' : 'Sélectionnez une note pour continuer'}
+          </Button>
+          
           <Button
             size="lg"
             variant="ghost"
