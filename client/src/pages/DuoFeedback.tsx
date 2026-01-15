@@ -218,7 +218,7 @@ export default function Feedback() {
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              L'application vous a-t-elle aidé à améliorer votre communication de couple?
+              L'application vous a-t-elle aidé à dénouer une situation difficile ou à vous rapprocher?
             </p>
             <ScaleRating
               value={feedbackData.perceivedUtility}
