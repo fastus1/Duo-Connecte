@@ -45,7 +45,7 @@ export function PageLayout({ children, showNav = true, showBackButton = true }: 
         totalSteps={flow.pages.length}
       />
 
-      <main className="flex-1 px-4 md:px-6 py-6 md:py-12 pb-32 md:pb-64">
+      <main className="flex-1 px-4 md:px-6 py-6 md:py-12 pb-20 md:pb-24">
         <motion.div
           key={session.currentStep}
           initial={{ opacity: 0, y: 20 }}

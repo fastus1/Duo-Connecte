@@ -23,7 +23,7 @@ export default function Completion() {
   };
 
   return (
-    <PageLayout showNav={false}>
+    <PageLayout>
       <div className="flex flex-col items-center space-y-6 md:space-y-8">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
           <CheckCircle2 className="w-8 h-8 text-primary" />

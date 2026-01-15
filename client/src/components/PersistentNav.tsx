@@ -41,7 +41,7 @@ export function PersistentNav({
   const isOnAdminPage = location === '/admin';
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border p-3 md:p-6 z-40" data-testid="persistent-nav">
+    <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border p-2 md:p-3 z-40" data-testid="persistent-nav">
       <div className="max-w-3xl mx-auto flex flex-wrap items-center gap-2 md:gap-3 justify-between pointer-events-auto">
         <div className="flex items-center gap-2 md:gap-3">
           {showBack && canGoBack && onBack && (
