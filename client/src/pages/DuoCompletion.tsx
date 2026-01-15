@@ -39,7 +39,7 @@ export default function Completion() {
           </p>
 
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-            Prendre le temps d'avoir ce type de conversation demande du courage et de la vulnérabilité. Prenez un moment pour vous remercier mutuellement pour votre présence et votre écoute.
+            Prendre le temps d'avoir les conversations difficiles demande de l'effort, de l'engagement et parfois de la vulnérabilité. Ce n'est pas facile mais vous l'avez fait. Bravo!
           </p>
 
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-left space-y-2">
