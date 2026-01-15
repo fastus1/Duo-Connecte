@@ -173,7 +173,7 @@ export const feedbacks = pgTable("feedbacks", {
   rating: integer("rating").notNull(), // 0.5-5 (demi-étoiles)
   // Popup questions
   purchaseEase: integer("purchase_ease"), // 1-5
-  experienceDescription: text("experience_description"), // texte court
+  experienceRating: integer("experience_rating"), // 1-5
   instructionsClarity: integer("instructions_clarity"), // 1-5
   perceivedUtility: integer("perceived_utility"), // 1-5
   helpfulAspect: text("helpful_aspect"), // texte libre
