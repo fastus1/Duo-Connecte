@@ -277,13 +277,48 @@ export default function Feedback() {
             <p className="text-base md:text-lg text-foreground">
               Qu'est-ce qui pourrait être amélioré?
             </p>
-            <Textarea
-              placeholder="Vos suggestions pour rendre cet outil encore plus efficace"
+            <RadioGroup
               value={feedbackData.improvementSuggestion || ''}
-              onChange={(e) => updateFeedback('improvementSuggestion', e.target.value || null)}
-              className="min-h-24"
-              data-testid="input-improvement"
-            />
+              onValueChange={(val) => updateFeedback('improvementSuggestion', val)}
+              className="flex flex-col gap-3"
+            >
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="duree" id="improve-duree" className="mt-1" />
+                <Label htmlFor="improve-duree" className="text-base leading-relaxed">
+                  La durée du parcours (trop long)
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="clarte" id="improve-clarte" className="mt-1" />
+                <Label htmlFor="improve-clarte" className="text-base leading-relaxed">
+                  La clarté des instructions
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="navigation" id="improve-navigation" className="mt-1" />
+                <Label htmlFor="improve-navigation" className="text-base leading-relaxed">
+                  La navigation entre les étapes
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="equilibre" id="improve-equilibre" className="mt-1" />
+                <Label htmlFor="improve-equilibre" className="text-base leading-relaxed">
+                  L'équilibre entre les rôles émetteur/récepteur
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="interface" id="improve-interface" className="mt-1" />
+                <Label htmlFor="improve-interface" className="text-base leading-relaxed">
+                  L'interface visuelle de l'application
+                </Label>
+              </div>
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="exemples" id="improve-exemples" className="mt-1" />
+                <Label htmlFor="improve-exemples" className="text-base leading-relaxed">
+                  Les exemples fournis pour guider les réponses
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
         );
       case 6:
