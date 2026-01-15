@@ -29,7 +29,7 @@ const faqItems = [
   },
   {
     question: "Puis-je reprendre un parcours plus tard?",
-    answer: "Les parcours sont conçus pour être complétés en une seule session. Si vous devez interrompre, vous devrez recommencer depuis le début. Prévoyez environ 45 à 60 minutes dans un endroit calme."
+    answer: "Le parcours est conçu pour être complété en une seule session. Si vous devez interrompre, vous devrez recommencer depuis le début. Prévoyez environ 45 à 60 minutes dans un endroit calme."
   },
   {
     question: "L'application ne fonctionne pas correctement, que faire?",
