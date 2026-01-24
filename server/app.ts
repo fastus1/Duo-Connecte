@@ -95,6 +95,20 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: false }));
 
+// Allow embedding in iframe from Circle.so
+app.use((req, res, next) => {
+  // Remove X-Frame-Options to allow iframe embedding
+  res.removeHeader('X-Frame-Options');
+  
+  // Set Content-Security-Policy frame-ancestors to allow Circle.so and self
+  const allowedOrigins = circleOrigin 
+    ? `frame-ancestors 'self' ${circleOrigin}` 
+    : "frame-ancestors 'self'";
+  res.setHeader('Content-Security-Policy', allowedOrigins);
+  
+  next();
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
