@@ -14,10 +14,21 @@ export async function serveStatic(app: Express, _server: Server) {
     );
   }
 
-  app.use(express.static(distPath));
+  // Get Circle origin for iframe headers
+  const circleOrigin = process.env.CIRCLE_ORIGIN || process.env.VITE_CIRCLE_ORIGIN || 'https://communaute.avancersimplement.com';
+  
+  // Set headers for static files to allow iframe embedding
+  app.use(express.static(distPath, {
+    setHeaders: (res) => {
+      res.removeHeader('X-Frame-Options');
+      res.setHeader('Content-Security-Policy', `frame-ancestors 'self' ${circleOrigin}`);
+    }
+  }));
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
+    res.removeHeader('X-Frame-Options');
+    res.setHeader('Content-Security-Policy', `frame-ancestors 'self' ${circleOrigin}`);
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
