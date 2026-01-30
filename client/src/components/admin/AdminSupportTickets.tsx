@@ -27,10 +27,10 @@ export function AdminSupportTickets() {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   const { data: tickets = [], isLoading } = useQuery<SupportTicket[]>({
-    queryKey: ['/api/admin/support/tickets'],
+    queryKey: ['/api/support/admin/tickets'],
     queryFn: async () => {
       const token = getSessionToken();
-      const response = await fetch('/api/admin/support/tickets', {
+      const response = await fetch('/api/support/admin/tickets', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error('Erreur lors du chargement');
@@ -40,10 +40,10 @@ export function AdminSupportTickets() {
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      return await apiRequest('PATCH', `/api/admin/support/tickets/${id}/status`, { status });
+      return await apiRequest('PATCH', `/api/support/admin/tickets/${id}/status`, { status });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/support/tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/support/admin/tickets'] });
       toast({ title: "Statut mis à jour" });
     },
     onError: () => {
@@ -53,10 +53,10 @@ export function AdminSupportTickets() {
 
   const deleteTicket = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest('DELETE', `/api/admin/support/tickets/${id}`);
+      return await apiRequest('DELETE', `/api/support/admin/tickets/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/support/tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/support/admin/tickets'] });
       toast({ title: "Ticket supprimé" });
     },
     onError: () => {
@@ -66,10 +66,10 @@ export function AdminSupportTickets() {
 
   const sendReply = useMutation({
     mutationFn: async ({ id, message }: { id: string; message: string }) => {
-      return await apiRequest('POST', `/api/admin/support/tickets/${id}/reply`, { message });
+      return await apiRequest('POST', `/api/support/admin/tickets/${id}/reply`, { message });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/support/tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/support/admin/tickets'] });
       setReplyMessage('');
       setReplyingTo(null);
       toast({ title: "Réponse envoyée", description: "L'email a été envoyé au client" });
