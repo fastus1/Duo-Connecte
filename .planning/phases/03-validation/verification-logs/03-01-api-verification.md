@@ -73,3 +73,26 @@
 | /api/debug/admin-check | 200 OK | reads users | Admin verified |
 
 **VAL-01:** VERIFIED - Health endpoint responds with 200 OK and database connected
+
+---
+
+## Database CRUD Operations (Task 2)
+
+### Read Operations - VERIFIED
+
+| Operation | Endpoint | Table | Status |
+|-----------|----------|-------|--------|
+| Health check | GET /api/health | app_config | PASS |
+| Config settings | GET /api/config | app_config | PASS |
+| Admin user check | GET /api/debug/admin-check | users | PASS |
+
+### Write Operations - Requires Human Verification
+
+The PATCH /api/config endpoint requires admin authentication:
+- Requires valid admin session token
+- Verifies user.isAdmin before allowing changes
+- Changes persist to app_config table in PostgreSQL
+
+**Write verification method:** User logs into admin panel and toggles a security setting, then refreshes to confirm persistence.
+
+**VAL-03 (partial):** Read operations confirmed. Write operations to be verified via admin panel in Task 3 checkpoint.
