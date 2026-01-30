@@ -48,10 +48,10 @@ Plans:
   2. Admin receives email notification when a new ticket is created
   3. Admin can view ticket details in the dashboard
   4. Admin can send email reply to user from the dashboard
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 04-01: TBD (to be defined by plan-phase)
+- [ ] 04-01-PLAN.md — Fix API route paths and configure email
 
 **Root Causes to Fix:**
 - Route mismatch: Frontend calls `/api/admin/support/tickets` but backend exposes `/api/support/admin/tickets`
@@ -64,7 +64,7 @@ Plans:
 | 1. Setup | v1.0 | 2/2 | Complete | 2026-01-30 |
 | 2. Database | v1.0 | 1/1 | Complete | 2026-01-30 |
 | 3. Validation | v1.0 | 2/2 | Complete | 2026-01-30 |
-| 4. Support Ticket Fixes | v1.1 | 0/? | Not started | - |
+| 4. Support Ticket Fixes | v1.1 | 0/1 | Ready | - |
 
 ---
 *Created: 2026-01-30*
