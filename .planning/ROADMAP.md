@@ -39,10 +39,10 @@ Plans:
   2. All required environment variables are configured (DATABASE_URL, JWT_SECRET, CIRCLE_ORIGIN, NODE_ENV)
   3. Application builds successfully on Railway
   4. Application starts and responds to HTTP requests
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: Create Railway project and configure deployment
+- [ ] 02-01-PLAN.md - Deploy to Railway with CLI (create project, set env vars, deploy, verify)
 
 ### Phase 3: Validation
 **Goal**: All application functionality verified working on Railway deployment
