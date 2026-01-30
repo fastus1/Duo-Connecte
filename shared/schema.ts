@@ -136,7 +136,7 @@ export const circleUserDataSchema = z.object({
     firstName: z.string().optional(),
     lastName: z.string().optional(),
     isAdmin: z.union([z.boolean(), z.string()]).optional().default(false),
-    timestamp: z.number(),
+    timestamp: z.number().optional().default(() => Date.now()),
   }),
   theme: z.enum(['light', 'dark']).optional(),
 });
