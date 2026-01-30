@@ -23,7 +23,7 @@ export function log(message: string, source = "express") {
 
 export const app = express();
 
-// Trust proxy for rate limiting behind Replit's reverse proxy
+// Trust proxy for rate limiting behind Railway's reverse proxy
 app.set('trust proxy', 1);
 
 // Configure CORS for Circle.so integration (API routes only)
@@ -32,26 +32,18 @@ app.set('trust proxy', 1);
 const circleOrigin = process.env.CIRCLE_ORIGIN || process.env.VITE_CIRCLE_ORIGIN;
 const devMode = process.env.DEV_MODE === 'true';
 
-// Get app's own origin dynamically from Replit environment
-// REPLIT_DOMAINS contains the deployment domain in production
+// Get app's own origin dynamically from Railway environment
 const getAppOrigins = (): string[] => {
   const origins: string[] = [];
 
-  // Dev domain
-  if (process.env.REPLIT_DEV_DOMAIN) {
-    origins.push(`https://${process.env.REPLIT_DEV_DOMAIN}`);
+  // Railway automatically provides RAILWAY_PUBLIC_DOMAIN
+  if (process.env.RAILWAY_PUBLIC_DOMAIN) {
+    origins.push(`https://${process.env.RAILWAY_PUBLIC_DOMAIN}`);
   }
 
-  // Deployment URL
-  if (process.env.REPLIT_DEPLOYMENT_URL) {
-    origins.push(process.env.REPLIT_DEPLOYMENT_URL);
-  }
-
-  // REPLIT_DOMAINS contains comma-separated list of domains
-  if (process.env.REPLIT_DOMAINS) {
-    process.env.REPLIT_DOMAINS.split(',').forEach(domain => {
-      origins.push(`https://${domain.trim()}`);
-    });
+  // Support custom domain via APP_DOMAIN env var
+  if (process.env.APP_DOMAIN) {
+    origins.push(process.env.APP_DOMAIN);
   }
 
   return origins;

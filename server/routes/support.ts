@@ -11,7 +11,10 @@ router.post("/tickets", async (req, res) => {
   try {
     const validatedTicket = insertSupportTicketSchema.parse(req.body);
     const ticket = await storage.createSupportTicket(validatedTicket);
-    
+
+    // Build dynamic admin URL from environment
+    const appUrl = process.env.APP_URL || (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : 'https://localhost:5000');
+
     if (process.env.RESEND_API_KEY) {
       try {
         const resend = new Resend(process.env.RESEND_API_KEY);
@@ -38,7 +41,7 @@ router.post("/tickets", async (req, res) => {
                 <p style="white-space: pre-wrap;">${ticket.description}</p>
               </div>
               <div style="margin-top: 20px; text-align: center;">
-                <a href="https://duo-connecte--fastusone.replit.app/admin" 
+                <a href="${appUrl}/admin"
                    style="background: #074491; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                   Voir et répondre au ticket
                 </a>
