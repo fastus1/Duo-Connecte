@@ -54,11 +54,11 @@ Plans:
   3. Database operations work (user can create/read data via Neon PostgreSQL)
   4. Circle.so iframe embedding works (postMessage communication, origin validation)
   5. All 4 security layers function correctly (domain check, user validation, paywall, PIN authentication)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Verify API and frontend functionality
-- [ ] 03-02: Verify iframe and security layers
+- [ ] 03-01-PLAN.md - Verify API, frontend, and database functionality (VAL-01, VAL-02, VAL-03)
+- [ ] 03-02-PLAN.md - Verify Circle.so iframe integration and security layers (VAL-04, VAL-05)
 
 ## Progress
 
@@ -67,8 +67,8 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Code Cleanup | 1/1 | ✓ Complete | 2026-01-30 |
-| 2. Railway Setup | 1/1 | ✓ Complete | 2026-01-30 |
+| 1. Code Cleanup | 1/1 | Complete | 2026-01-30 |
+| 2. Railway Setup | 1/1 | Complete | 2026-01-30 |
 | 3. Validation | 0/2 | Not started | - |
 
 ---
@@ -76,3 +76,4 @@ Phases execute in numeric order: 1 -> 2 -> 3
 *Last updated: 2026-01-30*
 *Phase 1 completed: 2026-01-30*
 *Phase 2 completed: 2026-01-30*
+*Phase 3 planned: 2026-01-30*
