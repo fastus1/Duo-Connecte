@@ -86,8 +86,8 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
 </script>`;
 
   const authScript = `<script>
-// Script d'authentification Circle.so -> Replit Apps v3
-// À placer dans: Settings → Code Snippets → JavaScript
+// Script d'authentification Circle.so -> Railway Apps v3
+// A placer dans: Settings -> Code Snippets -> JavaScript
 (function() {
   function getTheme() {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
@@ -110,7 +110,7 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
   }
   
   function sendToAllIframes() {
-    var iframes = document.querySelectorAll('iframe[src*=".replit.app"]');
+    var iframes = document.querySelectorAll('iframe[src*=".railway.app"], iframe[src*=".up.railway.app"]');
     var payload = buildPayload();
     if (payload) {
       iframes.forEach(function(iframe) {
@@ -200,7 +200,7 @@ fetch('${webhookAppUrl}/webhooks/circle-payment', {
             <Label htmlFor="webhook-app-url">URL de l'application</Label>
             <Input
               id="webhook-app-url"
-              placeholder="https://votre-app.replit.app"
+              placeholder="https://votre-app.railway.app"
               value={webhookAppUrl}
               onChange={(e) => setWebhookAppUrl(e.target.value)}
               data-testid="input-webhook-app-url"
