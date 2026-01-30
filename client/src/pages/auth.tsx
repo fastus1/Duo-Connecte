@@ -474,6 +474,17 @@ export default function AuthPage() {
                 Actualiser
               </Button>
             </div>
+            <div className="pt-4 border-t">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setLocation('/admin-login')}
+                data-testid="button-admin-access"
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                Accès Administrateur
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
