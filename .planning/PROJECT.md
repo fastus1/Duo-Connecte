@@ -33,7 +33,10 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 
 ### Active
 
-(No active requirements — define in next milestone)
+<!-- v1.1 Fix Support Tickets -->
+- [ ] Tickets visibles dans le dashboard admin
+- [ ] Notification email à l'admin quand un ticket est créé
+- [ ] Réponse email fonctionnelle depuis le dashboard
 
 ### Out of Scope
 
@@ -68,9 +71,17 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 - 21,603 lines of TypeScript
 
 **Known Issues (tech debt):**
-- Support tickets feature not working
 - Node 18.19.1 (some packages prefer 20+)
 - npm audit vulnerabilities (pre-existing)
+
+## Current Milestone: v1.1 Fix Support Tickets
+
+**Goal:** Réparer le système de tickets support pour que l'admin reçoive les notifications et voie les tickets dans le dashboard.
+
+**Target features:**
+- Corriger les routes API (mismatch frontend/backend)
+- Configurer Resend pour les notifications email
+- Valider le workflow complet: création → notification → dashboard → réponse
 
 **Futur:**
 - Cette app servira de base/template pour d'autres apps Circle.so
@@ -96,4 +107,4 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 | Admin bypass on paywall | Admins need access when paywall enabled | ✓ Good — admins can configure |
 
 ---
-*Last updated: 2026-01-30 after v1 milestone*
+*Last updated: 2026-01-30 after v1.1 milestone start*

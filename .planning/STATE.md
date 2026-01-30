@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** L'app doit fonctionner de maniere fiable dans l'iframe Circle.so avec toutes les couches de securite actives
-**Current focus:** v1 complete — ready for next milestone
+**Current focus:** v1.1 Fix Support Tickets
 
 ## Current Position
 
-Milestone: v1 Railway Migration — SHIPPED
-Phase: N/A (no active phase)
-Plan: N/A
-Status: Ready to plan next milestone
-Last activity: 2026-01-30 — v1 milestone complete
+Milestone: v1.1 Fix Support Tickets
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-30 — Milestone v1.1 started
 
-Progress: Milestone v1 complete
+Progress: Milestone v1.1 in progress
 
 ## Milestone Summary
 
@@ -46,16 +46,19 @@ None.
 
 ### Blockers/Concerns
 
-Tech debt carried forward to next milestone:
-- Support tickets feature not working
+**v1.1 Root Causes Identified:**
+- Route mismatch: Frontend calls `/api/admin/support/tickets` but backend exposes `/api/support/admin/tickets`
+- Email: RESEND_API_KEY not configured in Railway
+
+Tech debt carried forward:
 - Node 18.19.1 (some packages prefer 20+)
 - npm audit vulnerabilities (pre-existing)
 
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: v1 milestone completed
+Stopped at: v1.1 milestone started, requirements gathered
 Resume file: None
 
 ---
-*Updated: 2026-01-30 after v1 milestone completion*
+*Updated: 2026-01-30 after v1.1 milestone start*
