@@ -4,6 +4,8 @@
 
 Application de communication authentique guidée entre deux personnes, intégrée à Circle.so via iframe. Parcours structuré "Duo" en 38 étapes avec architecture de sécurité configurable à 4 couches. Marque : "Avancer Simplement".
 
+**Deployed:** https://duo-connecte-production.up.railway.app
+
 ## Core Value
 
 L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes les couches de sécurité actives — c'est la base de confiance pour les utilisateurs payants.
@@ -22,29 +24,30 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 - ✓ PWA (manifest, icons, installation banner) — existing
 - ✓ Synchronisation thème avec Circle.so — existing
 - ✓ Gestion membres (suppression accès/données) — existing
+- ✓ Migration de Replit vers Railway — v1
+- ✓ Configuration environnement Railway (variables, build, démarrage) — v1
+- ✓ Connexion base de données PostgreSQL (Neon) depuis Railway — v1
+- ✓ Validation des 4 couches de sécurité sur Railway — v1
+- ✓ Test intégration iframe Circle.so depuis Railway — v1
+- ✓ Suppression des dépendances Replit (plugins Vite, variables d'environnement) — v1
 
 ### Active
 
-- [ ] Migration de Replit vers Railway
-- [ ] Configuration environnement Railway (variables, build, démarrage)
-- [ ] Connexion base de données PostgreSQL (Neon) depuis Railway
-- [ ] Validation des 4 couches de sécurité sur Railway
-- [ ] Test intégration iframe Circle.so depuis Railway
-- [ ] Suppression des dépendances Replit (plugins Vite, variables d'environnement)
+(No active requirements — define in next milestone)
 
 ### Out of Scope
 
 - Mode Solo — extrait vers application séparée
-- Nouvelles fonctionnalités — après migration stable
-- Correction de bugs — après migration stable
-- Refactoring pour réutilisation — après migration stable
+- Modification auth.ts — fichier critique, nécessite approbation explicite
 
 ## Context
 
-**Situation actuelle:**
-- App fonctionne sur Replit mais dépendance non désirée
-- Tentative précédente de migration échouée (erreurs build, env vars, DB)
-- Objectif : développer avec Claude Code, déployer sur Railway
+**Current State (v1 shipped 2026-01-30):**
+- App deployed on Railway at https://duo-connecte-production.up.railway.app
+- Connected to Neon PostgreSQL database
+- All 4 security layers verified working
+- Circle.so iframe integration validated
+- Admin user: fastusone@gmail.com
 
 **Architecture de sécurité (4 couches):**
 1. Vérification domaine Circle.so (postMessage origin)
@@ -61,6 +64,13 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 - Frontend: React 18, TypeScript, Vite, shadcn/ui, Tailwind
 - Backend: Express, Drizzle ORM, PostgreSQL (Neon)
 - Auth: JWT (60min expiry), bcrypt (10 rounds)
+- Deployment: Railway (auto-deploy from GitHub)
+- 21,603 lines of TypeScript
+
+**Known Issues (tech debt):**
+- Support tickets feature not working
+- Node 18.19.1 (some packages prefer 20+)
+- npm audit vulnerabilities (pre-existing)
 
 **Futur:**
 - Cette app servira de base/template pour d'autres apps Circle.so
@@ -77,9 +87,13 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Railway comme plateforme | Alternative à Replit, meilleur contrôle, pas de vendor lock-in | — Pending |
-| Garder Neon PostgreSQL | Base existante, évite migration données | — Pending |
-| Migration avant améliorations | Stabilité d'abord, features ensuite | — Pending |
+| Railway comme plateforme | Alternative à Replit, meilleur contrôle, pas de vendor lock-in | ✓ Good — deployed, stable |
+| Garder Neon PostgreSQL | Base existante, évite migration données | ✓ Good — connected, working |
+| Migration avant améliorations | Stabilité d'abord, features ensuite | ✓ Good — migration complete |
+| RAILWAY_PUBLIC_DOMAIN for CORS | Auto-detection of Railway domain | ✓ Good — works in production |
+| APP_URL for email links | Fallback pattern for dynamic URLs | ✓ Good — emails work |
+| Timestamp optional in Circle schema | Circle.so doesn't always send timestamp | ✓ Good — fixed validation errors |
+| Admin bypass on paywall | Admins need access when paywall enabled | ✓ Good — admins can configure |
 
 ---
-*Last updated: 2026-01-30 after initialization*
+*Last updated: 2026-01-30 after v1 milestone*
