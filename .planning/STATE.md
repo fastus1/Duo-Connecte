@@ -5,17 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** L'app doit fonctionner de maniere fiable dans l'iframe Circle.so avec toutes les couches de securite actives
-**Current focus:** v1.1 Fix Support Tickets - Phase 4
+**Current focus:** v1.1 Complete - Support Tickets Fixed
 
 ## Current Position
 
 Milestone: v1.1 Fix Support Tickets
 Phase: 4 of 4 (Support Ticket Fixes)
-Plan: 0 of ? in current phase (plans TBD)
-Status: Ready to plan
-Last activity: 2026-01-30 — Roadmap created for v1.1
+Plan: 1 of 1 in current phase
+Status: Milestone complete
+Last activity: 2026-01-30 - Completed 04-01-PLAN.md
 
-Progress: v1.0 complete, v1.1 Phase 4 ready to plan
+Progress: [========================================] 100%
+v1.1: 1/1 plan complete
 
 ## Milestone Summary
 
@@ -23,6 +24,11 @@ Progress: v1.0 complete, v1.1 Phase 4 ready to plan
 - 3 phases, 5 plans completed
 - 11/11 requirements shipped
 - Production: https://duo-connecte-production.up.railway.app
+
+**v1.1 Fix Support Tickets (2026-01-30):**
+- 1 phase, 1 plan completed
+- Fixed API route mismatch in admin support tickets
+- Configured RESEND_API_KEY for email notifications
 
 See: .planning/MILESTONES.md for full details
 
@@ -40,15 +46,16 @@ All decisions are logged in PROJECT.md Key Decisions table.
 - Timestamp optional in Circle schema
 - Admin bypass on paywall
 
+**v1.1 Decisions:**
+- Route path correction: /api/admin/support/tickets -> /api/support/admin/tickets to match backend mount point
+
 ### Pending Todos
 
 None.
 
 ### Blockers/Concerns
 
-**v1.1 Root Causes Identified:**
-- Route mismatch: Frontend calls `/api/admin/support/tickets` but backend exposes `/api/support/admin/tickets`
-- Email: RESEND_API_KEY not configured in Railway
+None - v1.1 complete.
 
 Tech debt carried forward:
 - Node 18.19.1 (some packages prefer 20+)
@@ -57,8 +64,8 @@ Tech debt carried forward:
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Roadmap created for v1.1, ready to plan Phase 4
+Stopped at: Completed v1.1 milestone
 Resume file: None
 
 ---
-*Updated: 2026-01-30 after roadmap creation*
+*Updated: 2026-01-30 after v1.1 completion*
