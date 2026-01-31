@@ -61,18 +61,18 @@ export function InstallBanner() {
           
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground mb-1">
-              Installer Duo Connecte
+              Install Circle App
             </p>
-            
+
             {isIOS() ? (
               <p className="text-xs text-muted-foreground">
-                Appuyez sur <Share className="inline w-3.5 h-3.5 mx-0.5" /> puis{' '}
-                <span className="font-medium">"Sur l'écran d'accueil"</span>
+                Tap <Share className="inline w-3.5 h-3.5 mx-0.5" /> then{' '}
+                <span className="font-medium">"Add to Home Screen"</span>
               </p>
             ) : (
               <p className="text-xs text-muted-foreground">
-                Appuyez sur <MoreVertical className="inline w-3.5 h-3.5 mx-0.5" /> puis{' '}
-                <span className="font-medium">"Ajouter à l'écran d'accueil"</span>
+                Tap <MoreVertical className="inline w-3.5 h-3.5 mx-0.5" /> then{' '}
+                <span className="font-medium">"Add to Home Screen"</span>
               </p>
             )}
           </div>

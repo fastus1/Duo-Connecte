@@ -34,7 +34,7 @@ declare global {
 
 const AccessContext = createContext<AccessContextType | undefined>(undefined);
 
-const USER_EMAIL_KEY = 'duo-connecte-user-email';
+const USER_EMAIL_KEY = 'circle-app-user-email';
 
 function getStoredEmail(): string | null {
   try {

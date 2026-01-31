@@ -19,7 +19,7 @@ export function ArrowsIcon({ size = 'md' }: ArrowsIconProps) {
     <div className="flex justify-center">
       <img 
         src={iconSrc} 
-        alt="Flèches Avancer Simplement" 
+        alt="App Icon" 
         className={`${sizeClasses[size]} object-contain`}
         data-testid="img-arrows"
       />

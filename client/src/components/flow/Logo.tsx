@@ -23,16 +23,16 @@ export function Logo({ size = 'md', showText = true }: LogoProps) {
     <div className="flex flex-col items-center gap-2">
       <img 
         src={logoSrc} 
-        alt="Avancer Simplement" 
+        alt="App Logo"
         className={`${config.image} object-contain`}
         data-testid="img-logo"
       />
       {showText && (
-        <div 
+        <div
           className={`${config.text} font-black italic text-primary`}
           style={{ fontFamily: 'Montserrat, sans-serif' }}
         >
-          AVANCER SIMPLEMENT
+          CIRCLE APP
         </div>
       )}
     </div>

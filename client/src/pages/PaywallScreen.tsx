@@ -9,8 +9,8 @@ interface PaywallScreenProps {
 }
 
 export default function PaywallScreen({
-  paywallUrl = 'https://communaute.avancersimplement.com/checkout/communication-navette',
-  infoUrl = 'https://communaute.avancersimplement.com/untitled-page-6476'
+  paywallUrl = 'https://your-community.circle.so/checkout/your-product',
+  infoUrl = 'https://your-community.circle.so/info'
 }: PaywallScreenProps) {
   const { theme, setTheme } = useTheme();
 
@@ -34,27 +34,27 @@ export default function PaywallScreen({
             <div className="inline-flex items-center justify-center w-[100px] h-[100px] md:w-[140px] md:h-[140px]">
               <img
                 src="/logo-blue.png"
-                alt="Avancer Simplement Logo"
+                alt="App Logo"
                 className="w-[100px] h-[100px] md:w-[140px] md:h-[140px] dark:hidden"
               />
               <img
                 src="/logo-white.png"
-                alt="Avancer Simplement Logo"
+                alt="App Logo"
                 className="w-[100px] h-[100px] md:w-[140px] md:h-[140px] hidden dark:block"
               />
             </div>
             <div className="text-lg md:text-2xl font-black italic text-primary" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              AVANCER SIMPLEMENT
+              CIRCLE APP
             </div>
           </div>
 
           <Card className="max-w-md mx-auto">
             <CardContent className="p-6 md:p-8 space-y-4">
               <h1 className="text-lg md:text-xl font-semibold text-muted-foreground">
-                Accès Réservé
+                Access Reserved
               </h1>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                Cette application est réservée aux membres ayant payé leur accès. Achetez votre accès pour commencer à utiliser Duo-Connecte.
+                This app is reserved for members who have purchased access. Purchase your access to start using the app.
               </p>
 
               <div className="flex flex-col gap-3">
@@ -65,7 +65,7 @@ export default function PaywallScreen({
                   data-testid="button-buy-access"
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  Acheter maintenant
+                  Buy Now
                 </Button>
                 <Button
                   size="lg"
@@ -75,15 +75,15 @@ export default function PaywallScreen({
                   data-testid="button-more-info"
                 >
                   <Info className="w-4 h-4" />
-                  Plus d'informations
+                  More Information
                 </Button>
               </div>
             </CardContent>
           </Card>
 
           <p className="text-xs text-muted-foreground pt-2 px-4">
-            Vous avez déjà payé et vous voyez cet écran?<br />
-            Contactez le support pour résoudre ce problème.
+            Already purchased and seeing this screen?<br />
+            Contact support to resolve this issue.
           </p>
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function PaywallScreen({
           className="text-xs text-muted-foreground"
           data-testid="button-theme-toggle-paywall"
         >
-          {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+          {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
         </Button>
       </div>
     </div>

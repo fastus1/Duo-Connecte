@@ -21,7 +21,7 @@ export function Logo({ className = '', size = 'md' }: LogoProps) {
   return (
     <img 
       src={logoSrc} 
-      alt="Avancer Simplement" 
+      alt="App Logo" 
       className={`${sizeClasses[size]} object-contain ${className}`}
       data-testid="img-logo"
     />

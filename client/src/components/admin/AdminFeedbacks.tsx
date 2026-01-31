@@ -171,7 +171,7 @@ export function AdminFeedbacks() {
     };
 
     const generateMarkdown = (feedbacks: Feedback[]) => {
-        let markdown = "# Feedbacks Duo-Connecte\n\n";
+        let markdown = "# App Feedbacks\n\n";
         markdown += `**Exporté le:** ${new Date().toLocaleString("fr-FR", { dateStyle: "full", timeStyle: "short" })}\n\n`;
         markdown += `**Total:** ${feedbacks.length} feedback(s)\n\n`;
         markdown += "---\n\n";
@@ -239,7 +239,7 @@ export function AdminFeedbacks() {
         const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        const filename = `feedbacks-duo-connecte-${showArchived ? 'archives-' : ''}${new Date().toISOString().split('T')[0]}.md`;
+        const filename = `feedbacks-circle-app-${showArchived ? 'archives-' : ''}${new Date().toISOString().split('T')[0]}.md`;
 
         link.href = url;
         link.download = filename;

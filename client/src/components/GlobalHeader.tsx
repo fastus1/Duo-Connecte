@@ -66,15 +66,15 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
         return null;
     }
 
-    let title = "Espace Membre";
-    let subtitle = "Communauté Avancer Simplement";
+    let title = "Circle App Template";
+    let subtitle = "Member Area";
 
     if (location.startsWith('/admin')) {
-        title = "Dashboard Admin";
-        subtitle = "Espace d'administration";
-    } else if (location === '/welcome' || location.startsWith('/duo')) {
-        title = "Jumelage";
-        subtitle = "Application duo-connecte";
+        title = "Admin Dashboard";
+        subtitle = "Administration";
+    } else if (location === '/welcome') {
+        title = "Circle App Template";
+        subtitle = "Welcome";
     }
 
     return (
@@ -98,7 +98,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
                             data-testid="button-enter-preview"
                         >
                             <Eye className="h-4 w-4 mr-2" />
-                            <span className="hidden sm:inline">Prévisualiser</span>
+                            <span className="hidden sm:inline">Preview</span>
                         </Button>
                     )}
 
@@ -109,7 +109,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
                             data-testid="button-dashboard"
                         >
                             <Shield className="h-4 w-4 mr-2" />
-                            <span className="hidden sm:inline">Dashboard Admin</span>
+                            <span className="hidden sm:inline">Admin Dashboard</span>
                         </Button>
                     )}
 
@@ -120,7 +120,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
                             data-testid="button-user-home"
                         >
                             <Home className="h-4 w-4 mr-2" />
-                            <span className="hidden sm:inline">Page d'accueil</span>
+                            <span className="hidden sm:inline">Home</span>
                         </Button>
                     )}
 
@@ -131,7 +131,7 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
                             data-testid="button-logout"
                         >
                             <LogOut className="h-4 w-4 mr-2" />
-                            <span className="hidden sm:inline">Déconnexion</span>
+                            <span className="hidden sm:inline">Logout</span>
                         </Button>
                     ) : (
                         location !== '/admin-login' && (

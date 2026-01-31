@@ -77,15 +77,15 @@ function AccessGate({ children, isAdmin }: { children: React.ReactNode; isAdmin:
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-4 max-w-md">
-          <h1 className="text-xl font-semibold text-foreground">Acces non autorise</h1>
+          <h1 className="text-xl font-semibold text-foreground">Access Not Authorized</h1>
           <p className="text-muted-foreground">
-            Cette application est accessible uniquement depuis la communaute Avancer Simplement.
+            This application is only accessible from your Circle community.
           </p>
           <a
-            href="https://communaute.avancersimplement.com"
+            href="https://your-community.circle.so"
             className="inline-block mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
-            Acceder a la communaute
+            Access Community
           </a>
         </div>
       </div>

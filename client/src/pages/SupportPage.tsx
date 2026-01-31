@@ -14,45 +14,38 @@ import { apiRequest } from '@/lib/queryClient';
 import { cn } from '@/lib/utils';
 
 const supportFormSchema = z.object({
-  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-  email: z.string().email("Veuillez entrer une adresse email valide"),
-  subject: z.string().min(5, "Le sujet doit contenir au moins 5 caractères"),
-  description: z.string().min(20, "Veuillez décrire votre problème en détail (minimum 20 caractères)"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  subject: z.string().min(5, "Subject must be at least 5 characters"),
+  description: z.string().min(20, "Please describe your issue in detail (minimum 20 characters)"),
 });
 
 type SupportFormValues = z.infer<typeof supportFormSchema>;
 
 const faqItems = [
   {
-    question: "À quoi sert Duo-Connecte?",
-    answer: "Duo-Connecte est un guide qui vous accompagne pas à pas dans une conversation difficile ou délicate avec votre partenaire. L'application structure l'échange pour vous aider à vous exprimer et à vous écouter mutuellement."
+    question: "What is this template for?",
+    answer: "This template provides a starting point for building Circle.so embedded apps. It includes authentication, admin dashboard, user management, and support ticket infrastructure."
   },
   {
-    question: "Puis-je reprendre un parcours plus tard?",
-    answer: "Le parcours est conçu pour être complété en une seule session. Si vous devez interrompre, vous devrez recommencer depuis le début. Prévoyez environ 45 à 60 minutes dans un endroit calme."
+    question: "How do I customize this template?",
+    answer: "Start by updating the branding in client/index.html and client/public/manifest.json. Then modify the pages in client/src/pages/ to add your app's functionality."
   },
   {
-    question: "L'application ne fonctionne pas correctement, que faire?",
-    answer: "Essayez d'abord de rafraîchir la page. Si le problème persiste, assurez-vous d'utiliser un navigateur récent (Chrome, Firefox, Safari, Edge). Si ça ne fonctionne toujours pas, contactez-nous via le formulaire ci-dessous."
+    question: "The app is not working correctly, what should I do?",
+    answer: "First try refreshing the page. If the problem persists, make sure you're using a modern browser (Chrome, Firefox, Safari, Edge). If it still doesn't work, contact support using the form below."
   },
   {
-    question: "Comment accéder à l'application?",
-    answer: "L'accès se fait automatiquement si vous êtes connecté à la plateforme Avancer Simplement et que vous avez acheté l'application. Aucune inscription supplémentaire n'est requise."
+    question: "How do I access the app?",
+    answer: "Access is automatic if you're logged into your Circle community and have purchased access. No additional registration is required."
   },
   {
-    question: "Mes données sont-elles collectées?",
-    answer: "Non. Aucune donnée personnelle n'est collectée par l'application. Vos conversations ne sont pas enregistrées sur nos serveurs. L'authentification fonctionne uniquement par synchronisation avec votre compte Avancer Simplement."
+    question: "Is my data collected?",
+    answer: "No personal data is collected by the app. Authentication works through your Circle.so account synchronization."
   },
   {
-    question: "Est-ce que Duo-Connecte remplace une thérapie de couple?",
-    answer: "Non. Duo-Connecte est un outil d'accompagnement pour des conversations ponctuelles. Il ne remplace pas un suivi avec un thérapeute, surtout en cas de crise ou de conflits récurrents."
-  },
-  {
-    question: "Puis-je utiliser l'application seul·e?",
-    answer: "Non, Duo-Connecte est conçu pour être utilisé à deux, en même temps. Les deux partenaires doivent être présents et disponibles pour que le parcours fonctionne.\n\nSi vous souhaitez travailler la gestion de vos émotions en solo, découvrez Solo-Connecte, notre application d'accompagnement individuel.",
-    hasLink: true,
-    linkText: "Essayer Solo-Connecte",
-    linkUrl: "https://avancersimplement.com/solo-connecte"
+    question: "How do I deploy this app?",
+    answer: "This template can be deployed to Railway, Vercel, or any Node.js hosting platform. See the README for detailed deployment instructions."
   },
 ];
 
@@ -126,14 +119,14 @@ export default function SupportPage() {
     onSuccess: () => {
       setIsSubmitted(true);
       toast({
-        title: "Message envoyé",
-        description: "Nous avons bien reçu votre demande et vous répondrons dans les plus brefs délais.",
+        title: "Message sent",
+        description: "We have received your request and will respond as soon as possible.",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Erreur",
-        description: error.message || "Une erreur s'est produite. Veuillez réessayer.",
+        title: "Error",
+        description: error.message || "An error occurred. Please try again.",
         variant: "destructive",
       });
     },
@@ -150,9 +143,9 @@ export default function SupportPage() {
           <div className="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-primary/10">
             <HelpCircle className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Aide & Contact</h1>
+          <h1 className="text-3xl font-bold text-foreground">Help & Contact</h1>
           <p className="text-muted-foreground">
-            Trouvez des réponses à vos questions ou contactez-nous
+            Find answers to your questions or contact us
           </p>
         </div>
 
@@ -160,10 +153,10 @@ export default function SupportPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
-              Questions fréquentes
+              Frequently Asked Questions
             </CardTitle>
             <CardDescription>
-              Consultez les réponses aux questions les plus courantes
+              Find answers to the most common questions
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -186,10 +179,10 @@ export default function SupportPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              Nous contacter
+              Contact Us
             </CardTitle>
             <CardDescription>
-              Vous n'avez pas trouvé la réponse ? Envoyez-nous un message
+              Didn't find the answer? Send us a message
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -198,9 +191,9 @@ export default function SupportPage() {
                 <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30">
                   <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground">Message envoyé</h3>
+                <h3 className="text-xl font-semibold text-foreground">Message Sent</h3>
                 <p className="text-muted-foreground text-center max-w-md">
-                  Merci de nous avoir contactés. Nous examinerons votre demande et vous répondrons dans les plus brefs délais.
+                  Thank you for contacting us. We will review your request and respond as soon as possible.
                 </p>
                 <Button
                   variant="outline"
@@ -210,7 +203,7 @@ export default function SupportPage() {
                   }}
                   data-testid="button-send-another"
                 >
-                  Envoyer un autre message
+                  Send another message
                 </Button>
               </div>
             ) : (
@@ -222,10 +215,10 @@ export default function SupportPage() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nom</FormLabel>
+                          <FormLabel>Name</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="Votre nom" 
+                            <Input
+                              placeholder="Your name" 
                               {...field} 
                               data-testid="input-support-name"
                             />
@@ -259,10 +252,10 @@ export default function SupportPage() {
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Sujet</FormLabel>
+                        <FormLabel>Subject</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="Résumez votre demande" 
+                          <Input
+                            placeholder="Summarize your request" 
                             {...field} 
                             data-testid="input-support-subject"
                           />
@@ -279,8 +272,8 @@ export default function SupportPage() {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Décrivez votre problème ou question en détail..."
+                          <Textarea
+                            placeholder="Describe your issue or question in detail..."
                             className="min-h-[120px]"
                             {...field} 
                             data-testid="input-support-description"
@@ -298,11 +291,11 @@ export default function SupportPage() {
                     data-testid="button-submit-support"
                   >
                     {submitTicket.isPending ? (
-                      "Envoi en cours..."
+                      "Sending..."
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        Envoyer le message
+                        Send Message
                       </>
                     )}
                   </Button>
@@ -314,13 +307,13 @@ export default function SupportPage() {
 
         <div className="text-center text-sm text-muted-foreground">
           <p>
-            Vous pouvez également nous contacter directement à{' '}
-            <a 
-              href="mailto:support@avancersimplement.com" 
+            You can also contact us directly at{' '}
+            <a
+              href="mailto:support@example.com"
               className="text-primary hover:underline"
               data-testid="link-email-support"
             >
-              support@avancersimplement.com
+              support@example.com
             </a>
           </p>
         </div>

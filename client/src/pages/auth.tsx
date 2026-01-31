@@ -303,20 +303,20 @@ export default function AuthPage() {
           <CardHeader className="text-center space-y-4">
             <Logo size="lg" className="mx-auto" />
             <CardTitle className="text-2xl font-semibold">
-              Accès restreint
+              Access Restricted
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-center text-muted-foreground" data-testid="text-timeout-message">
-              Vous devez accéder à cette page via la Plateforme Avancer Simplement
+              You must access this page through your Circle community
             </p>
             <Button
               asChild
               className="w-full h-12"
               data-testid="button-access-platform"
             >
-              <a href="https://communaute.avancersimplement.com/" target="_top">
-                Accéder à la plateforme
+              <a href="https://your-community.circle.so/" target="_top">
+                Access Community
               </a>
             </Button>
             <div className="pt-4 border-t">
