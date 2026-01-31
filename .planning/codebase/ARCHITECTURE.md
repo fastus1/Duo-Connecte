@@ -1,192 +1,226 @@
 # Architecture
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-01-31
 
 ## Pattern Overview
 
-**Overall:** Full-stack Express + React web application with shared type definitions
+**Overall:** Monolithic full-stack application with client-server separation
 
 **Key Characteristics:**
-- Server and client share schemas via `@shared` directory
-- Database-first schema definitions with Drizzle ORM
-- Session-based authentication with JWT tokens and PIN validation
-- Multi-mode access control: Circle.so integration, paywall, PIN, admin roles
-- React Router-based client with context providers for session and access state
+- Single Node.js/Express server serving both API and static client
+- React SPA client (Vite-bundled) rendered in index.html
+- TypeScript shared types across client and server
+- Multi-environment configuration (development with hot reload, production with static assets)
+- Role-based access control (admin vs regular users)
+- Circle.so community integration with iframe embedding
 
 ## Layers
 
-**Server (Backend):**
-- Purpose: REST API, database operations, authentication, session management
-- Location: `/home/yan/projets/Duo-Connecte/server`
-- Contains: Express routes, middleware, storage layer with Drizzle ORM
-- Depends on: PostgreSQL (via Neon), bcrypt, JWT, Zod for validation
-- Used by: Client application via HTTP, webhooks from Circle.so
+**Client Layer (React SPA):**
+- Purpose: User interface and state management for the "Duo Connecté" workflow application
+- Location: `client/src/`
+- Contains: React components, pages, hooks, contexts, utilities
+- Depends on: Express API, shared schema
+- Used by: Users accessing via browser or iframe from Circle.so
 
-**Client (Frontend):**
-- Purpose: User interface, state management, routing, form handling
-- Location: `/home/yan/projets/Duo-Connecte/client/src`
-- Contains: React components, pages, contexts, hooks, UI library components
-- Depends on: React Query, Wouter router, Radix UI components, Tailwind CSS
-- Used by: End users via browser
+**Server/API Layer (Express.js):**
+- Purpose: HTTP API endpoints, authentication, session management, data validation
+- Location: `server/`
+- Contains: Route handlers, middleware, database operations, storage abstraction
+- Depends on: Database (PostgreSQL via Neon), shared schema
+- Used by: Client-side fetch requests, webhooks from external services
 
-**Shared Types:**
-- Purpose: Type safety across server and client
-- Location: `/home/yan/projets/Duo-Connecte/shared/schema.ts`
-- Contains: Drizzle tables, Zod schemas, TypeScript interfaces
-- Used by: Both server and client for validation and types
+**Shared Schema Layer:**
+- Purpose: Centralized type definitions and Zod validation schemas
+- Location: `shared/schema.ts`
+- Contains: Database table definitions (Drizzle ORM), insert/response schemas, validation rules
+- Depends on: Drizzle ORM, Zod
+- Used by: Both client and server for type safety and data validation
+
+**Storage/Database Layer:**
+- Purpose: Data persistence and transaction management
+- Location: `server/storage.ts`
+- Contains: IStorage interface, MemStorage implementation (in-memory), Drizzle ORM queries
+- Depends on: PostgreSQL database via Neon serverless
+- Used by: Route handlers for CRUD operations
 
 ## Data Flow
 
-**Authentication Flow (Circle.so + PIN):**
+**User Authentication Flow:**
 
-1. User lands on app, origin check via `AccessContext`
-2. Client calls `/api/auth/validate` with Circle.so user data
-3. Server validates and creates or updates user in database
-4. If PIN required, returns validation token; client navigates to PIN creation
-5. Client submits PIN via `/api/auth/create-pin` or `/api/auth/validate-pin`
-6. Server hashes PIN, stores in database, returns JWT session token
-7. Client stores token in localStorage with timestamp for 60-minute expiry
-8. All authenticated requests include `Authorization: Bearer <token>` header
+1. User arrives at app (from Circle.so iframe or direct)
+2. Circle.so posts user data via message event (from iframe communication)
+3. AccessContext (`client/src/contexts/AccessContext.tsx`) receives and validates Circle.so origin
+4. Client calls `POST /api/auth/validate` with user data from Circle.so
+5. Server validates user format, checks if user exists in database
+6. Server returns either:
+   - `new_user` status with validation_token (requires PIN creation)
+   - `existing_user` status with requires_pin flag
+7. Client creates PIN via `POST /api/auth/create-pin` (new users) or validates PIN via `POST /api/auth/validate-pin`
+8. Server generates JWT session token and returns it
+9. Client stores token in localStorage and makes future API calls with `Authorization: Bearer {token}` header
 
-**Access Control Flow:**
+**Workflow State Management:**
 
-1. Client fetches `/api/config` to determine app mode (public, Circle-only, paywall, PIN)
-2. `AccessProvider` context checks:
-   - Environment (development allows all)
-   - Circle.so domain requirement
-   - Circle.so login requirement (email presence)
-   - Paywall status via `/api/check-access`
-   - PIN authentication status
-3. `AccessGate` component blocks/allows content based on `accessStatus` state
-4. Admin users bypass most restrictions via `circleIsAdmin` or JWT `isAdmin` flag
+1. SessionContext (`client/src/contexts/SessionContext.tsx`) stores current step and participant names
+2. User navigates through Duo pages (20+ step progression)
+3. Names persisted to localStorage for session continuity
+4. Feedback submitted to `POST /api/feedback` endpoint
+5. Support tickets created via `POST /api/support/tickets`
 
-**Session & State Flow:**
+**Admin Dashboard Flow:**
 
-1. `SessionContext` manages Duo Connecté workflow state: names, current step
-2. Persists names to localStorage (`duo-connecte-names` key)
-3. Syncs URL with current step - `SessionRouter` redirects if step changes
-4. Admin preview mode allows navigation across all pages with sidebar
+1. Admin logs in via `/admin-login` page
+2. Submits credentials to `POST /api/admin/login`
+3. Server validates PIN against user's hash using bcrypt
+4. Returns JWT token for session
+5. Admin can access `/api/admin/*` endpoints with requireAdmin middleware
+6. Endpoints allow config updates, user management, feedback/ticket viewing
 
-**API Response Pattern:**
+**State Management:**
 
-- Authentication endpoints return: `{ status, user_id, email, name, is_admin, validation_token?, session_token? }`
-- Protected endpoints verified by `requireAuth` middleware (checks JWT in Authorization header)
-- Config endpoints return: `{ requireCircleDomain, requireCircleLogin, requirePaywall, requirePin, ... }`
-- Health check via `/api/health` returns: `{ status, database, config, timestamp }`
+- Session state (user step, participant names): React Context (SessionContext)
+- Access state (auth status, origin validation, email): React Context (AccessContext)
+- Query state (API data): TanStack React Query (queryClient)
+- Local state: localStorage for session tokens, user email, names
+- Theme state: next-themes provider
 
 ## Key Abstractions
 
-**Storage Layer (`storage.ts`):**
-- Purpose: Abstraction over database operations
-- Examples: `MemStorage` (in-memory implementation), Drizzle ORM calls
-- Pattern: `IStorage` interface defines contract; implementation can be swapped
-- Methods: User CRUD, login attempts, app config, paid members, feedback, support tickets
+**IStorage Interface:**
+- Purpose: Abstract database operations from route handlers
+- Examples: `server/storage.ts` implements IStorage
+- Pattern: Dependency injection - routes receive storage instance
+- Methods cover: Users (CRUD), login attempts, app config, paid members, feedback, support tickets
 
-**Middleware Functions:**
-- Purpose: Cross-cutting concerns (auth, validation, rate limiting)
-- Examples:
-  - `requireAuth`: Validates JWT bearer token, attaches user to request
-  - `createRequireAdmin`: Factory function creating admin-check middleware
-  - `pinRateLimiter`: Express rate limit (5 attempts per 15 minutes)
-  - `validateUserData`: Validates Circle.so user data, handles Liquid template issues
-- Pattern: Express middleware chain applied to routes
+**Authentication Middleware:**
+- Purpose: Protect API routes by validating JWT tokens
+- Examples: `requireAuth()`, `requireAdmin()`, `pinRateLimiter`
+- Pattern: Express middleware factory - receives storage dependency, returns middleware
+- Validates: Bearer token format, JWT signature, admin status
 
-**Context Providers (Client):**
-- Purpose: Share state across component tree without prop drilling
-- Examples:
-  - `SessionContext`: Workflow state (names, current step)
-  - `AccessContext`: Access status (loading, granted, denied), Circle.so admin flag
-- Pattern: React Context API with custom hooks (`useSession()`, `useAccess()`)
+**Route Modularity:**
+- Purpose: Organize API endpoints by feature domain
+- Locations: `server/routes/auth.ts`, `server/routes/admin.ts`, `server/routes/support.ts`, `server/routes/webhooks.ts`
+- Pattern: Router instances mounted on main app via `registerModularRoutes()`
+- Prefixes: `/api/auth/`, `/api/admin/`, `/api/support/`, `/webhooks/`
 
 **Page Components:**
-- Purpose: Routable components representing screens in Duo Connecté workflow
-- Examples: `DuoRoles.tsx`, `DuoSenderSituation.tsx`, `DuoIntention.tsx`, etc.
-- Pattern: Controlled components using `SessionContext` to read/write workflow state
+- Purpose: Full-page views for multi-step workflow
+- Locations: `client/src/pages/` contains 30+ page components
+- Pattern: One component per workflow step (e.g., DuoRoles, DuoPresentation, DuoFeedback)
+- Integration: Mounted dynamically in App.tsx router
+
+**Contexts:**
+- Purpose: Global state containers for cross-component access
+- Examples: SessionContext (workflow state), AccessContext (auth state)
+- Pattern: React Context + Provider pattern with custom hooks
+- Usage: useSession(), useAccess() custom hooks throughout app
 
 ## Entry Points
 
-**Server Entry Points:**
+**Server Entry (Development):**
+- Location: `server/index-dev.ts`
+- Triggers: `npm run dev` command
+- Responsibilities:
+  - Creates Vite dev server in middleware mode with HMR
+  - Serves hot-reloadable client code
+  - Transforms index.html with Vite
+  - Falls back to index.html for SPA routing
 
-**Development (`server/index-dev.ts`):**
-- Location: `/home/yan/projets/Duo-Connecte/server/index-dev.ts`
-- Triggers: `npm run dev` script
-- Responsibilities: Sets up Vite dev server with HMR, runs Express with hot module reloading
+**Server Entry (Production):**
+- Location: `server/index-prod.ts`
+- Triggers: `npm start` command (after `npm run build`)
+- Responsibilities:
+  - Serves pre-built static assets from `dist/public/`
+  - Sets Cache-Control headers
+  - Falls back to index.html for SPA routing
+  - Removes X-Frame-Options to allow Circle.so iframe embedding
 
-**Production (`server/index-prod.ts`):**
-- Location: `/home/yan/projets/Duo-Connecte/server/index-prod.ts`
-- Triggers: `npm run start` (after `npm run build`)
-- Responsibilities: Bundles and minifies server code with esbuild, runs standalone Node.js server
+**App Core:**
+- Location: `server/app.ts`
+- Responsibilities:
+  - Express app initialization with CORS and body parsing
+  - CORS middleware configuration for Circle.so and Railway domains
+  - API logging middleware (captures and truncates responses)
+  - Error handling (catches all thrown errors)
+  - HTTP server creation and port binding (5000 by default)
 
-**Client Entry Point (`client/src/main.tsx`):**
-- Location: `/home/yan/projets/Duo-Connecte/client/src/main.tsx`
-- Triggers: HTML `<script src="/src/main.tsx">` in `client/index.html`
-- Responsibilities: Mounts React app to `#root` DOM element via `createRoot().render()`
+**Client Entry:**
+- Location: `client/src/main.tsx`
+- Triggers: Browser requests index.html
+- Responsibilities:
+  - React root initialization with ReactDOM.createRoot()
+  - Renders App component
 
-**Root Component (`client/src/App.tsx`):**
-- Location: `/home/yan/projets/Duo-Connecte/client/src/App.tsx`
-- Triggers: Called by `main.tsx`
-- Responsibilities: Wraps app with providers (Query, Theme, Tooltip, Access, Session), renders `SessionRouter`
-
-**Route Registration (`server/routes.ts` & `server/routes/index.ts`):**
-- Location: `/home/yan/projets/Duo-Connecte/server/routes.ts`
-- Triggers: Called by `app.ts` during `registerRoutes(app)`
-- Responsibilities: Registers `/api/feedback`, `/api/health`, `/api/config`, `/api/check-access`, `/api/settings` endpoints and modular route handlers
+**App Router:**
+- Location: `client/src/App.tsx`
+- Responsibilities:
+  - Wraps entire app with providers (QueryClientProvider, ThemeProvider, SessionProvider, AccessProvider)
+  - Implements wouter-based route matching
+  - AccessGate component gates protected routes by access status
+  - SessionRouter component manages auth flow and user redirects
+  - Mounts 50+ pages for workflow, admin, and demo flows
 
 ## Error Handling
 
-**Strategy:** Global Express error handler with per-route try-catch, client-side fallback UI
+**Strategy:** Centralized error catching with status codes and user-friendly messages
 
 **Patterns:**
 
-**Server-side:**
-- Routes wrap async operations in try-catch blocks
-- Catch handlers call `res.status(code).json({ error: message })`
-- Zod validation errors caught and formatted as 400 responses
-- Global error handler in `app.ts` catches uncaught errors, returns 500 with message
+**Express Layer (`server/app.ts`):**
+- Global error handler middleware catches all thrown/passed errors
+- Returns status code (err.status/statusCode) and message as JSON
+- Logs to console
+- Returns 500 if no status provided
 
-**Client-side:**
-- `AccessContext` shows "origin_invalid" state with redirect link if access denied
-- `AccessGate` component shows loading spinner during access check
-- `AccessGate` shows `PaywallScreen` component if `accessStatus === 'denied'`
-- React Query handles HTTP error responses in hooks
-- User-facing messages in French (e.g., "Erreur serveur", "Accès réservé aux administrateurs")
+**Middleware Layer (`server/middleware.ts`):**
+- JWT verification returns 401 if token invalid/expired
+- Authentication required returns 401 if header missing
+- Admin check returns 403 if user not admin
+- Rate limiter (pinRateLimiter) returns 429 after 5 failed attempts in 15 minutes
 
-**Validation:**
-- Server validates all input via Zod schemas (`createPinSchema`, `validatePinSchema`, `updateConfigSchema`)
-- Client-side form validation via React Hook Form + Zod
-- Circle.so user data validated in `validateUserData()` function with detailed error messages
+**Route Layer (`server/routes/`):**
+- Zod schema validation catches errors and returns 400 with error message
+- Database queries wrapped in try-catch
+- Returns appropriate status and error message as JSON
+
+**Client Layer (`client/src/`):**
+- Toast component displays error messages to users
+- Failed API calls logged via React Query error handling
+- AccessContext catches origin validation errors and shows origin_invalid state
+- Form validation via react-hook-form + Zod
 
 ## Cross-Cutting Concerns
 
 **Logging:**
-- Server: Console logs with timestamp and source (e.g., `[12:34:56 PM [express] GET /api/config 200 in 45ms]`)
-- Intercepted via middleware that captures response JSON and duration
-- Logs filtered to only `/api/*` routes to avoid noise
-- Error logs in red via `console.error()` for caught exceptions
+- Express middleware logs API calls with method, path, status, duration, response body (truncated to 80 chars)
+- Format: `[HH:MM:SS] [express] METHOD /path STATUS in XXXms :: response`
+- Only logs requests to `/api/*` paths
 
 **Validation:**
-- Shared Zod schemas in `@shared/schema.ts` for both server and client
-- Server validates all POST/PATCH request bodies against schemas before processing
-- Client validates forms via React Hook Form before submission
-- Drizzle ORM types generated from table definitions ensure type safety
+- Server-side: Zod schemas in `shared/schema.ts` applied to all requests
+- Client-side: react-hook-form + Zod for form validation
+- Email format, PIN format (4-6 digits), Liquid template detection (Circle.so integration)
 
 **Authentication:**
-- Session tokens are signed JWTs with 60-minute expiry
-- PIN-based authentication uses bcrypt for hashing with 10 rounds
-- Both methods supported: PIN login (for non-Circle users) and Circle.so OAuth
-- `Authorization: Bearer <token>` header required for protected endpoints
+- JWT tokens (60-minute expiry) stored in Bearer header
+- Session secret from env var SESSION_SECRET (fallback to JWT_SECRET)
+- Bcrypt PIN hashing (10 rounds) for admin/user PINs
+- Rate limiting on PIN attempts (5 per 15 minutes)
 
 **CORS:**
-- Dynamic origin checking based on environment (dev allows all, production allows Circle.so + app origins)
-- `circleOrigin` from `CIRCLE_ORIGIN` or `VITE_CIRCLE_ORIGIN` env var
-- App origins built from `REPLIT_DEV_DOMAIN`, `REPLIT_DEPLOYMENT_URL`, `REPLIT_DOMAINS` env vars
-- CSP `frame-ancestors` header allows Circle.so iframe embedding
+- Allowed origins: Circle.so domain (CIRCLE_ORIGIN env var), Railway public domain, custom APP_DOMAIN
+- Dev mode (DEV_MODE=true) allows all origins
+- Requests with no origin (mobile, curl) allowed
+- Applied to `/api/*` routes and `/webhooks` routes
 
-**Rate Limiting:**
-- PIN validation endpoint rate-limited to 5 attempts per 15 minutes (IP-based)
-- IPv6 subnet masking (/64) for proper distributed client tracking
-- Uses `express-rate-limit` package with memory store
+**Configuration:**
+- Environment-based: NODE_ENV, DEV_MODE, DATABASE_URL, PORT
+- Feature flags: requireCircleDomain, requireCircleLogin, requirePaywall, requirePin
+- Integration: CIRCLE_ORIGIN, WEBHOOK_SECRET, SESSION_SECRET
+- Stored in AppConfig table (single row, id="main")
 
 ---
 
-*Architecture analysis: 2026-01-30*
+*Architecture analysis: 2026-01-31*

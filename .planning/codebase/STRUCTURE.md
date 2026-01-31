@@ -1,250 +1,296 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-01-31
 
 ## Directory Layout
 
 ```
-/home/yan/projets/Duo-Connecte/
-├── server/                    # Express backend application
-│   ├── index-dev.ts          # Development entry point with Vite
-│   ├── index-prod.ts         # Production entry point (bundled)
-│   ├── app.ts                # Express app configuration, middleware
-│   ├── routes.ts             # Main route registration, core API endpoints
-│   ├── routes/               # Modular route handlers
-│   │   ├── index.ts          # Route registration orchestrator
-│   │   ├── auth.ts           # /api/auth/* (Circle.so, PIN, JWT)
-│   │   ├── admin.ts          # /api/admin/* (protected admin operations)
-│   │   ├── support.ts        # /api/support/* (feedback, tickets)
-│   │   └── webhooks.ts       # /webhooks/* (Circle.so webhooks)
-│   ├── storage.ts            # Database abstraction layer (Drizzle ORM)
-│   └── middleware.ts         # Auth, validation, rate limiting functions
-├── client/                   # React frontend application
-│   ├── src/
-│   │   ├── main.tsx          # React DOM mount point
-│   │   ├── App.tsx           # Root component with providers
-│   │   ├── index.css         # Global styles
-│   │   ├── pages/            # Page components (routable screens)
-│   │   │   ├── auth/         # Login/signup flows
-│   │   │   ├── DuoXxx.tsx    # Duo Connecté workflow pages (25+ files)
-│   │   │   ├── DuoInversionPageXa.tsx  # Inversion variant pages (14 files)
-│   │   │   ├── dashboard.tsx # Admin dashboard
-│   │   │   ├── Welcome.tsx   # Welcome screen
-│   │   │   └── [other pages] # Demo screens, support, 404
-│   │   ├── components/       # Reusable React components
-│   │   │   ├── ui/           # Radix UI primitives (button, card, form, etc.)
-│   │   │   ├── admin/        # Admin-specific components
-│   │   │   ├── flow/         # Duo flow step components
-│   │   │   ├── App.tsx       # Root wrapper (providers)
-│   │   │   ├── GlobalHeader.tsx
-│   │   │   └── [others]
-│   │   ├── contexts/         # React Context providers
-│   │   │   ├── SessionContext.tsx  # Workflow state (names, step)
-│   │   │   └── AccessContext.tsx   # Access control state
-│   │   ├── hooks/            # Custom React hooks
-│   │   │   ├── use-toast.ts  # Toast notifications
-│   │   │   ├── use-circle-auth.ts
-│   │   │   ├── use-mobile.tsx
-│   │   │   └── usePageTransition.ts
-│   │   └── lib/              # Utilities and services
-│   │       ├── queryClient.ts     # React Query setup
-│   │       ├── utils.ts           # Helper functions
-│   │       └── auth.ts            # Auth token management
-│   ├── public/               # Static assets
-│   │   └── icons/
-│   └── index.html            # HTML entry point
-├── shared/                   # Shared TypeScript code
-│   └── schema.ts             # Drizzle tables, Zod schemas, types
-├── vite.config.ts            # Vite build configuration
-├── tsconfig.json             # TypeScript configuration
-├── tailwind.config.ts        # Tailwind CSS configuration
-├── package.json              # Dependencies and scripts
-├── .env*                     # Environment variables (not committed)
-├── dist/                     # Build output (generated)
-│   └── public/               # Built client assets
-├── docs/                     # Documentation (if present)
-└── .planning/
-    └── codebase/             # Planning documents
-        ├── ARCHITECTURE.md
-        ├── STRUCTURE.md
-        ├── CONVENTIONS.md
-        ├── TESTING.md
-        ├── STACK.md
-        ├── INTEGRATIONS.md
-        └── CONCERNS.md
+template-app-circle/
+├── client/                    # React SPA client application
+│   ├── index.html            # Entry HTML template (server-rendered in dev, static in prod)
+│   ├── public/               # Static assets (icons, logos)
+│   └── src/
+│       ├── main.tsx          # React root initialization
+│       ├── App.tsx           # Main app component with routing and providers
+│       ├── index.css         # Global styles (Tailwind)
+│       ├── components/       # Reusable UI components
+│       │   ├── ui/           # Radix UI + custom styled primitives
+│       │   ├── admin/        # Admin panel components
+│       │   ├── flow/         # Duo workflow-specific components
+│       │   ├── GlobalHeader.tsx
+│       │   ├── PageLayout.tsx
+│       │   ├── PersistentNav.tsx
+│       │   ├── theme-provider.tsx
+│       │   └── [other shared components]
+│       ├── pages/            # Full-page components (40+ pages)
+│       │   ├── auth.tsx                  # Login/Circle.so auth page
+│       │   ├── admin-login.tsx           # Admin PIN login
+│       │   ├── dashboard.tsx             # User dashboard
+│       │   ├── Welcome.tsx               # Landing page
+│       │   ├── PaywallScreen.tsx         # Payment wall
+│       │   ├── DuoPresentation.tsx       # Duo Connecté workflow step 1
+│       │   ├── DuoRoles.tsx              # Step 2 (role selection)
+│       │   ├── DuoSenderSituation.tsx    # Step N (multi-step flow)
+│       │   ├── DuoFeedback.tsx           # Feedback collection
+│       │   ├── DuoCompletion.tsx         # Workflow completion
+│       │   ├── DuoInversionPage*.tsx     # Alternate flow pages (14 variants)
+│       │   ├── SupportPage.tsx           # Support ticket form
+│       │   ├── not-found.tsx             # 404 page
+│       │   └── [20+ other workflow pages]
+│       ├── contexts/         # React Context providers
+│       │   ├── SessionContext.tsx        # Workflow state (step, names)
+│       │   └── AccessContext.tsx         # Auth state (email, access, origin)
+│       ├── hooks/            # Custom React hooks
+│       │   ├── use-circle-auth.ts        # Circle.so integration hook
+│       │   ├── use-mobile.tsx            # Mobile detection
+│       │   ├── usePageTransition.ts      # Page animation
+│       │   └── use-toast.ts              # Toast notifications
+│       └── lib/              # Utilities and helpers
+│           ├── queryClient.ts            # TanStack React Query config
+│           ├── auth.ts                   # Client-side auth utilities
+│           └── utils.ts                  # General utilities (cn, etc)
+│
+├── server/                    # Express.js backend API
+│   ├── index-dev.ts          # Dev server entry (with Vite HMR)
+│   ├── index-prod.ts         # Production server entry (static files)
+│   ├── app.ts                # Express app config (CORS, middleware, error handling)
+│   ├── middleware.ts         # Auth, validation, rate limiting
+│   ├── storage.ts            # Database abstraction (IStorage interface + MemStorage)
+│   ├── routes.ts             # Route registration (registerRoutes function)
+│   └── routes/               # Modular route handlers
+│       ├── index.ts          # Route registration orchestrator (registerModularRoutes)
+│       ├── auth.ts           # POST /api/auth/validate, /create-pin, /validate-pin, /me
+│       ├── admin.ts          # POST /api/admin/login, GET /config, POST /config, user mgmt
+│       ├── support.ts        # POST /api/support/tickets, GET /support/tickets
+│       └── webhooks.ts       # /webhooks/* endpoints
+│
+├── shared/                    # Shared code (client + server)
+│   └── schema.ts             # Drizzle ORM tables + Zod validation schemas
+│
+├── public/                    # Build artifacts (generated)
+│   ├── assets/               # Bundled JS/CSS
+│   ├── icons/                # Icon files
+│   └── index.html            # Built HTML (production only)
+│
+├── migrations/               # Drizzle migrations (auto-generated)
+│   └── *.sql                 # Database schema migrations
+│
+├── docs/                     # Documentation
+│
+├── attached_assets/          # External assets referenced in build
+│
+├── .planning/               # Planning documents (created by GSD)
+│   └── codebase/
+│       ├── ARCHITECTURE.md
+│       ├── STRUCTURE.md
+│       ├── CONVENTIONS.md
+│       ├── TESTING.md
+│       ├── STACK.md
+│       ├── INTEGRATIONS.md
+│       └── CONCERNS.md
+│
+├── dist/                    # Production build output
+│   ├── index.js             # Bundled server (from esbuild)
+│   └── public/              # Vite-built client (from vite build)
+│
+├── node_modules/            # Dependencies (not committed)
+│
+├── vite.config.ts           # Vite build config for client
+├── tsconfig.json            # TypeScript config (shared client/server)
+├── tailwind.config.ts       # Tailwind CSS config
+├── package.json             # Dependencies, scripts
+├── drizzle.config.ts        # Database migration config
+└── components.json          # Shadcn/ui config
+
 ```
 
 ## Directory Purposes
 
-**`server/`:**
-- Purpose: Express backend with database operations, authentication, API endpoints
-- Contains: Route handlers, middleware, storage layer, Drizzle ORM integration
-- Key files:
-  - `app.ts`: Express instance, CORS setup, middleware chain
-  - `routes.ts`: Endpoint registration (`/api/feedback`, `/api/config`, `/api/check-access`)
-  - `storage.ts`: `IStorage` interface and `MemStorage` implementation
-  - `middleware.ts`: JWT signing/verification, PIN hashing, validation functions
-
 **`client/src/`:**
-- Purpose: React frontend with pages, components, state management
-- Contains: Page components, UI library, contexts, hooks
-- Key subdirectories:
-  - `pages/`: Routable screens (Duo workflow pages, auth, admin, welcome)
-  - `components/ui/`: Radix UI-based design system components
-  - `components/admin/`: Admin dashboard components
-  - `contexts/`: SessionContext (workflow state), AccessContext (access control)
-
-**`client/src/pages/`:**
-- Purpose: Full-screen routable components
-- Contains: 50+ page components following patterns:
-  - `Duo*.tsx`: Duo Connecté workflow pages (sender/receiver perspectives)
-  - `DuoInversion*.tsx`: Variant pages for role reversal
-  - `Dashboard.tsx`: Admin control panel
-  - `AuthPage.tsx`, `AdminLogin.tsx`: Login flows
-  - Demo screens: `DemoLoadingScreen.tsx`, `DemoPaywallScreen.tsx`, `DemoPinCreation.tsx`
+- Purpose: React source code for user-facing UI
+- Contains: Components, pages, hooks, contexts, utilities
+- Key files: App.tsx (main router), main.tsx (entry point)
 
 **`client/src/components/ui/`:**
-- Purpose: Radix UI wrapper components styled with Tailwind
-- Contains: Unstyled component exports (button, card, form, dialog, etc.)
-- Pattern: File per component (e.g., `button.tsx`, `card.tsx`, `form.tsx`)
+- Purpose: Styled primitives from Radix UI with Tailwind
+- Contains: 30+ reusable UI components (Button, Dialog, Input, etc)
+- Source: Shadcn/ui library (synced via CLI)
+
+**`client/src/pages/`:**
+- Purpose: Full-page route components
+- Contains: 40+ pages covering auth, workflow, admin, and demo flows
+- Pattern: One component per page/route
+
+**`client/src/contexts/`:**
+- Purpose: Global state providers
+- Contains: SessionContext (workflow state), AccessContext (auth state)
+- Pattern: React Context + custom hook for easy access
+
+**`client/src/hooks/`:**
+- Purpose: Reusable logic as custom hooks
+- Contains: Auth integration, mobile detection, page transitions, notifications
+- Pattern: Stateful logic extracted from components
+
+**`server/routes/`:**
+- Purpose: Route handler organization by feature
+- Contains: Auth routes, admin routes, support routes, webhooks
+- Pattern: Express Router instances mounted in registerModularRoutes()
 
 **`shared/`:**
-- Purpose: Shared type definitions and validation schemas
-- Contains:
-  - Drizzle ORM table definitions (`users`, `appConfig`, `paidMembers`, etc.)
-  - Zod validation schemas (`createPinSchema`, `validatePinSchema`, `updateConfigSchema`)
-  - TypeScript interfaces (`User`, `AppConfig`, `SessionState`)
-- Used by: Both server and client for type safety and runtime validation
+- Purpose: Type definitions and schemas used by both client and server
+- Contains: Drizzle table schemas, Zod validation schemas
+- Pattern: Single source of truth for data shapes
+
+**`migrations/`:**
+- Purpose: Database schema version control
+- Contains: Auto-generated SQL files from Drizzle Kit
+- Pattern: One file per schema change (drizzle-kit push)
 
 ## Key File Locations
 
 **Entry Points:**
 
-**Server (Development):**
-- `server/index-dev.ts`: Development entry point, sets up Vite HMR and Express
-
-**Server (Production):**
-- `server/index-prod.ts`: Production bundled entry point (esbuild)
-
-**Client:**
-- `client/src/main.tsx`: React DOM mount point, imports App component
-- `client/src/App.tsx`: Root component with all providers (Query, Theme, Access, Session)
-- `client/index.html`: HTML shell with `<div id="root">` and script tag
+- `server/index-dev.ts`: Dev server with Vite HMR - run with `npm run dev`
+- `server/index-prod.ts`: Production server serving static assets - run with `npm start` (after build)
+- `client/src/main.tsx`: React app root - mounted in browser
+- `server/app.ts`: Express app initialization and middleware setup
 
 **Configuration:**
 
-- `tsconfig.json`: TypeScript settings, path aliases
-- `vite.config.ts`: Vite build config, alias definitions (`@`, `@shared`, `@assets`)
-- `tailwind.config.ts`: Tailwind CSS theme and plugin config
-- `package.json`: Dependencies, build scripts, version info
-- `.env.local`, `.env.example`: Environment variables (secrets not committed)
+- `vite.config.ts`: Client build config (root: client, outDir: dist/public, aliases: @, @shared, @assets)
+- `tsconfig.json`: TypeScript config (includes client/src, shared, server)
+- `tailwind.config.ts`: Tailwind CSS theming
+- `drizzle.config.ts`: Database migration config (dialect: postgresql, schema: shared/schema.ts)
+- `package.json`: Scripts (dev, build, start, check, db:push) and dependencies
 
 **Core Logic:**
 
-- `server/app.ts`: Express instance, CORS, middleware, global error handler
-- `server/routes.ts`: Main route registration and core API endpoints
-- `server/storage.ts`: Database abstraction, MemStorage or Drizzle ORM implementation
-- `server/middleware.ts`: JWT, PIN, validation, rate limiting functions
+- `server/storage.ts`: Database operations abstraction (IStorage interface + MemStorage implementation)
+- `server/middleware.ts`: Authentication, validation, rate limiting
 - `client/src/contexts/SessionContext.tsx`: Workflow state management
-- `client/src/contexts/AccessContext.tsx`: Access control state management
-- `shared/schema.ts`: All Drizzle tables, Zod schemas, TypeScript types
+- `client/src/contexts/AccessContext.tsx`: Authentication and access control
+- `client/src/lib/auth.ts`: Client-side auth token management
+
+**Shared Schemas:**
+
+- `shared/schema.ts`: Drizzle ORM tables (users, loginAttempts, appConfig, paidMembers, feedbacks, supportTickets) + Zod schemas for validation
 
 **Testing:**
 
-- Not detected in current structure (no `__tests__`, `*.test.ts`, or `*.spec.ts` files found)
+- No test files currently present in codebase
+- Test structure would follow: `*.test.ts`, `*.spec.ts` files co-located with source
+
+**Public Assets:**
+
+- `client/public/icons/`: Icon SVG files
+- `client/public/`: Static files served in dev
 
 ## Naming Conventions
 
 **Files:**
 
-- **React Components:** PascalCase (`SessionContext.tsx`, `GlobalHeader.tsx`, `DuoRoles.tsx`)
-- **Utilities/Services:** camelCase (`queryClient.ts`, `usePageTransition.ts`, `use-circle-auth.ts`)
-- **Hooks:** `use` prefix, camelCase (`use-toast.ts`, `use-mobile.tsx`, `use-circle-auth.ts`)
-- **Pages:** PascalCase with domain prefix (`DuoSenderSituation.tsx`, `AdminLogin.tsx`)
-- **Routes:** Abbreviated action name (`auth.ts`, `admin.ts`, `support.ts`, `webhooks.ts`)
+- React components: PascalCase.tsx (e.g., SessionContext.tsx, GlobalHeader.tsx)
+- Hooks: kebab-case with `use-` prefix (e.g., use-circle-auth.ts, use-mobile.tsx)
+- Utils/helpers: kebab-case.ts (e.g., queryClient.ts, utils.ts)
+- Pages: PascalCase.tsx (e.g., DuoPresentation.tsx, AdminLogin.tsx)
+- Routes: kebab-case.ts (e.g., auth.ts, admin.ts, support.ts)
 
 **Directories:**
 
-- **UI Components:** `components/ui/` (Radix-based, lowercase with dash: `alert-dialog.tsx`, `dropdown-menu.tsx`)
-- **Features:** Feature name in lowercase or PascalCase (`admin/`, `flow/`, `pages/`)
-- **Hooks:** `hooks/` subdirectory, file names with `use-` prefix
-- **Utilities:** `lib/` subdirectory for shared helpers and services
+- Feature-based: lowercase (components, pages, hooks, lib, contexts, routes, migrations)
+- UI components: `ui/` subdirectory under components
+- Feature-specific: domain-based (admin, flow subdirectories under components)
 
-**TypeScript/JavaScript:**
+**Variables/Functions:**
 
-- **Interfaces:** PascalCase (`User`, `AppConfig`, `IStorage`)
-- **Types:** PascalCase (`SessionState`, `CircleUserData`)
-- **Functions:** camelCase (`hashPin()`, `validateUserData()`, `generateSessionToken()`)
-- **Constants:** SCREAMING_SNAKE_CASE (`VALIDATION_EXPIRY_MS`, `BCRYPT_ROUNDS`)
-- **React Hooks:** camelCase with `use` prefix (`useSession()`, `useAccess()`, `useQuery()`)
+- Constants: UPPER_SNAKE_CASE (VALIDATION_EXPIRY_MS, SESSION_SECRET)
+- Functions: camelCase (generateSessionToken, validateUserData)
+- React state: camelCase (session, accessStatus, userEmail)
+- Types/Interfaces: PascalCase (SessionState, AccessContextType, JWTPayload)
+
+**Routes:**
+
+- API routes: kebab-case with /api/ prefix (e.g., /api/auth/validate, /api/admin/config)
+- Frontend routes: kebab-case (e.g., /welcome, /admin-login, /admin)
 
 ## Where to Add New Code
 
-**New Feature:**
-- **Primary code:** `client/src/pages/FeatureName.tsx` for page, `client/src/components/FeatureName.tsx` for components
-- **Server logic:** `server/routes/featureName.ts` if new endpoint category, or add to existing file
-- **Types/schemas:** Add to `shared/schema.ts` (Drizzle tables, Zod validators, TypeScript types)
-- **API calls:** Add query functions in `client/src/lib/queryClient.ts` or create new hook in `client/src/hooks/`
+**New Feature (e.g., New Workflow Page):**
+
+- Primary code: `client/src/pages/[PageName].tsx` - create React component
+- Contexts: Update `client/src/contexts/SessionContext.tsx` if new state needed
+- Styles: Use Tailwind classes inline, components in `client/src/components/`
+- Routes: Add to wouter Switch in `client/src/App.tsx`
+- API: Create endpoint in `server/routes/[feature].ts` if needed
+
+**New API Endpoint:**
+
+- Implementation: `server/routes/[feature].ts` - add router method (post, get, etc)
+- Middleware: Use `requireAuth` or `requireAdmin` from `server/middleware.ts`
+- Validation: Add Zod schema in `shared/schema.ts`
+- Storage: Call `storage.method()` from IStorage interface
+- CORS: Automatically applied via `app.use('/api', corsMiddleware)`
 
 **New Component/Module:**
-- **UI Component:** Create in `client/src/components/` with file name matching component name (PascalCase)
-- **Page Component:** Create in `client/src/pages/` following naming pattern (`DuoXxx.tsx`, `AdminXxx.tsx`)
-- **Server Endpoint:** Add route to appropriate file in `server/routes/` (auth.ts, admin.ts, support.ts, etc.) or create new route file
-- **Middleware:** Add function to `server/middleware.ts` or create separate file if complex
+
+- Shared UI component: `client/src/components/[ComponentName].tsx`
+- Feature-specific component: `client/src/components/[feature]/[ComponentName].tsx`
+- Hook: `client/src/hooks/use-[feature-name].ts`
+- Library function: `client/src/lib/[name].ts`
+- Server utility: `server/[name].ts`
+
+**New Context/State:**
+
+- Create file: `client/src/contexts/[ContextName]Context.tsx`
+- Pattern: Create context, provider component, custom hook (useContextName)
+- Export: Named export for Provider, named export for hook
+- Wrap: Add provider in App.tsx at appropriate level
 
 **Utilities:**
-- **Shared helpers:** `client/src/lib/utils.ts` for general utilities
-- **Authentication utilities:** `client/src/lib/auth.ts` for token/auth logic
-- **Custom hooks:** `client/src/hooks/` directory with `use` prefix naming
-- **Server utilities:** Create in `server/` at appropriate level or in `server/routes/`
 
-**Database Operations:**
-- **New table:** Add Drizzle table definition to `shared/schema.ts`
-- **Zod schema:** Add validation schema in `shared/schema.ts` near corresponding Drizzle table
-- **Storage methods:** Implement in `MemStorage` class in `server/storage.ts`, update `IStorage` interface
+- Shared helpers: `client/src/lib/utils.ts` or new file `client/src/lib/[name].ts`
+- Server utilities: `server/[name].ts`
+- Cross-cutting concerns: `server/middleware.ts`
 
-**Styling:**
-- **Global styles:** `client/src/index.css` for app-wide styles
-- **Component styles:** Inline Tailwind classes in JSX (no separate CSS files)
-- **Theme config:** Modify `tailwind.config.ts` for custom colors, fonts, spacing
+**Database:**
+
+- New table: Add to `shared/schema.ts` (pgTable definition + Zod schema)
+- New operation: Add method to IStorage interface
+- Implementation: Add to MemStorage class in `server/storage.ts`
+- Migration: Run `npm run db:push` to auto-generate migration
 
 ## Special Directories
 
 **`dist/`:**
-- Purpose: Build output directory
-- Generated: Yes (created by `vite build && esbuild` build process)
-- Committed: No (in `.gitignore`)
-- Contents: Minified client assets in `dist/public/`, bundled server code in `dist/index.js`
+- Purpose: Production build output
+- Generated: Yes (via `npm run build`)
+- Committed: No (gitignored)
+- Contents: `dist/public/` contains Vite-built client, `dist/index.js` contains bundled server
+- Build command: Vite builds client to dist/public, esbuild bundles server to dist/index.js
 
-**`client/public/`:**
-- Purpose: Static assets served directly (icons, images, logos)
-- Generated: No
-- Committed: Yes
-- Contents: Icon files (`icons/`), favicon, publicly accessible files
+**`node_modules/`:**
+- Purpose: Installed npm dependencies
+- Generated: Yes (via `npm install`)
+- Committed: No (gitignored)
+- Size: Large (hundreds of packages)
 
-**`attached_assets/`:**
-- Purpose: Additional assets (not in repo)
-- Generated: No
-- Committed: Partial (referenced in vite alias `@assets`)
+**`migrations/`:**
+- Purpose: Database schema version control
+- Generated: Yes (via `npm run db:push` with drizzle-kit)
+- Committed: Yes (tracked in git)
+- Pattern: One SQL file per migration, numbered sequentially
 
-**`.planning/codebase/`:**
-- Purpose: Architecture and planning documents
-- Generated: Yes (by GSD commands)
-- Committed: Yes
-- Contents: ARCHITECTURE.md, STRUCTURE.md, CONVENTIONS.md, TESTING.md, STACK.md, INTEGRATIONS.md, CONCERNS.md
-
-**`.config/npm/`:**
-- Purpose: Node package manager configuration
-- Generated: Yes (by npm/package manager)
-- Committed: No
-- Contents: Global npm packages and cache
+**`.planning/`:**
+- Purpose: GSD planning and analysis documents
+- Generated: Yes (by `/gsd:*` commands)
+- Committed: Tracked for project planning
+- Structure: Organized by document type (codebase, phases, milestones)
 
 **`.local/`:**
-- Purpose: Local development state (not version controlled)
-- Generated: Yes (by development tools and Replit agent)
-- Committed: No
-- Contents: Agent state files, build caches
+- Purpose: Local development state and agent state files
+- Generated: Yes (by Replit agent system)
+- Committed: No (local-only)
 
 ---
 
-*Structure analysis: 2026-01-30*
+*Structure analysis: 2026-01-31*

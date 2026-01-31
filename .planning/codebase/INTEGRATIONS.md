@@ -1,195 +1,165 @@
 # External Integrations
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-01-31
 
 ## APIs & External Services
 
-**Circle.so Integration:**
-- Circle.so community platform - User authentication and identity provider
-  - SDK/Client: postMessage API for iframe communication
-  - Auth: Frame-to-frame authentication via message passing
-  - Implementation: `client/src/hooks/use-circle-auth.ts`
-  - Env vars: `VITE_CIRCLE_ORIGIN`, `CIRCLE_ORIGIN`
-  - Purpose: Authenticates users from Circle.so communities, provides user identity data
-
 **Email Service:**
-- Resend - Transactional email service for support tickets
-  - SDK/Client: `resend` package (6.6.0)
+- Resend - Email delivery for support tickets and admin notifications
+  - SDK/Client: `resend` 6.6.0
   - Auth: `RESEND_API_KEY` environment variable
-  - Implementation: `server/routes/support.ts`
-  - Endpoints:
-    - Support ticket notifications to `support@avancersimplement.com`
-    - Support ticket replies to user email addresses
-  - Purpose: Sends email notifications for new support tickets and admin replies
+  - Usage: `server/routes/support.ts` - Sends support ticket notifications to admin and reply emails to users
+  - Sender: `support@avancersimplement.com`
 
-**Payment Webhook:**
-- Circle.so Payment Webhook - Receives payment notifications
-  - Endpoint: `POST /api/webhooks/circle-payment`
-  - Auth: `X-Webhook-Secret` header validation (env var: `WEBHOOK_SECRET`)
-  - Implementation: `server/routes/webhooks.ts`
-  - Purpose: Processes payment events and registers paid members
+**Community Platform:**
+- Circle.so - Embedded community/membership platform
+  - Integration: iframe embedding with CORS configuration
+  - Auth: Custom validation flow via `server/routes/auth.ts`
+  - User data flow: Circle passes user data to `/api/auth/validate` endpoint
+  - Config: `CIRCLE_ORIGIN` (production) or `VITE_CIRCLE_ORIGIN` (development) environment variables
+  - CORS: Configured in `server/app.ts` to allow Circle.so origin
+  - Frame policy: X-Frame-Options removed, Content-Security-Policy set to allow iframe embedding
 
 ## Data Storage
 
 **Databases:**
-- PostgreSQL (production) or SQLite (optional fallback)
-  - Connection: `DATABASE_URL` environment variable
-  - Client: Drizzle ORM with Neon serverless driver
-  - Implementation: `server/storage.ts` (DB layer with abstraction)
-  - Connection pooling: `@neondatabase/serverless` Pool
 
-**Database Tables:**
-- `users` - User accounts with JWT-based sessions
-  - Fields: id (UUID), email, publicUid, name, pinHash, isAdmin, createdAt, lastLogin
-  - Indexes: Primary key on id
+**PostgreSQL (Production/Primary):**
+- Connection: `DATABASE_URL` environment variable (Neon serverless)
+- Client: Drizzle ORM with `@neondatabase/serverless` connection pooling
+- Tables managed in `shared/schema.ts`:
+  - `users` - User accounts with email, public UID, PIN hash, admin flag
+  - `loginAttempts` - Login audit trail with IP addresses and timestamps
+  - `appConfig` - Single config row for app settings (PIN requirement, paywall, Circle.so settings)
+  - `paidMembers` - Paywall/payment tracking (email, plan, amount, coupon)
+  - `feedbacks` - Anonymous user feedback with ratings and comments
+  - `supportTickets` - Support requests with name, email, subject, description, status
+- Migrations: Stored in `./migrations` directory, managed via `drizzle-kit`
 
-- `login_attempts` - Login audit trail
-  - Fields: id, userId, success, ipAddress, timestamp
-  - Indexes: Composite on (userId, timestamp)
+**In-Memory (Development/Fallback):**
+- Storage: `memorystore` 1.6.7
+- Usage: Development mode or when DATABASE_URL not set
+- Implements: `MemStorage` class in `server/storage.ts` with full data persistence simulation
+- Seeded with: Admin user `fastusone@gmail.com` with hashed PIN
 
-- `app_config` - Application configuration singleton
-  - Fields: requireCircleDomain, requireCircleLogin, requirePaywall, requirePin, paywallPurchaseUrl, paywallInfoUrl, paywallTitle, paywallMessage, webhookAppUrl, environment, updatedAt
-  - Purpose: Runtime configuration without code deployment
-
-- `paidMembers` - Paid subscription tracking
-  - Fields: id (UUID), email (unique), paymentDate, paymentPlan, amountPaid, couponUsed
-  - Purpose: Tracks users with active subscriptions
-
-- `feedbacks` - User feedback collection
-  - Fields: id, rating, message, createdAt, archived
-
-- `supportTickets` - Support request management
-  - Fields: id, name, email, subject, description, status, createdAt, updatedAt
+**Session Store:**
+- PostgreSQL via `connect-pg-simple` - Stateful session storage
+- Fallback: In-memory (`memorystore`) if not configured
+- Configuration: `SESSION_SECRET` or `JWT_SECRET` environment variables (default: "development-secret-change-in-production")
 
 **File Storage:**
-- Local filesystem only - Static assets in `attached_assets/`
-  - Served via Express static middleware from `dist/public`
+- Local filesystem only - No external file storage integration detected
+- Assets stored in: `attached_assets/` directory
+- Static files served from: `dist/public/` (Vite build output)
 
 **Caching:**
-- In-memory cache for client (localStorage)
-  - Circle.so user data cached for 7 days
-  - Validation tokens cached in memory (5 minute expiry)
-- Session storage (configurable)
-  - Development: memorystore (in-process)
-  - Production: connect-pg-simple (PostgreSQL-backed)
+- Client-side: TanStack React Query handles HTTP response caching
+- Server-side: Validation cache in `server/routes/auth.ts` (in-memory, 5-minute TTL)
+- No external cache service configured
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Circle.so (primary) - Community platform authentication
-  - Implementation: iframe-based postMessage protocol
-  - Data flow:
-    1. Client requests user auth from parent frame (Circle.so)
-    2. Circle.so sends user data via postMessage
-    3. Client validates and stores user info (localStorage)
-    4. Server validates Circle.so user data on auth endpoints
+- Circle.so (community platform)
+  - User data includes: publicUid, email, name, isAdmin flag, timestamp
+  - Implementation: Validation API endpoint flow (`/api/auth/validate`)
 
-- Custom PIN-based (secondary) - Local PIN authentication
-  - Implementation: bcrypt hashing with 10 rounds
-  - Endpoints: `/api/auth/validate-pin`, `/api/auth/create-pin`
-  - Rate limiting: 5 attempts per 15 minutes
+**Custom Authentication:**
+- PIN-based login: 4-6 digit numeric PIN, bcrypt hashed
+- Session tokens: JWT format via jsonwebtoken, signed with JWT_SECRET
+- Rate limiting: PIN attempts limited (default 5 attempts per 15 minutes) via express-rate-limit
 
-**Session Management:**
-- JWT tokens (Bearer tokens)
-  - Implementation: `server/middleware.ts`
-  - Secret: `JWT_SECRET` or `SESSION_SECRET` env var
-  - Expiry: 60 minutes
-  - Payload: { userId, email }
+**Auth Flow:**
+1. Circle.so sends user data to `/api/auth/validate`
+2. Validation token cached in memory (5-minute expiry)
+3. User creates PIN or logs in with existing PIN
+4. Successful auth returns JWT session token
+5. Paywall check available via `/api/auth/check-paywall` endpoint
+
+**Paywall Integration:**
+- Membership check: `requirePaywall` flag in appConfig table
+- Paid members tracked in `paidMembers` table
+- Payment webhook: `/api/webhooks/circle-payment` (Circle.so payment events)
+- Auth blocks non-paid users if paywall enabled
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- Not integrated (console.error only)
+- None detected - No Sentry, Rollbar, or similar service configured
 
 **Logs:**
-- Console logging (stdout)
-  - Dev mode: Request/response logging
-  - Auth logging: [AUTH], [WEBHOOK], [VALIDATE] tags
-  - Email logging: [RESEND] tags
-  - Webhook logging: [WEBHOOK] tags
+- Console logging only (stdout)
+- Log patterns in code:
+  - `[WEBHOOK]` - Payment webhook events
+  - `[RESEND]` - Email service events
+  - `[AUTH]` - Authentication events
+  - `[PAYWALL CHECK]` - Paywall validation
+  - `[ADMIN-LOGIN]` - Admin authentication
+- Server logs API requests: method, path, status code, duration, response payload
+- No external log aggregation service
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Replit (detected via REPLIT_* environment variables)
-  - Dev domain: `REPLIT_DEV_DOMAIN`
-  - Deployment URL: `REPLIT_DEPLOYMENT_URL`
-  - Production domains: `REPLIT_DOMAINS` (comma-separated)
-
-**Build & Deployment:**
-- Vite for client bundling
-- esbuild for production server bundling
-- Single port serving (5000)
-  - Firewalled - only accessible on configured port
-  - Serves both API and static client
+- Railway.com (production deployment platform)
+- Auto-provisioned via Railway: RAILWAY_PUBLIC_DOMAIN environment variable
+- Support for custom domains via APP_DOMAIN environment variable
+- nixpacks.toml for build configuration
 
 **CI Pipeline:**
-- None detected in configuration
+- None detected - No GitHub Actions, GitLab CI, or similar configured
+- Manual deployments to Railway
+
+**Build Output:**
+- Client: `dist/public/` (Vite build)
+- Server: `dist/index.js` (esbuild bundled ESM)
+- Start command: `node dist/index.js`
 
 ## Environment Configuration
 
-**Required env vars (for operation):**
-- `DATABASE_URL` - PostgreSQL connection string
-- `JWT_SECRET` or `SESSION_SECRET` - Token signing key
-- `NODE_ENV` - Set to `production` for production
+**Required env vars:**
+- `DATABASE_URL` - PostgreSQL connection string (Neon serverless recommended)
+- `JWT_SECRET` - Secret key for JWT signing (min 16 chars recommended)
+- `NODE_ENV` - "development" or "production"
 - `PORT` - Server port (default 5000)
+- `VITE_DEV_MODE` - "true" to bypass Circle.so validation (development only)
 
-**Critical optional env vars:**
-- `RESEND_API_KEY` - Email notifications (required for support email feature)
-- `WEBHOOK_SECRET` - Payment webhook validation (required for payment processing)
-- `VITE_CIRCLE_ORIGIN` - Circle.so community origin (for auth validation)
-- `CIRCLE_ORIGIN` - Circle.so origin in production
-
-**Feature flags:**
-- `VITE_DEV_MODE=true` - Bypasses Circle.so authentication (development only)
-- `SESSION_TIMEOUT` - Session timeout milliseconds (default 3600000 = 1 hour)
-- `PIN_ATTEMPTS_LIMIT=5` - Maximum PIN validation attempts
-- `PIN_ATTEMPTS_WINDOW=900000` - Rate limit window (15 minutes)
+**Optional env vars:**
+- `CIRCLE_ORIGIN` - Circle.so community URL (e.g., https://your-space.circle.so)
+- `VITE_CIRCLE_ORIGIN` - Fallback Circle.so URL for dev mode
+- `RESEND_API_KEY` - API key for email notifications (optional, support tickets only)
+- `WEBHOOK_SECRET` - Secret for validating incoming webhooks (required for paywall)
+- `APP_URL` - Custom app URL (falls back to Railway domain)
+- `APP_DOMAIN` - Custom domain for CORS whitelist
+- `SESSION_TIMEOUT` - Session timeout in milliseconds (default 3600000 = 1 hour)
+- `PIN_ATTEMPTS_LIMIT` - Max PIN attempts before rate limit (default 5)
+- `PIN_ATTEMPTS_WINDOW` - Rate limit window in milliseconds (default 900000 = 15 min)
+- `SESSION_SECRET` - Fallback to JWT_SECRET if not provided
 
 **Secrets location:**
-- Environment variables only (no .env file in version control)
-- Replit environment dashboard for production secrets
+- Development: `.env` file (not committed)
+- Production: Railway environment variables
 
 ## Webhooks & Callbacks
 
 **Incoming Webhooks:**
-- `POST /api/webhooks/circle-payment` - Circle.so payment notifications
-  - Event types: `payment_received`
-  - Headers: `X-Webhook-Secret` (HMAC validation)
-  - Payload: { event, user: { email }, payment: { paywall_display_name, amount_paid, coupon_code } }
-  - Purpose: Register paid members when payment received
+- `POST /api/webhooks/circle-payment` - Circle.so payment webhook
+  - Payload: `{ event: 'payment_received', user: { email, timestamp }, payment: { paywall_display_name?, amount_paid?, coupon_code? } }`
+  - Auth: `x-webhook-secret` header validation
+  - Action: Records paid member in `paidMembers` table, enables access if paywall enabled
+  - Logging: Detailed webhook event logging in production
 
 **Outgoing Webhooks:**
-- None implemented (configurable URL in `app_config.webhookAppUrl` but not used)
+- Email notifications via Resend:
+  - Support ticket created: Admin notification email to `support@avancersimplement.com`
+  - Support ticket replied: Reply email to user's registered email address
+- Both emails include: Ticket ID, subject, sender name/email, formatted response message
 
-**Email Callbacks:**
-- None (Resend is one-way notification service)
-
-## Cross-Origin Integration
-
-**CORS Configuration:**
-- `server/app.ts` - Dynamic CORS policy
-  - Allows Circle.so origin (from `CIRCLE_ORIGIN` env var)
-  - Allows app's own origins (Replit deployment domains)
-  - Dev mode: Allows all origins
-  - Credentials: enabled
-
-**iframe Support:**
-- Content-Security-Policy: `frame-ancestors 'self' [circleOrigin]`
-- X-Frame-Options: removed to allow embedding
-- Purpose: Application embedded in Circle.so iframe
-
-## Rate Limiting
-
-**PIN Validation:**
-- Service: `express-rate-limit`
-- Configuration: 5 attempts per 15 minutes (900000ms)
-- Implementation: `server/middleware.ts` (pinRateLimiter)
-- Applied to: `/api/auth/validate-pin`, `/api/auth/admin-login`
-
-**Trust Proxy:**
-- Express configured to trust proxy (for accurate IP detection behind reverse proxy)
+**Webhook Security:**
+- Payment webhook protected by `WEBHOOK_SECRET` environment variable
+- Secret validation mandatory (returns 401 Unauthorized if missing/invalid)
+- No HMAC signature validation (relies on secret header only)
 
 ---
 
-*Integration audit: 2026-01-30*
+*Integration audit: 2026-01-31*

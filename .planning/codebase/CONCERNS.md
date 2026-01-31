@@ -1,227 +1,263 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-01-31
 
 ## Tech Debt
 
-**Excessive `any` type annotations:**
-- Issue: Widespread use of `any` type throughout server and client code defeats TypeScript safety. Roughly 30+ instances across `server/routes.ts`, `server/middleware.ts`, `server/storage.ts`, `server/routes/admin.ts`, and client components
-- Files: `server/middleware.ts`, `server/storage.ts`, `server/routes/admin.ts`, `server/routes/auth.ts`, `client/src/components/admin/*.tsx`
-- Impact: Type safety is compromised, potential runtime errors won't be caught at compile time. Makes refactoring and maintenance risky
-- Fix approach: Replace `any` types with proper type definitions. Use `(req as any).user` → define proper Express middleware types, create specific error types instead of `error: any`
+**In-Memory Validation Cache in Auth Routes:**
+- Issue: Validation tokens cached in memory during authentication flow will be lost on server restart
+- Files: `server/routes/auth.ts` (lines 16-33)
+- Impact: Users will get "validation token expired" errors if server restarts during signup flow; poor UX on deployments
+- Fix approach: Move validation cache to Redis or database-backed session store; implement distributed cache for multi-instance deployments
 
-**Validation cache in memory without persistence:**
-- Issue: `validationCache` in `server/routes/auth.ts` (lines 23-24) stores validation tokens in a simple Map with 5-minute TTL. No distributed cache mechanism
-- Files: `server/routes/auth.ts`
-- Impact: In multi-instance deployment, validation tokens created in one instance won't be visible to others, causing users to see "token expired" errors. Works only for single-instance deployments
-- Fix approach: Move to Redis or persistent storage. Use distributed cache backend for production scale
-
-**Embedded admin user credential:**
-- Issue: Admin user hardcoded with bcrypt hash in `MemStorage` constructor (line 82 in `server/storage.ts`): `fastusone@gmail.com` with seeded PIN hash
+**Hardcoded Admin User in Development Storage:**
+- Issue: Default admin user seeded in memory storage with hardcoded email and bcrypt hash
 - Files: `server/storage.ts` (lines 79-88)
-- Impact: Credential exposure if source code leaked. Not secure for production use
-- Fix approach: Remove from code, use environment variables or secure admin provisioning flow
+- Impact: Development credentials exposed in production if memory storage is accidentally used; not a concern if database storage is used, but creates maintenance burden
+- Fix approach: Use environment variables or a migration system for initial admin setup; document the production requirement clearly
 
-**Development secret for JWT:**
-- Issue: Default JWT_SECRET in `server/middleware.ts` (line 7) is "development-secret-change-in-production"
-- Files: `server/middleware.ts`
-- Impact: If SESSION_SECRET/JWT_SECRET not set in environment, fallback allows predictable token generation. Sessions can be forged
-- Fix approach: Require SESSION_SECRET to be set in production (throw error on startup if missing)
+**Global Error Handler Logs Full Error Details:**
+- Issue: Global error handler exposes error messages in response bodies in development mode
+- Files: `server/app.ts` (lines 139-145, 141)
+- Impact: Sensitive stack traces and implementation details leakable to clients in dev mode; current DEV_MODE check mitigates in dev environment
+- Fix approach: Implement structured error logging separate from response; ensure error details never reach production responses
 
-## Known Bugs
+**Validation Token Cleanup Interval Not Optimal:**
+- Issue: Cleanup interval runs every 60 seconds but expires tokens after 5 minutes - potential memory leak if many validation tokens created
+- Files: `server/routes/auth.ts` (lines 26-33)
+- Impact: Memory leak on high signup volume; cleanup interval not configurable
+- Fix approach: Use WeakMap for cleanup or implement TTL-based cache library (node-cache, redis)
 
-**Email validation in Circle.so flow:**
-- Symptoms: Users report "Email non reçu de Circle.so" errors intermittently. Validation at `server/middleware.ts` lines 68-70 checks for Liquid template remnants `{{` and `}}`
-- Files: `server/middleware.ts` (validateUserData function)
-- Trigger: Occurs when Circle.so doesn't properly hydrate member data in iframe context. Can happen with network delays or Circle.so template engine failures
-- Workaround: User refreshes page and retries auth. Works on second attempt
+## Security Concerns
 
-**Session token expiry edge case:**
-- Symptoms: Users with valid PIN get "Session invalide ou expirée" despite being within 60-minute window
-- Files: `server/middleware.ts` (line 19: `expiresIn: '60m'`)
-- Trigger: Clock skew between servers or drift in user system time. Timestamp validation (lines 97-102) allows ±5 minutes but token expiry is strict
-- Workaround: Manual logout and re-login
+**CORS Origin Validation Uses String Includes:**
+- Issue: CORS check uses `origin.includes()` which allows origin spoofing
+- Files: `server/app.ts` (line 68)
+- Impact: `https://evil.com-allowed-domain.com` would pass validation; should validate exact domain match or use subdomain patterns
+- Fix approach: Replace with exact origin matching or proper subdomain validation using URL parsing
 
-**Validation token cleanup race condition:**
-- Symptoms: Validation tokens occasionally expire while user is still submitting form
-- Files: `server/routes/auth.ts` (lines 26-33: interval-based cleanup)
-- Trigger: Cleanup interval runs every 60 seconds (line 33). If user takes 5+ minutes to complete form, token is deleted before form submission. VALIDATION_EXPIRY_MS is 5 minutes (line 24)
-- Workaround: None - user must restart auth flow
+**Weak X-Frame-Options Handling:**
+- Issue: X-Frame-Options header is removed entirely to allow iframe embedding; only CSP frame-ancestors is set
+- Files: `server/app.ts` (lines 91-102)
+- Impact: Older browsers without CSP support are vulnerable to clickjacking; tradeoff between Circle.so embedding and security
+- Fix approach: Use both X-Frame-Options and CSP; document the security tradeoff explicitly
 
-## Security Considerations
+**Validation Cache Token Not Cryptographically Secure:**
+- Issue: Validation tokens use crypto.randomBytes(32) which is secure, but cache lookups are synchronous and tokens visible in logs
+- Files: `server/routes/auth.ts` (line 62, 107)
+- Impact: Token enumeration possible if logs are exposed; tokens logged in console output
+- Fix approach: Prevent tokens from being logged; implement rate limiting on validation endpoints
 
-**Weak rate limiting on PIN validation:**
-- Risk: `pinRateLimiter` in `server/middleware.ts` (lines 107-114) allows 5 attempts per 15 minutes. PIN is only 4-6 digits (10,000 possible values)
-- Files: `server/middleware.ts`, `server/routes/auth.ts` (lines 335, 405)
-- Current mitigation: Rate limiting by IP. `ipv6Subnet: 64` masks IPv6 addresses
-- Recommendations: Increase window to 30 minutes, reduce max attempts to 3. Add exponential backoff. Implement account lockout after 3 failed attempts in 1 hour. Log suspicious PIN attempts for admin review
+**No Rate Limiting on Auth Endpoints Except PIN:**
+- Issue: `/api/auth/validate`, `/api/auth/create-pin`, `/api/auth/create-user-no-pin` have no rate limiting
+- Files: `server/routes/auth.ts` (lines 35, 146, 241)
+- Impact: User enumeration possible via validate endpoint; brute force attacks on account creation
+- Fix approach: Apply rate limiting middleware to all auth endpoints; use IP-based rate limiting for unauthenticated endpoints
 
-**CORS origin validation too permissive:**
-- Risk: `app.ts` lines 76 checks if origin `.includes(allowed)` - substring matching allows bypass. Origin `https://malicious-circle.so.attacker.com` would match `circle.so`
-- Files: `server/app.ts` (lines 76)
-- Current mitigation: CORS validation only for API routes (line 11 in `routes.ts`)
-- Recommendations: Use exact matching instead of substring: `origin === allowed`. Validate origin against full URL not substring
+**Admin Status Determined from Client Data:**
+- Issue: Admin status received from Circle.so can override server database state
+- Files: `server/routes/auth.ts` (line 86)
+- Impact: Privilege escalation possible if Circle.so data is compromised or spoofed; relies on client data for security decisions
+- Fix approach: Never trust client-provided admin status; always derive from database; validate Circle.so integrity if critical
 
-**postMessage accepts any origin for theme sync:**
-- Risk: `client/src/components/theme-provider.tsx` comment states "accepts from any origin for theme sync" for postMessage listener
-- Files: `client/src/components/theme-provider.tsx`
-- Current mitigation: Theme is non-sensitive data
-- Recommendations: Still validate origin using `event.origin` check. No reason to accept truly "any" origin. Whitelist Circle.so domains at minimum
+**Webhook Secret Validation:**
+- Issue: Webhook secret is basic string comparison without timing-attack protection
+- Files: `server/routes/webhooks.ts` (line 18)
+- Impact: Timing attacks possible to guess webhook secret
+- Fix approach: Use constant-time comparison (crypto.timingSafeEqual)
 
-**Webhook secret stored in environment variable only:**
-- Risk: `server/routes/webhooks.ts` (line 8) retrieves `WEBHOOK_SECRET` from env. No backup, rotation mechanism, or audit trail
-- Files: `server/routes/webhooks.ts`
-- Current mitigation: Server logs webhook calls with IP (line 11)
-- Recommendations: Implement webhook secret rotation. Add webhook signature verification beyond simple string comparison. Use HMAC-SHA256 for production. Log all webhook attempts to database for audit
+**No Input Sanitization in Email HTML Templates:**
+- Issue: User input (ticket.description, ticket.name, message) directly embedded in HTML emails
+- Files: `server/routes/support.ts` (lines 41, 166, 183)
+- Impact: Email injection and HTML injection possible if user input contains `<` or email headers
+- Fix approach: HTML-escape all user input before embedding in emails; use a template library with auto-escaping
 
-**Admin authentication lacks audit trail:**
-- Risk: Admin login at `server/routes/auth.ts` (lines 405-476) logs to console but no persistent audit. PIN is only 4-6 digits
-- Files: `server/routes/auth.ts`, `server/routes/admin.ts`
-- Current mitigation: Console logging with timestamps
-- Recommendations: Log all admin actions to database table (what changed, who, when). Require stronger PIN for admin (8+ digits or alphanumeric)
+**Session Token Hard-coded Expiry:**
+- Issue: Session tokens have 60-minute expiry hard-coded; no refresh token mechanism
+- Files: `server/middleware.ts` (line 19)
+- Impact: No way to extend sessions; users forced to re-auth after 60 minutes
+- Fix approach: Implement refresh tokens or sliding session window
 
-**Debug endpoints exposed in production:**
-- Risk: `/api/debug/admin-check` and `/api/debug/fix-admin` (lines 50-101 in `server/routes.ts`) check admin status and can elevate privileges via WEBHOOK_SECRET
-- Files: `server/routes.ts`
-- Current mitigation: Requires WEBHOOK_SECRET (line 77)
-- Recommendations: Remove debug endpoints or guard with strict environment checks (`NODE_ENV !== 'production'`)
+**Sensitive Data in Console Logs:**
+- Issue: Admin actions logged to console with email addresses and admin email visible
+- Files: `server/routes/admin.ts` (lines 85, 124, 153)
+- Impact: Logs may expose sensitive information if not properly secured; could leak to monitoring systems
+- Fix approach: Log only necessary audit info; hash or redact email addresses in logs; implement proper audit trail
+
+**Client-Side Session Storage:**
+- Issue: Session token and user data stored in localStorage without encryption
+- Files: `client/src/lib/auth.ts` (lines 2-3, 20-35)
+- Impact: XSS attacks can steal session tokens; no protection from compromised browser storage
+- Fix approach: Use httpOnly cookies for session tokens; validate token server-side on each request
+
+**Circle Auth Fallback Accepts Malformed Data:**
+- Issue: Fallback auth parsing directly uses user-provided fields without full validation
+- Files: `client/src/hooks/use-circle-auth.ts` (lines 204-210)
+- Impact: Invalid or malicious Circle.so data may be accepted if it has email field; could bypass validation
+- Fix approach: Require full schema validation for fallback case; don't accept partial objects
 
 ## Performance Bottlenecks
 
-**Inefficient user lookups in MemStorage:**
-- Problem: `getUserByEmail()` and `getUserByPublicUid()` in `server/storage.ts` (lines 95-105) iterate entire Map with `Array.from().find()`
-- Files: `server/storage.ts` (MemStorage class)
-- Cause: Map doesn't have secondary indexes. Every lookup is O(n)
-- Improvement path: Create secondary Maps for email→user and publicUid→user lookups. Keep them in sync on insert/update. Makes lookups O(1)
+**In-Memory Array Iteration for User Lookups:**
+- Issue: User lookups iterate entire array instead of using map keys
+- Files: `server/storage.ts` (lines 96-98, 102-104)
+- Impact: O(n) lookup time; scales poorly with user count even though users are stored in Map
+- Fix approach: Use email/publicUid as Map keys directly; avoid converting to array
 
-**Validation cache cleanup unbounded:**
-- Problem: `validationCache` in `server/routes/auth.ts` (line 23) cleans up every 60 seconds but never bounds maximum size
-- Files: `server/routes/auth.ts`
-- Cause: If many users start auth but don't complete, cache grows unbounded. Long-running server could accumulate thousands of entries
-- Improvement path: Add maximum cache size (e.g., 10,000 entries). Evict oldest entries when limit reached. Use LRU cache library
+**Validation Cache Stored in Single Map:**
+- Issue: All validation tokens in single in-memory map with cleanup on 60-second interval
+- Files: `server/routes/auth.ts` (lines 23, 26-33)
+- Impact: Linear scan on cleanup; potential memory leak if cleanup is missed
+- Fix approach: Use TTL-based cache or database-backed session store
 
-**No database indexes for common queries:**
-- Problem: `getRecentLoginAttempts()` in `server/storage.ts` (lines 384-393) uses index on `userId, timestamp` but other lookups have no indexes
-- Files: `shared/schema.ts`, `server/storage.ts`
-- Cause: `users.email` is unique but not indexed for query performance. `paidMembers.email` lookup has no special handling
-- Improvement path: Add indexes to `users(email)`, `users(public_uid)`, `feedbacks(archived, created_at)`, `support_tickets(status, created_at)`
+**No Database Query Optimization:**
+- Issue: Database queries have no indexes or batch operations defined
+- Files: `server/storage.ts` (DbStorage class)
+- Impact: Slow lookups for email-based queries if database has many users
+- Fix approach: Define database indexes on `email`, `publicUid`, `userId` fields in schema
 
-**Large component files:**
-- Problem: `client/src/pages/BlockShowcase.tsx` is 803 lines, `client/src/pages/DuoFeedback.tsx` is 630 lines
-- Files: `client/src/pages/BlockShowcase.tsx`, `client/src/pages/DuoFeedback.tsx`, others
-- Cause: No component splitting strategy. All logic in page component
-- Improvement path: Extract sub-components, use custom hooks for state logic. Aim for files under 300 lines
+**Support Ticket Sorting Done in Memory:**
+- Issue: Tickets sorted in memory after database fetch
+- Files: `server/storage.ts` (line 294)
+- Impact: All tickets fetched from database then sorted; should sort in query
+- Fix approach: Add ORDER BY to database query
+
+## Known Bugs
+
+**Login Attempt IP Address May Be Null:**
+- Issue: `req.ip` can be undefined depending on proxy configuration
+- Files: `server/routes/auth.ts` (lines 93, 224, 294, 360, 386, 426, 449)
+- Impact: Login attempts recorded with null IP address, defeating rate limiting based on IP
+- Fix approach: Ensure `trust proxy` is configured correctly; validate req.ip before logging
+
+**Support Ticket Email Reply Uses Wrong Sender:**
+- Issue: Email sender name differs between notification and reply
+- Files: `server/routes/support.ts` (lines 28, 130)
+- Impact: User sees inconsistent sender ("Duo Connecte" vs "Avancer Simplement")
+- Fix approach: Standardize sender name; use same value in both places
+
+**Missing Branding Variables:**
+- Issue: Email templates reference hardcoded brand names not sourced from config
+- Files: `server/routes/support.ts` (lines 28, 152, 197)
+- Impact: Cannot rebrand without code changes; email content hardcoded to French
+- Fix approach: Move branding to AppConfig; implement i18n for email templates
 
 ## Fragile Areas
 
-**Circle.so integration strongly coupled:**
-- Files: `client/src/hooks/use-circle-auth.ts`, `client/src/contexts/AccessContext.tsx`, `server/middleware.ts`
-- Why fragile: Hard-coded Circle.so domain checks (lines 54 in `use-circle-auth.ts`: `'avancersimplement.com'`, line 49: `'circle.so'`). Message format assumptions in `AccessContext.tsx` lines 18-26. If Circle.so changes data format or origin, app breaks
-- Safe modification: Extract Circle.so domain whitelist to config file. Create schema validation for message format. Add comprehensive logging for auth failures
-- Test coverage: No tests for Circle.so integration flow
+**Validation Cache Token Dependency:**
+- Files: `server/routes/auth.ts` (entire file)
+- Why fragile: Auth flow depends on in-memory cache that's not persistent; single point of failure; no fallback if cache is lost
+- Safe modification: Test reboot scenarios; add integration tests for auth flow; monitor cache size
+- Test coverage: No tests visible in codebase for auth flow; validation cache not tested
 
-**Validation token mechanism fragile:**
-- Files: `server/routes/auth.ts` (lines 16-33)
-- Why fragile: Tokens expire during user workflow. No way to extend expiry without restarting. Single-instance in-memory storage (see "Distributed cache" concern above)
-- Safe modification: Increase TTL to 15 minutes. Add mechanism to extend token if form submission in progress. Store in persistent backend
-- Test coverage: No tests for token lifecycle
+**Circle.so Data Validation:**
+- Files: `client/src/hooks/use-circle-auth.ts` (lines 164-220)
+- Why fragile: Multiple fallback mechanisms to extract email if schema validation fails; lenient origin checking; accepts partial objects
+- Safe modification: Add integration tests with actual Circle.so data; validate all Circle.so changes; document assumptions about Circle.so API
+- Test coverage: No visible tests for Circle.so integration; fallback logic not covered
 
-**Login attempt tracking incomplete:**
-- Files: `server/routes/auth.ts`, `server/storage.ts`
-- Why fragile: Login attempts logged but never used for lockout. Brute force attempts accumulate but no blocking. Rate limiter on PIN endpoint (5 attempts/15 min) is lenient
-- Safe modification: Implement account lockout: after 3 failed PIN attempts, lock for 30 minutes. Query login_attempts table to calculate lockout state
-- Test coverage: No tests for rate limit behavior
+**Admin Role Check Flow:**
+- Files: `server/middleware.ts` (lines 135-160), `server/routes/auth.ts` (lines 86)
+- Why fragile: Admin status determined from both client-provided data and database; unclear which takes precedence
+- Safe modification: Add tests for privilege escalation; audit all admin role assignments; document trust boundaries
+- Test coverage: No visible tests for admin authorization; role assignment logic not covered
 
-**Admin privilege management weak:**
-- Files: `server/routes/auth.ts` (line 86), `server/storage.ts` (lines 86-87)
-- Why fragile: Admin flag can be set by Circle.so in validation request (line 50 in `auth.ts`), or by webhook. No control over who can set admin flag. Privilege escalation possible if Circle.so data is compromised
-- Safe modification: Separate admin provisioning from user creation. Admin list should come from secure config, not user data. Make admin flag one-way (can set but not unset without manual override)
-- Test coverage: No tests for admin privilege checks
-
-## Scaling Limits
-
-**In-memory storage not suitable for production:**
-- Current capacity: Entire user database in RAM. Each user ~500 bytes. 10,000 users = 5MB
-- Limit: Single server instance. No persistence across restarts. All data lost on crash
-- Scaling path: Must use `DbStorage` with Neon PostgreSQL. Already implemented in `server/storage.ts` (lines 321-535) but MemStorage still used in development
-
-**Validation cache memory leak:**
-- Current capacity: Cleanup interval every 60 seconds, 5-minute TTL. Average ~100 concurrent validations
-- Limit: If 1,000+ users in auth flow simultaneously, cache could hold 10,000+ entries = 1MB+ per instance. Accumulates if cleanup fails
-- Scaling path: Use Redis with automatic expiry. Set max memory policy to evict oldest
-
-**WebSocket connections no scaling:**
-- Current capacity: Not visible in codebase yet, but ws package imported in `server/storage.ts` (line 6)
-- Limit: Each WebSocket connection consumes server resources. Single server can handle ~10,000 concurrent connections max
-- Scaling path: Implement connection pooling, use message queues (RabbitMQ/Redis) for broadcast instead of direct WebSocket
-
-## Dependencies at Risk
-
-**Express.js rate limiting library:**
-- Risk: `express-rate-limit` v8.2.1 is stable but if security patch required, need rapid deployment
-- Impact: PIN validation exposed without rate limiting if library fails
-- Migration plan: Have fallback rate limiting logic in middleware. Consider `slowDown` option for graceful degradation
-
-**Drizzle ORM version lock:**
-- Risk: `drizzle-orm@0.39.1` locked but dependencies like `@neondatabase/serverless@0.10.4` have breaking changes risk
-- Impact: Database connection could fail on deployment if dependency updates conflict
-- Migration plan: Use exact versions, test migration path before upgrading. Have fallback SQL queries
-
-**Neon serverless driver instability:**
-- Risk: `@neondatabase/serverless@0.10.4` is relatively young library. Connection pooling over WebSocket can timeout
-- Impact: Random database failures in production ("timeout after 30s", "connection reset")
-- Migration plan: Implement retry logic with exponential backoff in all DB queries. Have circuit breaker for repeated failures
-
-## Missing Critical Features
-
-**No email verification:**
-- Problem: Email accepted from Circle.so without verification. Users can input fake emails in paywall system
-- Blocks: Accurate paywall enforcement. Email-based password recovery (if added later)
-
-**No session persistence:**
-- Problem: Sessions only in JWT tokens (60-minute expiry). No logout mechanism. No session revocation
-- Blocks: Ability to invalidate user sessions remotely. Logout doesn't actually log out if token still valid
-
-**No audit logging for sensitive operations:**
-- Problem: Admin actions (user deletion, role changes, config updates) logged to console only
-- Blocks: Compliance/GDPR requirements. Forensic investigation of data breaches
-
-**No backup/disaster recovery:**
-- Problem: MemStorage loses all data on restart. DbStorage has no backup strategy defined
-- Blocks: Production reliability. Any server crash = data loss
+**Payment/Paywall Enforcement:**
+- Files: `server/routes/auth.ts` (lines 155-163, 250-259, 343-353)
+- Why fragile: Paywall check repeated in three places; inconsistent error responses; no refactoring for DRY
+- Safe modification: Extract paywall check to shared middleware; add tests for paywall bypass prevention
+- Test coverage: Paywall enforcement not tested; no integration tests for payment flow
 
 ## Test Coverage Gaps
 
-**Authentication flow not tested:**
-- What's not tested: Circle.so validation → PIN creation → PIN validation → token generation → token verification flow. No tests for happy path or error cases
-- Files: `server/routes/auth.ts`, `server/middleware.ts`
-- Risk: Regression changes could break login flow silently
+**Auth Flow Not Tested:**
+- What's not tested: Validation, PIN creation, PIN validation, session token generation
+- Files: `server/routes/auth.ts`
+- Risk: Regressions in critical auth path go undetected; security bugs in validation flow
 - Priority: High
 
-**Admin endpoints not tested:**
-- What's not tested: Paid member CRUD, feedback archiving, support ticket management. No permission tests
-- Files: `server/routes/admin.ts`
-- Risk: Privilege escalation or data loss could occur undetected
+**Admin Operations Not Tested:**
+- What's not tested: Admin login, admin role enforcement, user deletion, PIN reset
+- Files: `server/routes/admin.ts`, `server/middleware.ts`
+- Risk: Privilege escalation bugs undetected; admin functions break silently
 - Priority: High
 
-**CORS validation not tested:**
-- What's not tested: Origin validation logic, substring matching issue not caught
-- Files: `server/app.ts`
-- Risk: CORS bypass attack vectors undiscovered
+**Circle.so Integration Not Tested:**
+- What's not tested: Circle user data validation, cache behavior, fallback parsing, theme setting
+- Files: `client/src/hooks/use-circle-auth.ts`
+- Risk: Integration breaks on Circle.so API changes; fallback logic may fail silently
 - Priority: High
 
-**Webhook security not tested:**
-- What's not tested: Webhook secret validation, replay attack prevention, payload validation
-- Files: `server/routes/webhooks.ts`
-- Risk: Malicious webhooks could create fake paid members, trigger data loss
+**Email/Webhook Integration Not Tested:**
+- What's not tested: Webhook signature validation, payment webhook processing, email sending
+- Files: `server/routes/webhooks.ts`, `server/routes/support.ts`
+- Risk: Payment processing breaks; webhooks not validated; email sending fails silently
+- Priority: Medium
+
+**Database Storage Not Tested:**
+- What's not tested: Database operations, connection handling, transaction safety
+- Files: `server/storage.ts` (DbStorage class)
+- Risk: Data corruption, race conditions, connection leaks in production
 - Priority: High
 
-**Client-side Circle.so integration not tested:**
-- What's not tested: postMessage handling, origin validation, data parsing, cache behavior, fallback scenarios
-- Files: `client/src/hooks/use-circle-auth.ts`, `client/src/contexts/AccessContext.tsx`
-- Risk: Auth failures, data leaks via postMessage vectors
+**CORS and Security Middleware Not Tested:**
+- What's not tested: CORS origin validation, CSP headers, frame options, rate limiting
+- Files: `server/app.ts`, `server/middleware.ts`
+- Risk: Security controls fail; CORS bypass possible; rate limiting doesn't work
 - Priority: High
+
+## Missing Critical Features
+
+**No Test Suite:**
+- Problem: Zero visible test files in repository
+- Blocks: Cannot safely refactor; security bugs go undetected; regressions unnoticed
+- Impact: High risk for production code
+
+**No Error Recovery/Fallback:**
+- Problem: Database connection failure, webhook failures, email failures are not gracefully handled
+- Files: `server/index-prod.ts`, `server/routes/webhooks.ts`
+- Impact: Cascading failures; no graceful degradation
+
+**No Audit Trail:**
+- Problem: Admin actions logged to console only; no persistent audit log
+- Files: `server/routes/admin.ts`, `server/routes/auth.ts`
+- Impact: Cannot investigate security incidents; compliance violations
+
+**No Monitoring/Observability:**
+- Problem: No error tracking (Sentry), no APM, no structured logging
+- Impact: Production issues detected only by users; no performance visibility
+
+**No Secrets Management:**
+- Problem: Secrets configured via .env files
+- Files: `.env`, `server/routes/webhooks.ts`
+- Impact: Secrets at risk; no key rotation; no audit trail for secret access
+
+**No Request Validation Middleware:**
+- Problem: Each endpoint manually validates input; inconsistent error handling
+- Impact: Inconsistent validation behavior; possible bypasses
+
+## Dependencies at Risk
+
+**jsonwebtoken Without Key Rotation:**
+- Risk: No mechanism to rotate or revoke tokens
+- Impact: Compromised token secret affects all existing tokens
+- Migration plan: Implement key rotation with dual-validation; use refresh tokens with short expiry
+
+**bcrypt Hash Cost Fixed:**
+- Risk: BCRYPT_ROUNDS hard-coded; if compromised, all passwords equally vulnerable
+- Impact: Old hashes become weak if ROUNDS increased
+- Migration plan: Implement password re-hashing on login
+
+**Neon Serverless PostgreSQL:**
+- Risk: Connection pool exhaustion possible; no connection limiting
+- Impact: Database connection limits reached under load
+- Migration plan: Implement connection pooling; use PgBouncer
+
+**memorystore for Session Storage:**
+- Risk: Sessions lost on server restart; no persistence
+- Impact: All users logged out on deployment
+- Migration plan: Switch to Redis or database-backed sessions
 
 ---
 
-*Concerns audit: 2026-01-30*
+*Concerns audit: 2026-01-31*

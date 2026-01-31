@@ -1,281 +1,195 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-01-31
 
 ## Naming Patterns
 
 **Files:**
-- React components: PascalCase (e.g., `Checklist.tsx`, `SessionContext.tsx`, `DuoSenderSummary.tsx`)
-- Hooks: kebab-case with "use-" prefix (e.g., `use-circle-auth.ts`, `use-mobile.tsx`, `use-toast.ts`)
-- Utilities/helpers: camelCase (e.g., `queryClient.ts`, `utils.ts`, `auth.ts`)
-- API route files: camelCase (e.g., `auth.ts`, `admin.ts`, `support.ts`)
-- UI components: PascalCase (e.g., `Button`, `Input`, `Checkbox`)
-- Context files: PascalCase (e.g., `SessionContext.tsx`, `AccessContext.tsx`)
-- Pages: PascalCase (e.g., `DuoSenderSummary.tsx`, `PaywallScreen.tsx`, `Welcome.tsx`)
+- Components: PascalCase with `.tsx` extension (e.g., `SessionContext.tsx`, `Checklist.tsx`)
+- Pages/screens: PascalCase for page components (e.g., `DuoIntention.tsx`, `auth.tsx`)
+- Hooks: kebab-case with `use-` prefix or camelCase (e.g., `use-circle-auth.ts`, `usePageTransition.ts`)
+- Utilities/lib: camelCase (e.g., `queryClient.ts`, `auth.ts`, `utils.ts`)
+- Routes: lowercase with paths as directories (e.g., `/routes/auth.ts`, `/routes/admin.ts`)
+- Database/Schema: camelCase in code, snake_case in database (e.g., `publicUid` → `public_uid`)
 
 **Functions:**
-- Regular functions: camelCase (e.g., `getParentOrigin()`, `isValidCircleOrigin()`, `getCachedUserData()`)
-- Helper functions in utils: camelCase (e.g., `cn()` for classname utility)
-- Handler functions: camelCase with "handle" prefix (e.g., `handleContinue()`, `handleMessage()`)
-- Factory functions: create + camelCase (e.g., `createRequireAdmin()`, `createInsertSchema()`)
-- Callback/event handlers: camelCase with "on" prefix (e.g., `onCheckedChange`, `onChange`)
+- camelCase for all function names: `generateSessionToken()`, `validateUserData()`, `handleContinue()`
+- Async functions clearly marked: `async function getUserByEmail()`
+- Factory functions: `createRequireAdmin()`, `createInsertSchema()`
+- Validation functions: `validate*` prefix (e.g., `validateUserData()`, `validatePin()`)
+- Event handlers: `handle*` prefix (e.g., `handleContinue()`, `handleMessage()`)
 
 **Variables:**
-- Constants: UPPER_SNAKE_CASE (e.g., `CIRCLE_ORIGIN`, `MAX_CACHE_AGE_MS`, `SESSION_SECRET`)
-- Regular variables: camelCase (e.g., `parentOrigin`, `messageReceived`, `validationToken`)
-- State variables: camelCase (e.g., `session`, `userData`, `isLoading`, `error`)
-- Boolean flags: camelCase prefixed with "is", "has", "should", "can" (e.g., `isLoading`, `hasCircleData`, `shouldShow`)
+- camelCase for all local variables and constants
+- UPPER_SNAKE_CASE for constants only: `MAX_CACHE_AGE_MS`, `VALIDATION_EXPIRY_MS`, `CIRCLE_ORIGIN`, `BCRYPT_ROUNDS`
+- Storage keys: UPPER_SNAKE_CASE (e.g., `CIRCLE_USER_STORAGE_KEY`)
+- Private variables/functions: Optional leading underscore not used; rely on context
+- State variables: descriptive camelCase (e.g., `cachedUser`, `messageReceived`, `retryCount`)
 
-**Types:**
-- Interface names: PascalCase (e.g., `CircleAuthState`, `AppConfig`, `ValidationResult`)
-- Type aliases: PascalCase (e.g., `SessionState`, `CircleUserData`)
-- Zod schemas: camelCase with "Schema" suffix (e.g., `circleUserDataSchema`, `insertUserSchema`, `validatePinSchema`)
-- Union types: PascalCase (e.g., `AccessStatus = 'loading' | 'granted' | 'denied' | 'origin_invalid'`)
+**Types/Interfaces:**
+- PascalCase for all types and interfaces: `CircleAuthState`, `ValidationCache`, `JWTPayload`, `CircleUserData`
+- Schema definitions: camelCase in Zod (e.g., `circleUserDataSchema`, `createPinSchema`)
+- Suffix types with `Type` if needed: `SessionContextType`
 
 ## Code Style
 
 **Formatting:**
-- No explicit formatter configuration found (ESLint/Prettier not configured)
-- Uses TypeScript strict mode: `"strict": true` in `tsconfig.json`
-- Import organization follows ES modules with explicit paths
-- Path aliases in use: `@/*` for client source, `@shared/*` for shared code
+- No ESLint or Prettier config detected - code appears to follow consistent style manually
+- 2-space indentation used throughout
+- Lines typically break at ~100-120 characters
+- JSX opening brackets on same line: `<div className="...">`
 
 **Linting:**
-- TypeScript type checking via `npm run check` (tsc)
-- ESLint/Prettier: Not detected in project
-- Type safety enforced at compile time (TypeScript strict mode)
-- No pre-commit hooks configured
+- TypeScript strict mode enabled (`"strict": true` in `tsconfig.json`)
+- ESLint/Prettier: Not detected - no configuration files present
+- Type checking via `npm run check`: runs TypeScript compiler without emit
+
+**Comments:**
+- Inline comments use `//` (French and English)
+- Section dividers: Simple `// [Description]` comments
+- Debug comments: `console.log()` with prefixes like `[VALIDATE]`, `[ADMIN-LOGIN]`, `[PAYWALL CHECK]`
+- No JSDoc/TSDoc comments observed - not required in this codebase
 
 ## Import Organization
 
 **Order:**
-1. External dependencies (react, express, etc.)
-2. Type imports and interfaces
-3. Shared code imports (`@shared/*`)
-4. Local imports from project (`@/*` or relative paths)
-5. Side effects (CSS imports)
-
-**Examples from codebase:**
-```typescript
-// App.tsx
-import React, { useEffect, useState, useMemo } from 'react';
-import { Switch, Route, useLocation } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { SessionProvider, useSession } from '@/contexts/SessionContext';
-import { duoFlow, getFlow } from '@shared/schema';
-
-// use-circle-auth.ts
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { circleUserDataSchema, type CircleUserData } from '@shared/schema';
-import { setThemeFromCircle } from '@/components/theme-provider';
-```
+1. Node.js built-ins: `import crypto from 'crypto'`
+2. Framework/library imports: `import express from 'express'`, `import { createContext } from 'react'`
+3. Third-party packages: `import { z } from 'zod'`, `import bcrypt from 'bcrypt'`
+4. Local imports with aliases: `import { useSession } from '@/contexts/SessionContext'`, `import { validateUserData } from '../middleware'`
+5. Type imports: `import type { JWTPayload } from '../middleware'`
 
 **Path Aliases:**
-- `@/*`: Maps to `client/src/*` - use for all client-side code
-- `@shared/*`: Maps to `shared/*` - use for shared types and schemas
-- `@assets`: Maps to `attached_assets/*` - use for static assets
+- `@/*` → `./client/src/*` (client code)
+- `@shared/*` → `./shared/*` (shared schemas and types)
+- `@assets/*` → `./attached_assets/*` (static assets)
+- Relative paths used within server directory
+
+**Example import pattern:**
+```typescript
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { Request, Response, NextFunction } from 'express';
+import rateLimit from 'express-rate-limit';
+import { circleUserDataSchema, type CircleUserData } from '@shared/schema';
+```
 
 ## Error Handling
 
 **Patterns:**
-- Try-catch blocks with console logging for debugging
-- Graceful degradation: "Silent fail" comments where errors are acceptable
-- Validation results returned as objects with `{valid: boolean, error?: string}`
-- HTTP error responses: status codes with error message in JSON (e.g., `res.status(400).json({ error: 'message' })`)
-- Type guards for error checking: `error instanceof Error ? error.message : 'Unknown error'`
+- Try-catch blocks wrap async operations: `try { ... } catch (error) { ... }`
+- Silent failures common in utilities: `catch { return null }` for non-critical operations
+- Graceful degradation: cached data used if fresh data fails
+- Validation errors returned as structured responses with `error` and optional `details` fields
+- Console error logging for debugging: `console.error('[CONTEXT] Message:', error)`
+- HTTP status codes for API errors: 400 (bad request), 401 (unauthorized), 403 (forbidden), 404 (not found), 500 (server error)
 
-**Examples:**
+**Error response pattern:**
 ```typescript
-// Cache operations - silent fail
-function getCachedUserData(): CircleUserData['user'] | null {
-  try {
-    const timestamp = localStorage.getItem(CIRCLE_USER_TIMESTAMP_KEY);
-    const data = localStorage.getItem(CIRCLE_USER_STORAGE_KEY);
-    if (!timestamp || !data) return null;
-    return JSON.parse(data);
-  } catch {
-    return null; // Silent fail - cache not critical
-  }
-}
+return res.status(400).json({ error: 'Description message' });
+return res.status(500).json({
+  error: 'Erreur serveur',
+  details: process.env.DEV_MODE === 'true' ? errorMessage : undefined
+});
+```
 
-// API error handling
+**Async error handling:**
+```typescript
 try {
-  const validatedFeedback = insertFeedbackSchema.parse(req.body);
-  const feedback = await storage.createFeedback(validatedFeedback);
-  res.json(feedback);
-} catch (error: any) {
-  res.status(400).json({ error: error.message });
+  const result = await someAsyncOperation();
+  // Process result
+} catch (error) {
+  console.error('Error context:', error);
+  return res.status(500).json({ error: 'User-friendly message' });
 }
-
-// Type-safe error extraction
-const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-return res.status(500).json({ error: errorMessage });
 ```
 
 ## Logging
 
-**Framework:** Console API (console.log, console.error)
+**Framework:** Console methods (`console.log`, `console.error`, `console.warn`)
 
 **Patterns:**
-- Prefixed logs with brackets for context: `[VALIDATE]`, `[Circle Auth]`, `[express]`
-- Formatted timestamps for server logs
-- Structured logging with `log()` utility function in `server/app.ts`
-- Debug logging for authentication flows
-- No production logging framework (Sentry, DataDog, etc.) detected
+- Structured logging with prefixes: `[VALIDATE]`, `[AUTH]`, `[PAYWALL CHECK]`, `[ADMIN-LOGIN]`
+- Request/response logging in middleware: `${req.method} ${path} ${res.statusCode} in ${duration}ms`
+- Error tracking: All errors logged before returning response
+- Debug mode: Conditional details in responses when `DEV_MODE === 'true'`
+- Timestamp logging: `new Date().toLocaleTimeString()` for formatted output
 
-**Examples:**
+**Logging examples:**
 ```typescript
-// Server logging
-export function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {...});
-  console.log(`${formattedTime} [${source}] ${message}`);
-}
-
-// Client validation logging
 console.log('[VALIDATE] Received data:', JSON.stringify(data, null, 2));
-console.log('[VALIDATE] Email missing or empty:', data.email);
-console.warn('[Circle Auth] Liquid template not replaced:', rawEmail);
-```
-
-## Comments
-
-**When to Comment:**
-- Complex validation logic (email format checks, timestamp validation)
-- Non-obvious workarounds or browser compatibility issues
-- Security considerations (CORS configuration, token validation)
-- Configuration options and their purpose
-- Business logic that isn't immediately obvious from code
-
-**JSDoc/TSDoc:**
-- Minimal JSDoc usage observed
-- Inline comments preferred for clarity
-- Type annotations provide most documentation via TypeScript
-
-**Examples:**
-```typescript
-// Security: Be permissive with origin validation - accept if it looks like Circle data
-const hasCircleData = event.data && event.data.type === 'CIRCLE_USER_AUTH';
-
-// Caching strategy explanation
-// Still request fresh data in background
-requestAuthFromParent();
-
-// Configuration purpose
-// In development, be more permissive
-if (import.meta.env.DEV) {
-  return true;
-}
+console.log('[AUTH] Paywall block on create-pin for:', email);
+log(`${formattedTime} [${source}] ${message}`);
 ```
 
 ## Function Design
 
-**Size:**
-- Keep functions focused on single responsibility
-- Average function size: 20-80 lines
-- Complex functions factored into helpers (e.g., `getParentOrigin()`, `isValidCircleOrigin()`)
+**Size:** Functions typically 5-50 lines; longer functions decomposed
+  - Route handlers: 30-100 lines when handling complex logic
+  - Context/hook setup: 50-150 lines acceptable for setup and effects
+  - Helper functions: 5-20 lines, single responsibility
 
 **Parameters:**
-- Single parameter object for multiple arguments: `({ children, isAdmin }: { children: React.ReactNode; isAdmin: boolean })`
-- Type all parameters explicitly
-- Use optional parameters with defaults sparingly
+- Named parameters preferred over positional: Use object destructuring for 2+ parameters
+- Type annotations required for all parameters in TypeScript
+- Optional parameters: Use `?` or provide defaults
+- Middleware pattern: `(req: Request, res: Response, next: NextFunction) => void`
 
 **Return Values:**
-- Explicit return types on all functions
-- Async functions return Promise types
-- Validation functions return result objects: `{valid: boolean, error?: string}`
-- Null/undefined acceptable for optional values (explicitly typed)
-
-**Examples:**
-```typescript
-// Single responsibility with typed parameters
-function isValidCircleOrigin(origin: string): boolean {
-  if (!origin) return false;
-  const normalizedOrigin = origin.replace(/\/$/, '').toLowerCase();
-  // Validation logic...
-  return false;
-}
-
-// Result object pattern
-export function validateUserData(data: CircleUserData): ValidationResult {
-  if (!data.email) {
-    return { valid: false, error: 'Email non reçu de Circle.so...' };
-  }
-  return { valid: true };
-}
-
-// Component with object destructuring
-function AccessGate({ children, isAdmin }: { children: React.ReactNode; isAdmin: boolean }) {
-  // Component logic...
-}
-```
+- Functions return typed values: No implicit `any`
+- Promise types explicit: `Promise<User | null>`
+- Union types for success/error: `{ valid: boolean, error?: string }`
+- JSON responses structured: `{ success: true, data: ... }` or `{ error: '...' }`
 
 ## Module Design
 
 **Exports:**
-- Named exports preferred for functions and types
-- Default export for React components and page components
-- Explicit export statements (no wildcard exports observed in core modules)
+- Named exports preferred: `export function validateUserData() { ... }`
+- Default exports for page components: `export default function HomePage() { ... }`
+- Type exports: `export type User = typeof users.$inferSelect`
+- Interface exports: `export interface CircleAuthState { ... }`
 
-**Barrel Files:**
-- Not used extensively
-- Each component/hook in separate file
-- Index files used in route directories (e.g., `server/routes/index.ts`)
+**Context/Provider pattern:**
+- Context created separately: `const SessionContext = createContext<...>(undefined)`
+- Provider component wraps context setup
+- Custom hook provides access: `export function useSession() { ... }`
+- Error on missing provider: `throw new Error('... must be used within ...')`
 
-**Examples:**
+**File organization:**
+- One main export per file
+- Helper functions (prefixed with non-export) in same file
+- Interfaces/types at top of file
+- Configuration constants after imports
+
+## Data Validation
+
+**Zod schema pattern:**
 ```typescript
-// Named exports for utilities
-export function cn(...inputs: ClassValue[]) { ... }
-export function clearCircleUserCache(): void { ... }
-export function useCircleAuth() { ... }
-
-// Default export for components
-export default function SenderSummary() { ... }
-export default App;
-
-// Index file for modular routes
-import { registerModularRoutes } from "./routes/index";
-```
-
-## React Patterns
-
-**Hooks:**
-- Use React hooks for state management (useState, useContext, useEffect)
-- Custom hooks with "use" prefix
-- React Query for server state (`useQuery`, `QueryClientProvider`)
-- Context API for shared state (SessionContext, AccessContext)
-
-**Components:**
-- Functional components only
-- Props interface with explicit types
-- Fragment shorthand `<>...</>` for wrapping
-- CSS classes via `cn()` utility for Tailwind merging
-
-**State Management:**
-- Local state for UI state (modals, transitions)
-- Context for app-wide state (session, access control)
-- localStorage for persistence (names, auth tokens, cache)
-- React Query for server data
-
-## TypeScript
-
-**Type Safety:**
-- Strict mode enabled: `"strict": true`
-- Explicit types on all function parameters
-- Explicit return types on functions
-- Type aliases for complex types
-- Zod schemas for runtime validation of external data
-
-**Generic Usage:**
-```typescript
-// Custom generic in useQuery
-const { data: configData, isLoading: configLoading } = useQuery<AppConfig>({
-  queryKey: ['/api/config'],
+export const createPinSchema = z.object({
+  email: z.string().email('Email invalide'),
+  pin: z.string().regex(/^\d{4,6}$/, 'Le NIP doit contenir 4 à 6 chiffres'),
 });
+
+export type CreatePin = z.infer<typeof createPinSchema>;
 ```
+
+**Validation function pattern:**
+```typescript
+export function validateUserData(data: CircleUserData): ValidationResult {
+  if (!data.email) {
+    return { valid: false, error: 'Email required' };
+  }
+  return { valid: true };
+}
+```
+
+## Async/Await
+
+- Always used over `.then()` chains
+- Try-catch blocks wrap await calls
+- Error types checked: `error instanceof Error`
+- Conditional awaits in useEffect for setup: `if (configLoading) return`
 
 ---
 
-*Convention analysis: 2026-01-30*
+*Convention analysis: 2026-01-31*

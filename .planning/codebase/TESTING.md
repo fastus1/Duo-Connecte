@@ -1,391 +1,294 @@
 # Testing Patterns
 
-**Analysis Date:** 2026-01-30
+**Analysis Date:** 2026-01-31
 
 ## Test Framework
 
-**Status:** No testing framework detected
+**Runner:**
+- Not detected - No test framework configured
+- No Jest, Vitest, or other test runner found
+- No test scripts in `package.json`
 
-- No Jest, Vitest, or other test runner configured
-- No test files (*.test.ts, *.spec.ts) found in codebase
-- No `jest.config.js`, `vitest.config.ts`, or similar configuration
-- Package.json excludes `**/*.test.ts` from TypeScript compilation
-- No test dependencies in package.json
+**Assertion Library:**
+- Not in use
 
-**Implications:**
-- Testing is not currently part of the development workflow
-- All testing must be manual or external (E2E/integration testing only)
-- No unit test examples to reference in codebase
-
-## Run Commands
-
-**Currently available:**
-```bash
-npm run dev              # Run development server with hot reload
-npm run build            # Build for production
-npm start                # Start production server
-npm run check            # Run TypeScript type checking
-npm run db:push          # Push database schema changes (Drizzle)
-```
-
-**No test commands available.**
+**Run Commands:**
+- Type checking only: `npm run check` (runs TypeScript compiler)
+- No dedicated test command available
 
 ## Test File Organization
 
-**Opportunity:**
-When testing is implemented, follow these patterns:
+**Status:** No test files found in `/client/src/` or `/server/`
+- Test files exist only in node_modules (dependency tests)
+- No local test infrastructure established
 
-**Recommended Location:**
-- Co-located with source files for unit tests
-- Tests next to component: `components/Button.test.tsx` alongside `components/Button.tsx`
-- Or separate `__tests__` directory at same level
+**Recommendation if testing is added:**
+- Unit tests: Co-located with source files (e.g., `Component.test.tsx` next to `Component.tsx`)
+- Integration tests: Separate `/tests/integration/` directory
+- Server tests: `/server/__tests__/` directory structure
 
-**Naming Convention:**
-- Suffix pattern: `.test.ts` or `.test.tsx` for unit tests
-- Suffix pattern: `.integration.test.ts` for integration tests
-- Suffix pattern: `.e2e.test.ts` for end-to-end tests (if E2E framework added)
+## Code Testing Approaches (Inferred from Source)
 
-**Directory Structure (recommended):**
-```
-client/src/
-├── components/
-│   ├── Button.tsx
-│   └── Button.test.tsx
-├── hooks/
-│   ├── use-toast.ts
-│   └── use-toast.test.ts
-└── contexts/
-    ├── SessionContext.tsx
-    └── SessionContext.test.tsx
+**Manual testing indicators found:**
+- Demo components exist: `DemoLoadingScreen.tsx`, `DemoPinCreation.tsx`, `DemoPinLogin.tsx`, `DemoPaywallScreen.tsx` in `/client/src/pages/`
+- These appear to be manual test/showcase components
+- Data-testid attributes present in components (e.g., `data-testid="checklist"` in `Checklist.tsx`)
 
-server/
-├── middleware.ts
-├── middleware.test.ts
-├── routes/
-│   ├── auth.ts
-│   └── auth.test.ts
-```
+## Testing-Friendly Code Patterns
 
-## Mocking Strategy
-
-**Recommended Framework:**
-- Vitest for unit tests (matches Vite build setup)
-- Jest for server-side tests (Express compatibility)
-- React Testing Library for component tests
-
-**What to Mock:**
-
-1. **External APIs:**
-   - Circle.so authentication messages via `postMessage`
-   - Fetch requests (use MSW - Mock Service Worker)
-   - localStorage and sessionStorage
-
-2. **Dependencies:**
-   - React Query client (`useQuery`)
-   - Context providers (`SessionContext`, `AccessContext`)
-   - Express middleware and routes
-
-3. **What NOT to Mock:**
-   - Core React hooks (useState, useEffect, useContext)
-   - Zod validation schemas
-   - Business logic functions
-   - Database schema definitions
-
-**Patterns to implement:**
-
+**Composition over logic:**
 ```typescript
-// Mock postMessage for Circle Auth testing
-const mockPostMessage = jest.fn();
-Object.defineProperty(window, 'parent', {
-  value: { postMessage: mockPostMessage },
-});
+// In Checklist.tsx - simple, testable props interface
+interface ChecklistProps {
+  items: ChecklistItem[];
+}
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-};
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-
-// Mock useQuery
-jest.mock('@tanstack/react-query', () => ({
-  useQuery: jest.fn(() => ({ data: null, isLoading: false })),
-}));
-
-// Mock fetch for API routes
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve({ status: 'ok' }),
-  })
-);
+export function Checklist({ items }: ChecklistProps) {
+  return (
+    <div className="space-y-3" data-testid="checklist">
+      {items.map((item) => (
+        <div key={item.id}>
+          <Checkbox
+            id={item.id}
+            checked={item.checked}
+            onCheckedChange={item.onChange}
+            data-testid={`checkbox-${item.id}`}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
 ```
 
-## Test Types
-
-**Unit Tests:**
-- **Scope:** Individual functions, utility helpers, validation logic
-- **Examples to test:**
-  - `utils.ts`: `cn()` classname utility
-  - `auth.ts`: Session token generation and verification
-  - Middleware validators: `validateUserData()`, `isValidCircleOrigin()`
-  - Schema validation: Zod schema parsing
-
-**Integration Tests:**
-- **Scope:** Feature workflows, API route + storage layer, hooks with context
-- **Examples to test:**
-  - Complete auth flow: validate → create pin → verify pin → session token
-  - Session persistence: name saving/loading in SessionContext
-  - Access control: AccessGate with different user roles
-  - API endpoints with database interaction
-
-**E2E Tests:**
-- **Framework:** Not currently present; consider Playwright or Cypress
-- **Scope:** Complete user journeys through UI
-- **Examples to test:**
-  - User login flow: Circle auth → PIN creation → dashboard
-  - Duo conversation flow: both participants through all steps
-  - Admin preview mode: sidebar navigation, page transitions
-
-## Test Structure Patterns
-
-**Recommended setup (unit test example):**
+**Isolated hooks:**
 ```typescript
-describe('useCircleAuth', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    localStorage.clear();
+// In use-circle-auth.ts - hook with clear input/output
+export function useCircleAuth() {
+  const { data: configData, isLoading: configLoading } = useQuery<AppConfig>({
+    queryKey: ['/api/config'],
   });
 
-  it('should load cached user data on mount', () => {
-    // Arrange
-    const cachedUser = { email: 'test@example.com', name: 'Test User' };
-    localStorage.setItem(CIRCLE_USER_STORAGE_KEY, JSON.stringify(cachedUser));
+  const [state, setState] = useState<CircleAuthState>({ ... });
 
-    // Act
-    const { result } = renderHook(() => useCircleAuth());
-
-    // Assert
-    expect(result.current.userData).toEqual(cachedUser);
-  });
-
-  it('should request auth from parent when cache is empty', () => {
-    // Arrange
-    const mockPostMessage = jest.fn();
-
-    // Act
-    const { result } = renderHook(() => useCircleAuth());
-
-    // Assert
-    expect(mockPostMessage).toHaveBeenCalledWith(
-      { type: 'CIRCLE_AUTH_REQUEST' },
-      expect.any(String)
-    );
-  });
-});
+  // Hook returns typed state - easy to test in isolation
+  return state;
+}
 ```
 
-**Test suite organization:**
+**Validation functions (easily testable):**
 ```typescript
-describe('SessionContext', () => {
-  describe('loadSavedNames', () => {
-    it('returns empty names when no localStorage data exists', () => { ... });
-    it('returns parsed names from localStorage', () => { ... });
-    it('handles corrupted JSON gracefully', () => { ... });
-  });
-
-  describe('SessionProvider', () => {
-    it('provides default session state', () => { ... });
-    it('updates session when updateSession is called', () => { ... });
-    it('persists names to localStorage on change', () => { ... });
-  });
-});
+// In middleware.ts - pure validation function
+export function validateUserData(data: CircleUserData): ValidationResult {
+  if (!data.email) {
+    return { valid: false, error: 'Email required' };
+  }
+  return { valid: true };
+}
 ```
 
-## Async Testing Patterns
-
-**React hooks with async operations:**
+**Middleware as pure functions:**
 ```typescript
-it('should handle async validation', async () => {
-  const { result, waitForNextUpdate } = renderHook(() => useCircleAuth());
-
-  expect(result.current.isLoading).toBe(true);
-
-  await waitForNextUpdate();
-
-  expect(result.current.isLoading).toBe(false);
-});
-```
-
-**API route testing:**
-```typescript
-it('should validate user and return token', async () => {
-  const response = await request(app)
-    .post('/api/auth/validate')
-    .send({ user: mockUserData });
-
-  expect(response.status).toBe(200);
-  expect(response.body).toHaveProperty('validation_token');
-  await waitFor(() => expect(response.body.status).toBe('new_user'));
-});
-```
-
-## Error Testing
-
-**Validation error patterns:**
-```typescript
-it('should reject invalid email', () => {
-  const result = validateUserData({
-    email: 'invalid-email',
-    name: 'Test',
-    publicUid: 'test-uid',
-    timestamp: Date.now(),
-  });
-
-  expect(result.valid).toBe(false);
-  expect(result.error).toContain('Email invalide');
-});
-
-it('should reject Liquid template variables', () => {
-  const result = validateUserData({
-    email: '{{member.email}}',
-    name: 'Test',
-    publicUid: 'test-uid',
-    timestamp: Date.now(),
-  });
-
-  expect(result.valid).toBe(false);
-  expect(result.error).toContain('Liquid template');
-});
-```
-
-**API error handling:**
-```typescript
-it('should return 401 when auth header missing', async () => {
-  const response = await request(app)
-    .get('/api/admin/users')
-    .set('Authorization', '');
-
-  expect(response.status).toBe(401);
-  expect(response.body).toHaveProperty('error');
-});
-
-it('should handle database errors gracefully', async () => {
-  jest.spyOn(storage, 'getUser').mockRejectedValue(new Error('DB error'));
-
-  const response = await request(app)
-    .post('/api/auth/validate')
-    .send({ user: mockUserData });
-
-  expect(response.status).toBe(500);
-  expect(response.body.error).toContain('DB error');
-});
-```
-
-## Fixtures and Factories
-
-**Test data location (recommended):**
-- `__tests__/fixtures/` for mock data
-- `__tests__/factories/` for data builders
-
-**Fixture examples to create:**
-
-```typescript
-// __tests__/fixtures/users.ts
-export const mockCircleUser = {
-  publicUid: 'circle_test123',
-  email: 'test@example.com',
-  name: 'Test User',
-  isAdmin: false,
-  timestamp: Date.now(),
-};
-
-export const mockAdminUser = {
-  ...mockCircleUser,
-  isAdmin: true,
-};
-
-// __tests__/factories/user.ts
-export function createUser(overrides = {}) {
-  return {
-    id: crypto.randomUUID(),
-    email: `test${Date.now()}@example.com`,
-    publicUid: `uid_${Date.now()}`,
-    name: 'Test User',
-    pinHash: null,
-    isAdmin: false,
-    createdAt: new Date(),
-    lastLogin: null,
-    ...overrides,
+// Auth middleware pattern - dependency injection friendly
+export function createRequireAdmin(storage: { getUser: (id: string) => Promise<...> }) {
+  return async function requireAdmin(req: Request, res: Response, next: NextFunction) {
+    // Middleware implementation
   };
 }
-
-export function createValidationToken() {
-  return crypto.randomBytes(32).toString('hex');
-}
 ```
 
-**Usage in tests:**
+## Mocking Patterns (if testing framework added)
+
+**Expected mocking approach for this codebase:**
+
+**React Query mocking:**
 ```typescript
-it('should create user from validation token', async () => {
-  const user = createUser({ isAdmin: true });
-  const token = createValidationToken();
+// Mock useQuery for auth state tests
+vi.mock('@tanstack/react-query', () => ({
+  useQuery: vi.fn(() => ({
+    data: { requireCircleDomain: true },
+    isLoading: false,
+    error: null,
+  })),
+}));
+```
 
-  const response = await request(app)
-    .post('/api/auth/pin/create')
-    .send({ validation_token: token, ...user });
+**Storage mocking (localStorage):**
+```typescript
+// Mock localStorage for cache tests
+const mockLocalStorage = {
+  getItem: vi.fn((key: string) => null),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+};
+global.localStorage = mockLocalStorage as any;
+```
 
-  expect(response.status).toBe(200);
+**Database layer mocking (Server tests):**
+```typescript
+// Factory pattern already supports dependency injection
+const mockStorage = {
+  getUser: vi.fn(async (id: string) => ({ isAdmin: true })),
+  getUserByEmail: vi.fn(async (email: string) => null),
+  createUser: vi.fn(async (data) => ({ id: '123', ...data })),
+};
+
+const requireAdmin = createRequireAdmin(mockStorage);
+```
+
+**Express middleware testing:**
+```typescript
+// Mock req/res for middleware tests
+const mockReq = {
+  headers: { authorization: 'Bearer token' },
+  ip: '127.0.0.1',
+  method: 'POST',
+} as any;
+
+const mockRes = {
+  status: vi.fn().mockReturnThis(),
+  json: vi.fn().mockReturnThis(),
+} as any;
+
+const mockNext = vi.fn();
+```
+
+## What NOT to Mock
+
+**Real validation logic:**
+- Zod schemas should run against actual data
+- Email regex validation should execute for real
+- PIN format validation (`/^\d{4,6}$/`) should validate real inputs
+
+**Cryptography functions:**
+- `bcrypt.hash()` and `bcrypt.compare()` - too slow, would need fixtures
+- `jwt.sign()` and `jwt.verify()` - could mock, but token structure matters
+
+**Database layer (for integration tests):**
+- Use test database or in-memory fixtures
+- Don't mock query results - test actual ORM behavior with Drizzle
+
+## Fixtures and Test Data
+
+**Current approach:** No fixtures system found
+
+**If testing framework added, pattern would likely be:**
+
+```typescript
+// fixtures/users.ts
+export const mockUsers = {
+  adminUser: {
+    id: 'user-123',
+    email: 'admin@example.com',
+    publicUid: 'admin_123',
+    name: 'Admin User',
+    isAdmin: true,
+    pinHash: 'hashed_pin',
+  },
+  regularUser: {
+    id: 'user-456',
+    email: 'user@example.com',
+    publicUid: 'user_456',
+    name: 'Regular User',
+    isAdmin: false,
+    pinHash: 'hashed_pin',
+  },
+};
+
+// fixtures/circleAuth.ts
+export const mockCircleUserData = {
+  type: 'CIRCLE_USER_AUTH' as const,
+  user: {
+    publicUid: 'circle_123',
+    email: 'member@circle.so',
+    name: 'Circle Member',
+    isAdmin: false,
+    timestamp: Date.now(),
+  },
+  theme: 'light' as const,
+};
+```
+
+## Coverage
+
+**Requirements:** None currently enforced
+
+**If added, focus areas should be:**
+- Validation functions (middleware.ts): High priority - security critical
+- Auth routes: High priority - security critical
+- Utility functions (cn(), validate*): Medium priority - widely used
+- Components: Lower priority - mainly UI layout
+
+**View Coverage (if configured):**
+```bash
+# If using vitest:
+npm run test:coverage
+# Opens coverage report in browser
+```
+
+## Proposed Test Structure
+
+**Unit Tests (if framework added):**
+```
+client/src/
+  hooks/__tests__/
+    use-circle-auth.test.ts
+    usePageTransition.test.ts
+  lib/__tests__/
+    utils.test.ts
+    auth.test.ts
+  components/__tests__/
+    Checklist.test.tsx
+
+server/__tests__/
+  middleware.test.ts
+  routes/
+    auth.test.ts
+    admin.test.ts
+  storage.test.ts
+```
+
+**Integration test pattern:**
+```typescript
+// Example: Auth flow integration test
+describe('Auth Flow', () => {
+  it('should validate user and create session', async () => {
+    // Setup: Mock storage with test data
+    const storage = createMockStorage();
+
+    // Execute: POST /api/auth/validate
+    const response = await request(app)
+      .post('/api/auth/validate')
+      .send({ user: mockCircleUserData });
+
+    // Assert: Check response and state
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('validation_token');
+  });
 });
 ```
 
-## Coverage Goals
+## Current Testing State
 
-**Current Status:** Not enforced
+**Strengths:**
+- Code already structured for testability (pure functions, dependency injection)
+- Components have data-testid attributes for future e2e testing
+- Validation logic separated from routes (easy to unit test)
+- Zod schemas can be tested directly
 
-**Recommended targets when framework added:**
-- Core utilities: 90%+ coverage
-- API routes: 85%+ coverage
-- React components: 80%+ coverage
-- Custom hooks: 85%+ coverage
+**Gaps:**
+- No test framework installed
+- No test infrastructure
+- No test data/fixtures
+- Routes mixed with business logic (would need extraction for unit testing)
 
-**Excluded from coverage:**
-- Type definitions
-- Barrel exports
-- Configuration files
-- Demo/preview components
-
-## Critical Areas to Test First
-
-**High Priority (when implementing tests):**
-
-1. **Authentication & Security:**
-   - `server/middleware.ts`: Token generation, verification, PIN hashing
-   - `server/routes/auth.ts`: User validation, session creation
-   - All Bearer token verification
-
-2. **Data Validation:**
-   - `server/middleware.ts`: `validateUserData()` with all edge cases
-   - Zod schemas in `shared/schema.ts`
-   - Email format, Liquid template detection
-
-3. **State Management:**
-   - `client/src/contexts/SessionContext.tsx`: Name persistence
-   - `client/src/contexts/AccessContext.tsx`: Access status transitions
-   - `client/src/hooks/use-circle-auth.ts`: Cache management
-
-4. **Database Operations:**
-   - User CRUD operations
-   - Login attempt tracking
-   - Paid member queries
-
-5. **Circle.so Integration:**
-   - postMessage protocol handling
-   - Origin validation
-   - Cache expiry
+**Recommendation for implementation:**
+1. Add Vitest (faster, ESM-native, simpler than Jest)
+2. Start with utility/validation function tests
+3. Add middleware tests
+4. Consider e2e tests with Playwright for auth flows
 
 ---
 
-*Testing analysis: 2026-01-30*
+*Testing analysis: 2026-01-31*
