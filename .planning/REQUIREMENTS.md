@@ -9,11 +9,11 @@ Requirements for template transformation. Each maps to roadmap phases.
 
 ### Cleanup
 
-- [ ] **CLEAN-01**: Remove all Duo workflow pages from `client/src/pages/` (Duo*.tsx files)
-- [ ] **CLEAN-02**: Remove SessionContext participant/step logic
-- [ ] **CLEAN-03**: Remove Duo-specific routes from App.tsx router
-- [ ] **CLEAN-04**: Update branding from "Duo-Connecte" to "Circle App Template"
-- [ ] **CLEAN-05**: Clean up unused imports and dead code
+- [x] **CLEAN-01**: Remove all Duo workflow pages from `client/src/pages/` (Duo*.tsx files)
+- [x] **CLEAN-02**: Remove SessionContext participant/step logic
+- [x] **CLEAN-03**: Remove Duo-specific routes from App.tsx router
+- [x] **CLEAN-04**: Update branding from "Duo-Connecte" to "Circle App Template"
+- [x] **CLEAN-05**: Clean up unused imports and dead code
 
 ### Template Structure
 
@@ -66,11 +66,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLEAN-01 | Phase 1 | Pending |
-| CLEAN-02 | Phase 1 | Pending |
-| CLEAN-03 | Phase 1 | Pending |
-| CLEAN-04 | Phase 1 | Pending |
-| CLEAN-05 | Phase 1 | Pending |
+| CLEAN-01 | Phase 1 | Complete |
+| CLEAN-02 | Phase 1 | Complete |
+| CLEAN-03 | Phase 1 | Complete |
+| CLEAN-04 | Phase 1 | Complete |
+| CLEAN-05 | Phase 1 | Complete |
 | TMPL-01 | Phase 2 | Pending |
 | TMPL-02 | Phase 2 | Pending |
 | TMPL-03 | Phase 2 | Pending |
