@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-31)
 ## Current Position
 
 Phase: 3 of 3 (Documentation & Data)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-31 - Completed 03-01-PLAN.md
+Last activity: 2026-01-31 - Completed 03-02-PLAN.md
 
-Progress: [███████░░░] 71%
+Progress: [████████░░] 86%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 5 min
-- Total execution time: 27 min
+- Total execution time: 31 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [███████░░░] 71%
 |-------|-------|-------|----------|
 | 01-cleanup | 3 | 21 min | 7 min |
 | 02-template-structure | 1 | 5 min | 5 min |
-| 03-documentation-data | 1 | 1 min | 1 min |
+| 03-documentation-data | 2 | 5 min | 2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (5min), 01-03 (12min), 02-01 (5min), 03-01 (1min)
+- Last 5 plans: 01-02 (5min), 01-03 (12min), 02-01 (5min), 03-01 (1min), 03-02 (4min)
 - Trend: Accelerating
 
 *Updated after each plan completion*
@@ -56,6 +56,8 @@ Recent decisions affecting current work:
 - Extension points as file pointers, not step-by-step guides (02-01)
 - README.md in English for international developer audience (03-01)
 - Extension guide in README kept brief, references ARCHITECTURE.md for details (03-01)
+- Reset app_config with update instead of delete to preserve required row (03-02)
+- Extension guide uses concrete code examples from actual project patterns (03-02)
 
 ### Pending Todos
 
@@ -63,7 +65,7 @@ None.
 
 ### Blockers/Concerns
 
-None - Phase 3 documentation in progress.
+None - Phase 3 documentation and tooling progressing well.
 
 ## Phase 1 Cleanup Summary
 
@@ -83,13 +85,14 @@ All 3 plans completed successfully:
 
 ## Phase 3 Documentation & Data Summary
 
-1 of 3 plans completed:
+2 of 3 plans completed:
 - **03-01:** Created README.md (246 lines) with complete developer documentation
+- **03-02:** Created db:reset script and extension guide (256 lines)
 
-**Result:** Template now has comprehensive README with installation, configuration, deployment, and Circle.so setup instructions.
+**Result:** Template now has comprehensive README, database reset tooling, and developer extension documentation.
 
 ## Session Continuity
 
-Last session: 2026-01-31T18:22:46Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-01-31T18:30:00Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
