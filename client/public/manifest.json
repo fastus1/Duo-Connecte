@@ -1,7 +1,7 @@
 {
-  "name": "Duo Connecte - Avancer Simplement",
-  "short_name": "Duo Connecte",
-  "description": "Guide de communication authentique et régulation émotionnelle",
+  "name": "Circle App Template",
+  "short_name": "Circle App",
+  "description": "A reusable template for Circle.so embedded apps",
   "start_url": "/welcome",
   "scope": "/",
   "display": "standalone",
