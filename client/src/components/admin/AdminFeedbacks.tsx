@@ -24,28 +24,28 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 
-// Mappings pour afficher les valeurs lisibles
+// Mappings for displaying readable values
 const helpfulAspectLabels: Record<string, string> = {
-    structure: "La structure étape par étape du parcours",
-    cadre: "Le cadre sécurisant pour aborder un sujet difficile",
-    theorie: "Les explications théoriques (popups \"Plus d'infos\")",
-    roles: "La séparation claire des rôles (émetteur/récepteur)",
-    intention: "Le rappel de l'intention (\"être bien ensemble\")",
+    structure: "Step-by-step structure",
+    cadre: "Safe framework for difficult topics",
+    theorie: "Theoretical explanations",
+    roles: "Clear role separation",
+    intention: "Intention reminder",
 };
 
 const improvementLabels: Record<string, string> = {
-    duree: "La durée du parcours (trop long)",
-    clarte: "La clarté des instructions",
-    navigation: "La navigation entre les étapes",
-    equilibre: "L'équilibre entre les rôles émetteur/récepteur",
-    interface: "L'interface visuelle de l'application",
-    exemples: "Les exemples fournis pour guider les réponses",
+    duree: "Duration (too long)",
+    clarte: "Clarity of instructions",
+    navigation: "Navigation between steps",
+    equilibre: "Role balance",
+    interface: "Visual interface",
+    exemples: "Examples provided",
 };
 
 const durationLabels: Record<string, string> = {
-    too_short: "Trop courte",
-    adequate: "Adéquate",
-    too_long: "Trop longue",
+    too_short: "Too short",
+    adequate: "Adequate",
+    too_long: "Too long",
 };
 
 export function AdminFeedbacks() {
@@ -71,7 +71,7 @@ export function AdminFeedbacks() {
             });
 
             if (!response.ok) {
-                throw new Error("Accès non autorisé");
+                throw new Error("Unauthorized access");
             }
 
             return response.json();
@@ -84,20 +84,20 @@ export function AdminFeedbacks() {
                 method: 'PATCH',
                 headers: getAuthHeader(),
             });
-            if (!response.ok) throw new Error("Erreur lors de l'archivage");
+            if (!response.ok) throw new Error("Error archiving feedback");
             return response.json();
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["/api/admin/feedbacks"] });
             toast({
-                title: "Feedback archivé",
-                description: "Le feedback a été déplacé dans les archives",
+                title: "Feedback archived",
+                description: "The feedback has been moved to archives",
             });
         },
         onError: () => {
             toast({
-                title: "Erreur",
-                description: "Impossible d'archiver le feedback",
+                title: "Error",
+                description: "Unable to archive feedback",
                 variant: "destructive",
             });
         },
@@ -109,20 +109,20 @@ export function AdminFeedbacks() {
                 method: 'PATCH',
                 headers: getAuthHeader(),
             });
-            if (!response.ok) throw new Error("Erreur lors de la restauration");
+            if (!response.ok) throw new Error("Error restoring feedback");
             return response.json();
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["/api/admin/feedbacks"] });
             toast({
-                title: "Feedback restauré",
-                description: "Le feedback a été restauré",
+                title: "Feedback restored",
+                description: "The feedback has been restored",
             });
         },
         onError: () => {
             toast({
-                title: "Erreur",
-                description: "Impossible de restaurer le feedback",
+                title: "Error",
+                description: "Unable to restore feedback",
                 variant: "destructive",
             });
         },
@@ -134,20 +134,20 @@ export function AdminFeedbacks() {
                 method: 'DELETE',
                 headers: getAuthHeader(),
             });
-            if (!response.ok) throw new Error("Erreur lors de la suppression");
+            if (!response.ok) throw new Error("Error deleting feedback");
             return response.json();
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["/api/admin/feedbacks"] });
             toast({
-                title: "Feedback supprimé",
-                description: "Le feedback a été supprimé définitivement",
+                title: "Feedback deleted",
+                description: "The feedback has been permanently deleted",
             });
         },
         onError: () => {
             toast({
-                title: "Erreur",
-                description: "Impossible de supprimer le feedback",
+                title: "Error",
+                description: "Unable to delete feedback",
                 variant: "destructive",
             });
         },
@@ -156,8 +156,8 @@ export function AdminFeedbacks() {
     useEffect(() => {
         if (error) {
             toast({
-                title: "Erreur",
-                description: "Impossible de charger les feedbacks",
+                title: "Error",
+                description: "Unable to load feedbacks",
                 variant: "destructive",
             });
         }
@@ -172,51 +172,51 @@ export function AdminFeedbacks() {
 
     const generateMarkdown = (feedbacks: Feedback[]) => {
         let markdown = "# App Feedbacks\n\n";
-        markdown += `**Exporté le:** ${new Date().toLocaleString("fr-FR", { dateStyle: "full", timeStyle: "short" })}\n\n`;
+        markdown += `**Exported on:** ${new Date().toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" })}\n\n`;
         markdown += `**Total:** ${feedbacks.length} feedback(s)\n\n`;
         markdown += "---\n\n";
 
         feedbacks.forEach((feedback, index) => {
             const realRating = getRealRating(feedback.rating);
             markdown += `## Feedback #${index + 1}\n\n`;
-            markdown += `**Date:** ${new Date(feedback.createdAt).toLocaleString("fr-FR", { dateStyle: "full", timeStyle: "short" })}\n\n`;
-            markdown += `**Note globale:** ${realRating}/5\n\n`;
+            markdown += `**Date:** ${new Date(feedback.createdAt).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" })}\n\n`;
+            markdown += `**Overall rating:** ${realRating}/5\n\n`;
 
             if (feedback.purchaseEase) {
-                markdown += `**Facilité d'achat:** ${feedback.purchaseEase}/5\n\n`;
+                markdown += `**Purchase ease:** ${feedback.purchaseEase}/5\n\n`;
             }
             if (feedback.experienceRating) {
-                markdown += `**Expérience:** ${feedback.experienceRating}/5\n\n`;
+                markdown += `**Experience:** ${feedback.experienceRating}/5\n\n`;
             }
             if (feedback.instructionsClarity) {
-                markdown += `**Clarté des instructions:** ${feedback.instructionsClarity}/5\n\n`;
+                markdown += `**Instructions clarity:** ${feedback.instructionsClarity}/5\n\n`;
             }
             if (feedback.perceivedUtility) {
-                markdown += `**Utilité perçue:** ${feedback.perceivedUtility}/5\n\n`;
+                markdown += `**Perceived utility:** ${feedback.perceivedUtility}/5\n\n`;
             }
             if (feedback.helpfulAspect) {
-                markdown += `**Ce qui a été utile:** ${helpfulAspectLabels[feedback.helpfulAspect] || feedback.helpfulAspect}\n\n`;
+                markdown += `**What was helpful:** ${helpfulAspectLabels[feedback.helpfulAspect] || feedback.helpfulAspect}\n\n`;
             }
             if (feedback.improvementSuggestion) {
-                markdown += `**À améliorer:** ${improvementLabels[feedback.improvementSuggestion] || feedback.improvementSuggestion}\n\n`;
+                markdown += `**To improve:** ${improvementLabels[feedback.improvementSuggestion] || feedback.improvementSuggestion}\n\n`;
             }
             if (feedback.difficulties) {
-                markdown += `**Difficultés:** ${feedback.difficulties}\n\n`;
+                markdown += `**Difficulties:** ${feedback.difficulties}\n\n`;
             }
             if (feedback.confusingElements) {
-                markdown += `**Éléments confus:** ${feedback.confusingElements}\n\n`;
+                markdown += `**Confusing elements:** ${feedback.confusingElements}\n\n`;
             }
             if (feedback.technicalIssues) {
-                markdown += `**Problèmes techniques:** ${feedback.technicalIssues}\n\n`;
+                markdown += `**Technical issues:** ${feedback.technicalIssues}\n\n`;
             }
             if (feedback.missingFeatures) {
-                markdown += `**Fonctionnalités manquantes:** ${feedback.missingFeatures}\n\n`;
+                markdown += `**Missing features:** ${feedback.missingFeatures}\n\n`;
             }
             if (feedback.durationFeedback) {
-                markdown += `**Durée du parcours:** ${durationLabels[feedback.durationFeedback] || feedback.durationFeedback}\n\n`;
+                markdown += `**Duration:** ${durationLabels[feedback.durationFeedback] || feedback.durationFeedback}\n\n`;
             }
             if (feedback.continuedUseLikelihood) {
-                markdown += `**Probabilité de réutilisation:** ${feedback.continuedUseLikelihood}/5\n\n`;
+                markdown += `**Likelihood of continued use:** ${feedback.continuedUseLikelihood}/5\n\n`;
             }
 
             markdown += "---\n\n";
@@ -228,8 +228,8 @@ export function AdminFeedbacks() {
     const handleDownloadMarkdown = () => {
         if (!feedbacks || feedbacks.length === 0) {
             toast({
-                title: "Aucun feedback",
-                description: "Il n'y a pas de feedbacks à télécharger.",
+                title: "No feedbacks",
+                description: "There are no feedbacks to download.",
                 variant: "destructive",
             });
             return;
@@ -249,8 +249,8 @@ export function AdminFeedbacks() {
         URL.revokeObjectURL(url);
 
         toast({
-            title: "Téléchargement réussi",
-            description: `${feedbacks.length} feedback(s) exporté(s) en Markdown`,
+            title: "Download successful",
+            description: `${feedbacks.length} feedback(s) exported as Markdown`,
         });
     };
 
@@ -302,10 +302,10 @@ export function AdminFeedbacks() {
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
                     <h2 className="text-xl font-semibold">
-                        {showArchived ? "Feedbacks archivés" : "Feedbacks des utilisateurs"}
+                        {showArchived ? "Archived Feedbacks" : "User Feedbacks"}
                     </h2>
                     <p className="text-muted-foreground">
-                        {feedbacks?.length || 0} feedback(s) {showArchived ? "archivé(s)" : "actif(s)"}
+                        {feedbacks?.length || 0} {showArchived ? "archived" : "active"} feedback(s)
                     </p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -317,12 +317,12 @@ export function AdminFeedbacks() {
                         {showArchived ? (
                             <>
                                 <ArchiveRestore className="h-4 w-4 mr-2" />
-                                Voir les actifs
+                                View active
                             </>
                         ) : (
                             <>
                                 <Archive className="h-4 w-4 mr-2" />
-                                Voir les archives
+                                View archived
                             </>
                         )}
                     </Button>
@@ -333,14 +333,14 @@ export function AdminFeedbacks() {
                         data-testid="button-download-markdown"
                     >
                         <Download className="h-4 w-4 mr-2" />
-                        Télécharger Markdown
+                        Download Markdown
                     </Button>
                 </div>
             </div>
 
             {isLoading && (
                 <div className="text-center py-12">
-                    <p className="text-muted-foreground">Chargement des feedbacks...</p>
+                    <p className="text-muted-foreground">Loading feedbacks...</p>
                 </div>
             )}
 
@@ -348,7 +348,7 @@ export function AdminFeedbacks() {
                 <Card>
                     <CardContent className="py-12 text-center">
                         <p className="text-muted-foreground">
-                            {showArchived ? "Aucun feedback archivé" : "Aucun feedback pour le moment"}
+                            {showArchived ? "No archived feedbacks" : "No feedbacks yet"}
                         </p>
                     </CardContent>
                 </Card>
@@ -379,7 +379,7 @@ export function AdminFeedbacks() {
                                             </span>
                                         </div>
                                         <span className="text-sm text-muted-foreground">
-                                            {new Date(feedback.createdAt).toLocaleDateString("fr-FR", {
+                                            {new Date(feedback.createdAt).toLocaleDateString("en-US", {
                                                 day: "numeric",
                                                 month: "short",
                                                 year: "numeric",
@@ -394,7 +394,7 @@ export function AdminFeedbacks() {
                                             data-testid={`button-view-${feedback.id}`}
                                         >
                                             <Eye className="h-4 w-4 mr-1" />
-                                            Voir détails
+                                            View details
                                         </Button>
                                         {showArchived ? (
                                             <Button
@@ -429,18 +429,18 @@ export function AdminFeedbacks() {
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <AlertDialogTitle>Supprimer ce feedback ?</AlertDialogTitle>
+                                                    <AlertDialogTitle>Delete this feedback?</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        Cette action est irréversible. Le feedback sera définitivement supprimé.
+                                                        This action is irreversible. The feedback will be permanently deleted.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
-                                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                     <AlertDialogAction
                                                         onClick={() => deleteMutation.mutate(feedback.id)}
                                                         data-testid={`button-confirm-delete-${feedback.id}`}
                                                     >
-                                                        Supprimer
+                                                        Delete
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
@@ -458,10 +458,10 @@ export function AdminFeedbacks() {
                 <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-semibold">
-                            Détails du feedback
+                            Feedback Details
                         </DialogTitle>
                         <DialogDescription className="sr-only">
-                            Toutes les réponses du feedback sélectionné
+                            All responses from the selected feedback
                         </DialogDescription>
                     </DialogHeader>
 
@@ -469,7 +469,7 @@ export function AdminFeedbacks() {
                         <div className="space-y-4">
                             {/* Note globale */}
                             <div className="p-4 bg-muted rounded-lg">
-                                <p className="text-sm text-muted-foreground mb-2">Note globale</p>
+                                <p className="text-sm text-muted-foreground mb-2">Overall Rating</p>
                                 <div className="flex items-center gap-1">
                                     {[1, 2, 3, 4, 5].map((star) => {
                                         const realRating = getRealRating(selectedFeedback.rating);
@@ -490,7 +490,7 @@ export function AdminFeedbacks() {
                                     </span>
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    {new Date(selectedFeedback.createdAt).toLocaleString("fr-FR", {
+                                    {new Date(selectedFeedback.createdAt).toLocaleString("en-US", {
                                         dateStyle: "full",
                                         timeStyle: "short",
                                     })}
@@ -500,18 +500,18 @@ export function AdminFeedbacks() {
                             {/* Questions avec échelles */}
                             <div className="space-y-1">
                                 <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                                    Évaluations
+                                    Ratings
                                 </h3>
                                 <div className="bg-card border rounded-lg p-4">
-                                    <RatingRow label="Facilité du processus d'achat" value={selectedFeedback.purchaseEase} />
-                                    <RatingRow label="Expérience globale" value={selectedFeedback.experienceRating} />
-                                    <RatingRow label="Clarté des instructions" value={selectedFeedback.instructionsClarity} />
-                                    <RatingRow label="Utilité perçue" value={selectedFeedback.perceivedUtility} />
-                                    <RatingRow label="Probabilité de réutilisation" value={selectedFeedback.continuedUseLikelihood} />
-                                    {!selectedFeedback.purchaseEase && !selectedFeedback.experienceRating && 
-                                     !selectedFeedback.instructionsClarity && !selectedFeedback.perceivedUtility && 
+                                    <RatingRow label="Purchase ease" value={selectedFeedback.purchaseEase} />
+                                    <RatingRow label="Overall experience" value={selectedFeedback.experienceRating} />
+                                    <RatingRow label="Instructions clarity" value={selectedFeedback.instructionsClarity} />
+                                    <RatingRow label="Perceived utility" value={selectedFeedback.perceivedUtility} />
+                                    <RatingRow label="Likelihood of continued use" value={selectedFeedback.continuedUseLikelihood} />
+                                    {!selectedFeedback.purchaseEase && !selectedFeedback.experienceRating &&
+                                     !selectedFeedback.instructionsClarity && !selectedFeedback.perceivedUtility &&
                                      !selectedFeedback.continuedUseLikelihood && (
-                                        <p className="text-muted-foreground italic text-sm py-2">Aucune évaluation</p>
+                                        <p className="text-muted-foreground italic text-sm py-2">No ratings</p>
                                     )}
                                 </div>
                             </div>
@@ -519,23 +519,23 @@ export function AdminFeedbacks() {
                             {/* Questions à choix */}
                             <div className="space-y-1">
                                 <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                                    Réponses
+                                    Responses
                                 </h3>
                                 <div className="bg-card border rounded-lg p-4">
-                                    <DetailRow 
-                                        label="Ce qui a été le plus utile" 
-                                        value={selectedFeedback.helpfulAspect ? helpfulAspectLabels[selectedFeedback.helpfulAspect] || selectedFeedback.helpfulAspect : null} 
+                                    <DetailRow
+                                        label="What was most helpful"
+                                        value={selectedFeedback.helpfulAspect ? helpfulAspectLabels[selectedFeedback.helpfulAspect] || selectedFeedback.helpfulAspect : null}
                                     />
-                                    <DetailRow 
-                                        label="Ce qui pourrait être amélioré" 
-                                        value={selectedFeedback.improvementSuggestion ? improvementLabels[selectedFeedback.improvementSuggestion] || selectedFeedback.improvementSuggestion : null} 
+                                    <DetailRow
+                                        label="What could be improved"
+                                        value={selectedFeedback.improvementSuggestion ? improvementLabels[selectedFeedback.improvementSuggestion] || selectedFeedback.improvementSuggestion : null}
                                     />
-                                    <DetailRow 
-                                        label="Durée du parcours" 
-                                        value={selectedFeedback.durationFeedback ? durationLabels[selectedFeedback.durationFeedback] || selectedFeedback.durationFeedback : null} 
+                                    <DetailRow
+                                        label="Duration feedback"
+                                        value={selectedFeedback.durationFeedback ? durationLabels[selectedFeedback.durationFeedback] || selectedFeedback.durationFeedback : null}
                                     />
                                     {!selectedFeedback.helpfulAspect && !selectedFeedback.improvementSuggestion && !selectedFeedback.durationFeedback && (
-                                        <p className="text-muted-foreground italic text-sm py-2">Aucune réponse</p>
+                                        <p className="text-muted-foreground italic text-sm py-2">No responses</p>
                                     )}
                                 </div>
                             </div>
@@ -545,13 +545,13 @@ export function AdminFeedbacks() {
                               selectedFeedback.technicalIssues || selectedFeedback.missingFeatures) && (
                                 <div className="space-y-1">
                                     <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                                        Commentaires
+                                        Comments
                                     </h3>
                                     <div className="bg-card border rounded-lg p-4">
-                                        <DetailRow label="Difficultés rencontrées" value={selectedFeedback.difficulties} />
-                                        <DetailRow label="Éléments confus" value={selectedFeedback.confusingElements} />
-                                        <DetailRow label="Problèmes techniques" value={selectedFeedback.technicalIssues} />
-                                        <DetailRow label="Fonctionnalités manquantes" value={selectedFeedback.missingFeatures} />
+                                        <DetailRow label="Difficulties encountered" value={selectedFeedback.difficulties} />
+                                        <DetailRow label="Confusing elements" value={selectedFeedback.confusingElements} />
+                                        <DetailRow label="Technical issues" value={selectedFeedback.technicalIssues} />
+                                        <DetailRow label="Missing features" value={selectedFeedback.missingFeatures} />
                                     </div>
                                 </div>
                             )}

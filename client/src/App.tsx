@@ -61,7 +61,7 @@ function AccessGate({ children, isAdmin }: { children: React.ReactNode; isAdmin:
               className="w-16 h-16 animate-pulse hidden dark:block"
             />
           </div>
-          <p className="text-muted-foreground">Verification de l'acces...</p>
+          <p className="text-muted-foreground">Verifying access...</p>
         </div>
       </div>
     );

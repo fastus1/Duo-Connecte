@@ -131,7 +131,7 @@ export function PinLoginForm({ userEmail, onSuccess, onError }: PinLoginFormProp
             disabled={validatePinMutation.isPending || !form.formState.isValid || rateLimitError}
             data-testid="button-validate-pin"
           >
-            {validatePinMutation.isPending ? 'Vérification...' : 'Se connecter'}
+            {validatePinMutation.isPending ? 'Verifying...' : 'Sign in'}
           </Button>
 
           <div className="text-center">
@@ -139,11 +139,11 @@ export function PinLoginForm({ userEmail, onSuccess, onError }: PinLoginFormProp
               type="button"
               className="text-sm text-primary hover:underline"
               onClick={() => {
-                onError('Pour réinitialiser votre NIP, veuillez contacter le support.');
+                onError('To reset your PIN, please contact support.');
               }}
               data-testid="link-forgot-pin"
             >
-              NIP oublié ?
+              Forgot PIN?
             </button>
           </div>
         </form>
