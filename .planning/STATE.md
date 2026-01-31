@@ -4,71 +4,56 @@
 
 See: .planning/PROJECT.md (updated 2026-01-31)
 
-**Core value:** L'app doit fonctionner de maniere fiable dans l'iframe Circle.so avec toutes les couches de securite actives
-**Current focus:** Stable - pret pour prochaine fonctionnalite
+**Core value:** Ready-to-deploy Circle.so app infrastructure
+**Current focus:** Phase 1 - Cleanup
 
 ## Current Position
 
-Milestone: v1.1 Complete
-Phase: N/A (between milestones)
-Plan: N/A
-Status: Ready for next milestone
-Last activity: 2026-01-31 - v1.1 shipped
+Phase: 1 of 3 (Cleanup)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-01-31 - Roadmap created
 
-Progress: [========================================] 100%
-v1.1: 1/1 plan complete
+Progress: [░░░░░░░░░░] 0%
 
-## Milestone Summary
+## Performance Metrics
 
-**v1.0 Railway Migration (2026-01-30):**
-- 3 phases, 5 plans completed
-- 11/11 requirements shipped
-- Production: https://duo-connecte-production.up.railway.app
+**Velocity:**
+- Total plans completed: 0
+- Average duration: -
+- Total execution time: 0 hours
 
-**v1.1 Fix Support Tickets (2026-01-31):**
-- 1 phase, 1 plan completed
-- 3/3 requirements shipped
-- Fixed API route mismatch in admin support tickets
-- Configured RESEND_API_KEY for email notifications
-- Added nixpacks.toml for Railway rebuild
+**By Phase:**
 
-See: .planning/MILESTONES.md for full details
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+**Recent Trend:**
+- Last 5 plans: -
+- Trend: -
+
+*Updated after each plan completion*
 
 ## Accumulated Context
 
 ### Decisions
 
-All decisions are logged in PROJECT.md Key Decisions table.
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
 
-**v1 Decisions:**
-- Railway as deployment platform
-- Keep Neon PostgreSQL
-- RAILWAY_PUBLIC_DOMAIN for CORS
-- APP_URL for email links
-- Timestamp optional in Circle schema
-- Admin bypass on paywall
-
-**v1.1 Decisions:**
-- Route path correction to match backend mount point
-- nixpacks.toml to force frontend rebuild
+- None yet
 
 ### Pending Todos
 
-None.
+None yet.
 
 ### Blockers/Concerns
 
-None - v1.1 complete.
-
-Tech debt carried forward:
-- Node 18.19.1 (some packages prefer 20+)
-- npm audit vulnerabilities (pre-existing)
+None yet.
 
 ## Session Continuity
 
 Last session: 2026-01-31
-Stopped at: Completed v1.1 milestone
+Stopped at: Roadmap created, ready to plan Phase 1
 Resume file: None
-
----
-*Updated: 2026-01-31 after v1.1 completion*
