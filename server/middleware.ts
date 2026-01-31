@@ -1,3 +1,21 @@
+/**
+ * Authentication Middleware
+ *
+ * Provides Express middleware for protecting API routes.
+ * Uses JWT tokens stored in httpOnly cookies for session management.
+ *
+ * Available middleware:
+ * - requireAuth: Ensures user is logged in
+ * - requireAdmin: Ensures user is logged in AND is admin
+ * - optionalAuth: Adds user to request if logged in, continues if not
+ *
+ * Utility functions:
+ * - generateSessionToken: Creates a signed JWT
+ * - verifySessionToken: Validates and decodes a JWT
+ * - hashPin: Hashes a user PIN with bcrypt
+ * - comparePin: Compares a PIN against its hash
+ * - validateUserData: Validates Circle.so postMessage data
+ */
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
@@ -52,6 +70,16 @@ export interface ValidationResult {
   error?: string;
 }
 
+/**
+ * Validates Circle.so postMessage user data.
+ *
+ * Checks for required fields (email) and validates format.
+ * Normalizes email to lowercase and handles missing optional fields.
+ * Detects unresolved Liquid templates from Circle.so.
+ *
+ * @param data - User data received from Circle.so postMessage
+ * @returns ValidationResult with valid=true or valid=false with error message
+ */
 export function validateUserData(data: CircleUserData): ValidationResult {
   console.log('[VALIDATE] Received data:', JSON.stringify(data, null, 2));
   
@@ -113,6 +141,14 @@ export const pinRateLimiter = rateLimit({
   ipv6Subnet: 64, // IPv6 subnet masking for proper rate limiting
 });
 
+/**
+ * Middleware that requires user authentication.
+ *
+ * Validates the JWT from Authorization header, attaches user to request.
+ * Returns 401 if token is missing, invalid, or expired.
+ *
+ * After this middleware, access user via (req as any).user
+ */
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   
@@ -131,7 +167,15 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-// Factory function to create requireAdmin middleware with storage dependency
+/**
+ * Factory function to create requireAdmin middleware.
+ *
+ * Same as requireAuth but also checks isAdmin flag from database.
+ * Returns 403 if user is authenticated but not an admin.
+ *
+ * @param storage - Storage instance with getUser method
+ * @returns Express middleware function
+ */
 export function createRequireAdmin(storage: { getUser: (id: string) => Promise<{ isAdmin: boolean } | undefined> }) {
   return async function requireAdmin(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;

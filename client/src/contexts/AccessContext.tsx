@@ -1,3 +1,20 @@
+/**
+ * AccessContext - Circle.so Authentication Provider
+ *
+ * This context handles the authentication flow for Circle.so iframe apps:
+ * 1. Receives user data from Circle.so via postMessage
+ * 2. Validates the user data structure
+ * 3. Syncs user with backend database
+ * 4. Manages access states (loading, authenticated, needs_pin, paywall)
+ *
+ * The Circle.so iframe sends a CIRCLE_USER_AUTH message containing:
+ * - user.email: User's email from Circle
+ * - user.publicUid: Circle's unique identifier
+ * - user.name: Display name
+ * - user.isAdmin: Whether user is community admin
+ *
+ * @see ARCHITECTURE.md for full authentication flow diagram
+ */
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 
 type AccessStatus = 'loading' | 'granted' | 'denied' | 'origin_invalid';
@@ -32,6 +49,10 @@ declare global {
   }
 }
 
+/**
+ * React Context for access state management.
+ * Access via useAccess() hook - do not use directly.
+ */
 const AccessContext = createContext<AccessContextType | undefined>(undefined);
 
 const USER_EMAIL_KEY = 'circle-app-user-email';
@@ -52,6 +73,14 @@ function storeEmail(email: string) {
   }
 }
 
+/**
+ * AccessProvider - Wraps the application with authentication state.
+ *
+ * Handles Circle.so postMessage events, validates user data,
+ * and manages access control based on app configuration.
+ *
+ * @param children - React children to render within the provider
+ */
 export function AccessProvider({ children }: { children: ReactNode }) {
   const [accessStatus, setAccessStatus] = useState<AccessStatus>('loading');
   const [userEmail, setUserEmail] = useState<string | null>(() => {
@@ -244,6 +273,19 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Hook to access authentication state and methods.
+ *
+ * @returns AccessContextType containing:
+ *   - accessStatus: 'loading' | 'granted' | 'denied' | 'origin_invalid'
+ *   - userEmail: User's email or null
+ *   - circleIsAdmin: Whether user is Circle.so admin
+ *   - appEnvironment: 'development' | 'production'
+ *   - checkAccess: Function to recheck access status
+ *   - forceRecheck: Function to trigger immediate recheck
+ *
+ * @throws Error if used outside AccessProvider
+ */
 export function useAccess() {
   const context = useContext(AccessContext);
   if (context === undefined) {

@@ -1,3 +1,15 @@
+/**
+ * SessionContext - User Session State Management
+ *
+ * Manages lightweight session state for the authenticated user.
+ * This is a simplified context for template purposes.
+ *
+ * State includes:
+ * - currentStep: Progress tracking (generic counter)
+ * - lastUpdated: Timestamp of last state change
+ *
+ * Use this context to persist user progress across page navigations.
+ */
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { type SessionState } from '@shared/schema';
 
