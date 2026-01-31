@@ -2,18 +2,18 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-30)
+See: .planning/PROJECT.md (updated 2026-01-31)
 
 **Core value:** L'app doit fonctionner de maniere fiable dans l'iframe Circle.so avec toutes les couches de securite actives
-**Current focus:** v1.1 Complete - Support Tickets Fixed
+**Current focus:** Stable - pret pour prochaine fonctionnalite
 
 ## Current Position
 
-Milestone: v1.1 Fix Support Tickets
-Phase: 4 of 4 (Support Ticket Fixes)
-Plan: 1 of 1 in current phase
-Status: Milestone complete
-Last activity: 2026-01-30 - Completed 04-01-PLAN.md
+Milestone: v1.1 Complete
+Phase: N/A (between milestones)
+Plan: N/A
+Status: Ready for next milestone
+Last activity: 2026-01-31 - v1.1 shipped
 
 Progress: [========================================] 100%
 v1.1: 1/1 plan complete
@@ -25,10 +25,12 @@ v1.1: 1/1 plan complete
 - 11/11 requirements shipped
 - Production: https://duo-connecte-production.up.railway.app
 
-**v1.1 Fix Support Tickets (2026-01-30):**
+**v1.1 Fix Support Tickets (2026-01-31):**
 - 1 phase, 1 plan completed
+- 3/3 requirements shipped
 - Fixed API route mismatch in admin support tickets
 - Configured RESEND_API_KEY for email notifications
+- Added nixpacks.toml for Railway rebuild
 
 See: .planning/MILESTONES.md for full details
 
@@ -47,7 +49,8 @@ All decisions are logged in PROJECT.md Key Decisions table.
 - Admin bypass on paywall
 
 **v1.1 Decisions:**
-- Route path correction: /api/admin/support/tickets -> /api/support/admin/tickets to match backend mount point
+- Route path correction to match backend mount point
+- nixpacks.toml to force frontend rebuild
 
 ### Pending Todos
 
@@ -63,9 +66,9 @@ Tech debt carried forward:
 
 ## Session Continuity
 
-Last session: 2026-01-30
+Last session: 2026-01-31
 Stopped at: Completed v1.1 milestone
 Resume file: None
 
 ---
-*Updated: 2026-01-30 after v1.1 completion*
+*Updated: 2026-01-31 after v1.1 completion*

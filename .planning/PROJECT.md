@@ -30,13 +30,13 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 - ✓ Validation des 4 couches de sécurité sur Railway — v1
 - ✓ Test intégration iframe Circle.so depuis Railway — v1
 - ✓ Suppression des dépendances Replit (plugins Vite, variables d'environnement) — v1
+- ✓ Tickets visibles dans le dashboard admin — v1.1
+- ✓ Notification email à l'admin quand un ticket est créé — v1.1
+- ✓ Réponse email fonctionnelle depuis le dashboard — v1.1
 
 ### Active
 
-<!-- v1.1 Fix Support Tickets -->
-- [ ] Tickets visibles dans le dashboard admin
-- [ ] Notification email à l'admin quand un ticket est créé
-- [ ] Réponse email fonctionnelle depuis le dashboard
+(Aucun — prêt pour le prochain milestone)
 
 ### Out of Scope
 
@@ -45,11 +45,12 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 
 ## Context
 
-**Current State (v1 shipped 2026-01-30):**
+**Current State (v1.1 shipped 2026-01-31):**
 - App deployed on Railway at https://duo-connecte-production.up.railway.app
 - Connected to Neon PostgreSQL database
 - All 4 security layers verified working
 - Circle.so iframe integration validated
+- Support ticket system fully functional (dashboard + email notifications)
 - Admin user: fastusone@gmail.com
 
 **Architecture de sécurité (4 couches):**
@@ -74,18 +75,10 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 - Node 18.19.1 (some packages prefer 20+)
 - npm audit vulnerabilities (pre-existing)
 
-## Current Milestone: v1.1 Fix Support Tickets
+## Future
 
-**Goal:** Réparer le système de tickets support pour que l'admin reçoive les notifications et voie les tickets dans le dashboard.
-
-**Target features:**
-- Corriger les routes API (mismatch frontend/backend)
-- Configurer Resend pour les notifications email
-- Valider le workflow complet: création → notification → dashboard → réponse
-
-**Futur:**
 - Cette app servira de base/template pour d'autres apps Circle.so
-- La fondation (auth, support, etc.) doit être solide
+- La fondation (auth, support, etc.) est maintenant solide
 
 ## Constraints
 
@@ -105,6 +98,8 @@ L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes le
 | APP_URL for email links | Fallback pattern for dynamic URLs | ✓ Good — emails work |
 | Timestamp optional in Circle schema | Circle.so doesn't always send timestamp | ✓ Good — fixed validation errors |
 | Admin bypass on paywall | Admins need access when paywall enabled | ✓ Good — admins can configure |
+| Route path correction v1.1 | Frontend appelait mauvais endpoint API | ✓ Good — tickets fonctionnels |
+| nixpacks.toml pour Railway | Forcer rebuild frontend sur deploy | ✓ Good — evite cache stale |
 
 ---
-*Last updated: 2026-01-30 after v1.1 milestone start*
+*Last updated: 2026-01-31 after v1.1 milestone completion*

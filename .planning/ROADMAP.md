@@ -3,7 +3,7 @@
 ## Milestones
 
 - [x] **v1.0 Railway Migration** - Phases 1-3 (shipped 2026-01-30)
-- [ ] **v1.1 Fix Support Tickets** - Phase 4 (in progress)
+- [x] **v1.1 Fix Support Tickets** - Phase 4 (shipped 2026-01-31)
 
 ## Phases
 
@@ -35,27 +35,18 @@ Plans:
 
 </details>
 
-### v1.1 Fix Support Tickets (In Progress)
+<details>
+<summary>v1.1 Fix Support Tickets (Phase 4) - SHIPPED 2026-01-31</summary>
 
-**Milestone Goal:** Repair the support ticket system so admin receives notifications and can view/respond to tickets in the dashboard.
-
-#### Phase 4: Support Ticket Fixes
+### Phase 4: Support Ticket Fixes
 **Goal**: Admin can receive, view, and respond to support tickets
 **Depends on**: Phase 3 (v1 complete)
-**Requirements**: TICK-01, TICK-02, TICK-03
-**Success Criteria** (what must be TRUE):
-  1. User submits a support ticket and it appears in admin dashboard at `/admin`
-  2. Admin receives email notification when a new ticket is created
-  3. Admin can view ticket details in the dashboard
-  4. Admin can send email reply to user from the dashboard
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md — Fix API route paths and configure email
+- [x] 04-01: Fix API route paths and configure email
 
-**Root Causes to Fix:**
-- Route mismatch: Frontend calls `/api/admin/support/tickets` but backend exposes `/api/support/admin/tickets`
-- Email: `RESEND_API_KEY` not configured in Railway
+</details>
 
 ## Progress
 
@@ -64,8 +55,8 @@ Plans:
 | 1. Setup | v1.0 | 2/2 | Complete | 2026-01-30 |
 | 2. Database | v1.0 | 1/1 | Complete | 2026-01-30 |
 | 3. Validation | v1.0 | 2/2 | Complete | 2026-01-30 |
-| 4. Support Ticket Fixes | v1.1 | 0/1 | Ready | - |
+| 4. Support Ticket Fixes | v1.1 | 1/1 | Complete | 2026-01-31 |
 
 ---
 *Created: 2026-01-30*
-*Last updated: 2026-01-30*
+*Last updated: 2026-01-31 - v1.1 shipped*
