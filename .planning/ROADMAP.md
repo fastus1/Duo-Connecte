@@ -60,10 +60,12 @@ Plans:
   3. Key source files have inline comments explaining their purpose
   4. Database reset script exists and clears user data when run
   5. Environment variables are documented with descriptions and examples
-**Plans**: TBD
+**Plans**: 3 plans in 1 wave
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — Create README.md with complete documentation
+- [ ] 03-02-PLAN.md — Database reset script and extension guide
+- [ ] 03-03-PLAN.md — JSDoc comments in key source files
 
 ## Progress
 
@@ -74,8 +76,8 @@ Phases execute in numeric order: 1 -> 2 -> 3
 |-------|----------------|--------|-----------|
 | 1. Cleanup | 3/3 | Complete | 2026-01-31 |
 | 2. Template Structure | 1/1 | Complete | 2026-01-31 |
-| 3. Documentation & Data | 0/TBD | Not started | - |
+| 3. Documentation & Data | 0/3 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-31*
-*Last updated: 2026-01-31 - Phase 2 complete*
+*Last updated: 2026-01-31 - Phase 3 planned*
