@@ -28,10 +28,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. SessionContext no longer references participants or workflow steps
   4. App displays "Circle App Template" branding (not "Duo-Connecte")
   5. Build completes without unused import warnings for removed code
-**Plans**: TBD
+**Plans**: 3 plans in 3 waves
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md — Delete Duo page files and clean up App.tsx router
+- [ ] 01-02-PLAN.md — Schema, context, and sidebar cleanup
+- [ ] 01-03-PLAN.md — Branding update and build verification
 
 ### Phase 2: Template Structure
 **Goal**: Establish a clean, welcoming starter structure for developers
@@ -70,7 +72,7 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Cleanup | 0/TBD | Not started | - |
+| 1. Cleanup | 0/3 | Ready to execute | - |
 | 2. Template Structure | 0/TBD | Not started | - |
 | 3. Documentation & Data | 0/TBD | Not started | - |
 
