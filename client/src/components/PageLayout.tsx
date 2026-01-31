@@ -1,9 +1,6 @@
 import { ReactNode, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation } from 'wouter';
-import { ProgressBar } from './ProgressBar';
-import { PersistentNav } from './PersistentNav';
-import { getFlow } from '@shared/schema';
 import { useSession } from '@/contexts/SessionContext';
 
 interface PageLayoutProps {
@@ -15,8 +12,6 @@ interface PageLayoutProps {
 export function PageLayout({ children, showNav = true, showBackButton = true }: PageLayoutProps) {
   const { session, goBack } = useSession();
   const [, setLocation] = useLocation();
-  const flow = getFlow(session.appType);
-  const currentPage = flow.pages[session.currentStep];
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const animationDuration = prefersReducedMotion ? 0 : 1;
@@ -39,12 +34,6 @@ export function PageLayout({ children, showNav = true, showBackButton = true }: 
 
   return (
     <div className="min-h-full flex flex-col" style={{ background: 'hsl(var(--page-bg))' }}>
-      <ProgressBar
-        section={currentPage.section}
-        currentStep={session.currentStep}
-        totalSteps={flow.pages.length}
-      />
-
       <main className="flex-1 px-4 md:px-6 py-6 md:py-12 pb-20 md:pb-24">
         <motion.div
           key={session.currentStep}
@@ -56,13 +45,6 @@ export function PageLayout({ children, showNav = true, showBackButton = true }: 
           {children}
         </motion.div>
       </main>
-
-      {showNav && (
-        <PersistentNav 
-          onBack={handleBack} 
-          canGoBack={showBackButton} 
-        />
-      )}
     </div>
   );
 }
