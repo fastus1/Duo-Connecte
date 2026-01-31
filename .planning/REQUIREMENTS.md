@@ -17,11 +17,9 @@ Requirements for template transformation. Each maps to roadmap phases.
 
 ### Template Structure
 
-- [ ] **TMPL-01**: Create Home page with header, content area, and footer
-- [ ] **TMPL-02**: Header displays app title and basic navigation
-- [ ] **TMPL-03**: Content area shows "This is an empty template" message with structure hints
-- [ ] **TMPL-04**: Footer displays template info
-- [ ] **TMPL-05**: Keep one example/demo page showing component patterns
+- [x] **ARCH-01**: Create ARCHITECTURE.md for AI comprehension (200-400 lines, French, covers stack/structure/auth/extension points)
+
+*Note: Original TMPL-01 to TMPL-05 (UI pages) abandoned per CONTEXT.md - template already has functional pages from cleanup*
 
 ### Documentation
 
@@ -71,11 +69,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLEAN-03 | Phase 1 | Complete |
 | CLEAN-04 | Phase 1 | Complete |
 | CLEAN-05 | Phase 1 | Complete |
-| TMPL-01 | Phase 2 | Pending |
-| TMPL-02 | Phase 2 | Pending |
-| TMPL-03 | Phase 2 | Pending |
-| TMPL-04 | Phase 2 | Pending |
-| TMPL-05 | Phase 2 | Pending |
+| ARCH-01 | Phase 2 | Complete |
 | DOCS-01 | Phase 3 | Pending |
 | DOCS-02 | Phase 3 | Pending |
 | DOCS-03 | Phase 3 | Pending |
@@ -86,10 +80,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DATA-03 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 18 total
-- Mapped to phases: 18
+- v1 requirements: 14 total (5 CLEAN + 1 ARCH + 5 DOCS + 3 DATA)
+- Mapped to phases: 14
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-31*
-*Last updated: 2026-01-31 after roadmap creation*
+*Last updated: 2026-01-31 after Phase 2 completion*
