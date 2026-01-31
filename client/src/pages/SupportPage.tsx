@@ -162,13 +162,10 @@ export default function SupportPage() {
           <CardContent>
             <div className="divide-y">
               {faqItems.map((item, index) => (
-                <FAQItem 
-                  key={index} 
-                  question={item.question} 
+                <FAQItem
+                  key={index}
+                  question={item.question}
                   answer={item.answer}
-                  hasLink={item.hasLink}
-                  linkText={item.linkText}
-                  linkUrl={item.linkUrl}
                 />
               ))}
             </div>
