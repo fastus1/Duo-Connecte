@@ -13,7 +13,7 @@ Transform Duo-Connecte into a reusable Circle.so app template by systematically 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Cleanup** - Remove Duo-Connecte specific code and rebrand
-- [ ] **Phase 2: Template Structure** - Create starter home page and example components
+- [ ] **Phase 2: Template Structure** - Create ARCHITECTURE.md for AI comprehension
 - [ ] **Phase 3: Documentation & Data** - Developer docs and database scripts
 
 ## Phase Details
@@ -36,19 +36,19 @@ Plans:
 - [x] 01-03-PLAN.md — Branding update and build verification
 
 ### Phase 2: Template Structure
-**Goal**: Establish a clean, welcoming starter structure for developers
+**Goal**: Create ARCHITECTURE.md - comprehensive architecture documentation for AI (Claude Code with GSD) to understand and work with the template
 **Depends on**: Phase 1
-**Requirements**: TMPL-01, TMPL-02, TMPL-03, TMPL-04, TMPL-05
+**Requirements**: ARCH-01 (ARCHITECTURE.md creation) - Note: Original UI requirements TMPL-01 to TMPL-05 abandoned per CONTEXT.md
 **Success Criteria** (what must be TRUE):
-  1. Home page loads at root URL with visible header, content area, and footer
-  2. Header shows app title and navigation links (Home, Admin if logged in)
-  3. Content area displays guidance text about the template
-  4. Demo page exists showing how to structure a new page with components
-  5. Navigation between Home and Demo page works
-**Plans**: TBD
+  1. ARCHITECTURE.md exists at project root
+  2. Document is in French, 200-400 lines
+  3. Contains: Vue d'Ensemble, Stack Technique, Structure des Dossiers, Flux d'Authentification, Points d'Extension, Configuration
+  4. ASCII diagram for auth flow included
+  5. All file path references are accurate
+**Plans**: 1 plan in 1 wave
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md — Create ARCHITECTURE.md for AI comprehension
 
 ### Phase 3: Documentation & Data
 **Goal**: Provide complete developer documentation and clean-slate database tools
@@ -73,9 +73,9 @@ Phases execute in numeric order: 1 -> 2 -> 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Cleanup | 3/3 | Complete | 2026-01-31 |
-| 2. Template Structure | 0/TBD | Not started | - |
+| 2. Template Structure | 0/1 | Planned | - |
 | 3. Documentation & Data | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-31*
-*Last updated: 2026-01-31 - Phase 1 complete*
+*Last updated: 2026-01-31 - Phase 2 planned*
