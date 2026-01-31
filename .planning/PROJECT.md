@@ -1,105 +1,89 @@
-# Duo-Connecte
+# Circle App Template
 
 ## What This Is
 
-Application de communication authentique guidée entre deux personnes, intégrée à Circle.so via iframe. Parcours structuré "Duo" en 38 étapes avec architecture de sécurité configurable à 4 couches. Marque : "Avancer Simplement".
-
-**Deployed:** https://duo-connecte-production.up.railway.app
+A reusable starter template for building apps embedded in Circle.so communities. Provides authentication (Circle.so iframe integration, PIN system), admin dashboard, support ticket system, and user management out of the box. Developers clone this template and build their custom app logic on top.
 
 ## Core Value
 
-L'app doit fonctionner de manière fiable dans l'iframe Circle.so avec toutes les couches de sécurité actives — c'est la base de confiance pour les utilisateurs payants.
+**Ready-to-deploy Circle.so app infrastructure** — auth, admin, and support systems work immediately so developers can focus on their unique app features instead of boilerplate.
 
 ## Requirements
 
 ### Validated
 
-- ✓ Authentification Circle.so (vérification domaine, validation utilisateur) — existing
-- ✓ Authentification PIN personnelle (bcrypt, JWT, rate limiting) — existing
-- ✓ Vérification paywall (membres payants via webhooks Circle) — existing
-- ✓ Parcours Duo 38 étapes avec inversion — existing
-- ✓ Dashboard admin avec mode preview — existing
-- ✓ Système de tickets support — existing
-- ✓ FAQ — existing
-- ✓ PWA (manifest, icons, installation banner) — existing
-- ✓ Synchronisation thème avec Circle.so — existing
-- ✓ Gestion membres (suppression accès/données) — existing
-- ✓ Migration de Replit vers Railway — v1
-- ✓ Configuration environnement Railway (variables, build, démarrage) — v1
-- ✓ Connexion base de données PostgreSQL (Neon) depuis Railway — v1
-- ✓ Validation des 4 couches de sécurité sur Railway — v1
-- ✓ Test intégration iframe Circle.so depuis Railway — v1
-- ✓ Suppression des dépendances Replit (plugins Vite, variables d'environnement) — v1
-- ✓ Tickets visibles dans le dashboard admin — v1.1
-- ✓ Notification email à l'admin quand un ticket est créé — v1.1
-- ✓ Réponse email fonctionnelle depuis le dashboard — v1.1
+<!-- Existing functionality from Duo-Connecte codebase -->
+
+- [x] AUTH: Circle.so iframe authentication with origin validation — existing
+- [x] AUTH: PIN-based secondary authentication with bcrypt hashing — existing
+- [x] AUTH: JWT session management with 60-min expiry — existing
+- [x] AUTH: Rate limiting on PIN attempts (5 per 15 minutes) — existing
+- [x] ADMIN: Admin login with separate credentials — existing
+- [x] ADMIN: User management (view, search users) — existing
+- [x] ADMIN: Support ticket management with statuses — existing
+- [x] ADMIN: App configuration (feature flags) — existing
+- [x] ADMIN: Analytics/stats dashboard — existing
+- [x] SUPPORT: Ticket creation from user side — existing
+- [x] SUPPORT: Ticket status tracking — existing
+- [x] INFRA: Express API with modular routes — existing
+- [x] INFRA: PostgreSQL via Neon serverless — existing
+- [x] INFRA: Railway deployment configuration — existing
+- [x] INFRA: CORS configured for Circle.so domains — existing
+- [x] INFRA: Webhook endpoint for Circle.so events — existing
 
 ### Active
 
-(Aucun — prêt pour le prochain milestone)
+<!-- New work for template transformation -->
+
+- [ ] TEMPLATE: Remove all Duo-Connecte specific pages (50+ workflow pages)
+- [ ] TEMPLATE: Remove SessionContext participant/step logic
+- [ ] TEMPLATE: Create starter home page with header, nav, content area
+- [ ] TEMPLATE: Keep one example/demo page showing component structure
+- [ ] TEMPLATE: Rename app branding from "Duo-Connecte" to "Circle App Template"
+- [ ] DOCS: Add developer documentation in code (README, comments)
+- [ ] DOCS: Document how to extend the template with new pages
+- [ ] DOCS: Document environment variables and configuration
+- [ ] DATA: Provide database reset/seed scripts for clean slate
 
 ### Out of Scope
 
-- Mode Solo — extrait vers application séparée
-- Modification auth.ts — fichier critique, nécessite approbation explicite
+- New features beyond template structure — this is about stripping down, not adding
+- Mobile app version — web-first, embedded in Circle.so
+- OAuth providers (Google, GitHub) — Circle.so auth is sufficient
+- Real-time features (WebSocket chat) — template is request/response based
+- Multi-language support — English only for v1
 
 ## Context
 
-**Current State (v1.1 shipped 2026-01-31):**
-- App deployed on Railway at https://duo-connecte-production.up.railway.app
-- Connected to Neon PostgreSQL database
-- All 4 security layers verified working
-- Circle.so iframe integration validated
-- Support ticket system fully functional (dashboard + email notifications)
-- Admin user: fastusone@gmail.com
+**Origin:** This template is extracted from "Duo-Connecte", a working production app that runs on Railway and embeds in Circle.so communities via custom HTML blocks.
 
-**Architecture de sécurité (4 couches):**
-1. Vérification domaine Circle.so (postMessage origin)
-2. Validation utilisateur Circle (email, nom via postMessage)
-3. Paywall (membres payants via webhooks)
-4. PIN personnel (bcrypt + JWT sessions)
+**Technical environment:**
+- Frontend: React 18 + Vite + Tailwind CSS + Radix UI
+- Backend: Express.js + TypeScript
+- Database: PostgreSQL via Neon serverless + Drizzle ORM
+- Deployment: Railway with nixpacks
+- Integration: Circle.so iframe embedding with postMessage communication
 
-**Intégration Circle.so:**
-- Iframe sur `communaute.avancersimplement.com`
-- Communication via postMessage
-- Headers CSP `frame-ancestors` pour autoriser embedding
+**Current state:** The codebase has 50+ pages specific to the Duo workflow that need removal. The infrastructure (auth, admin, support) is production-tested and should remain untouched.
 
-**Base technique:**
-- Frontend: React 18, TypeScript, Vite, shadcn/ui, Tailwind
-- Backend: Express, Drizzle ORM, PostgreSQL (Neon)
-- Auth: JWT (60min expiry), bcrypt (10 rounds)
-- Deployment: Railway (auto-deploy from GitHub)
-- 21,603 lines of TypeScript
-
-**Known Issues (tech debt):**
-- Node 18.19.1 (some packages prefer 20+)
-- npm audit vulnerabilities (pre-existing)
-
-## Future
-
-- Cette app servira de base/template pour d'autres apps Circle.so
-- La fondation (auth, support, etc.) est maintenant solide
+**Target users:** Developers (including non-experts) who want to build Circle.so embedded apps without setting up auth/admin from scratch.
 
 ## Constraints
 
-- **Circle.so**: L'intégration iframe et les 4 couches de sécurité sont non-négociables
-- **Base de données**: PostgreSQL via Neon (connexion existante à préserver)
-- **Auth critique**: Ne pas modifier `server/routes/auth.ts` sans approbation explicite
-- **Solo exclus**: Le mode Solo a été extrait — ne pas le réintroduire
+- **Tech stack**: Keep existing stack (React, Express, Drizzle, Neon) — no migrations
+- **Styling**: Keep current Tailwind + Radix UI design system
+- **Deployment**: Must remain Railway-compatible
+- **Circle.so**: Must maintain iframe embedding compatibility
+- **Database**: Keep all existing tables, just clear data
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Railway comme plateforme | Alternative à Replit, meilleur contrôle, pas de vendor lock-in | ✓ Good — deployed, stable |
-| Garder Neon PostgreSQL | Base existante, évite migration données | ✓ Good — connected, working |
-| Migration avant améliorations | Stabilité d'abord, features ensuite | ✓ Good — migration complete |
-| RAILWAY_PUBLIC_DOMAIN for CORS | Auto-detection of Railway domain | ✓ Good — works in production |
-| APP_URL for email links | Fallback pattern for dynamic URLs | ✓ Good — emails work |
-| Timestamp optional in Circle schema | Circle.so doesn't always send timestamp | ✓ Good — fixed validation errors |
-| Admin bypass on paywall | Admins need access when paywall enabled | ✓ Good — admins can configure |
-| Route path correction v1.1 | Frontend appelait mauvais endpoint API | ✓ Good — tickets fonctionnels |
-| nixpacks.toml pour Railway | Forcer rebuild frontend sur deploy | ✓ Good — evite cache stale |
+| Keep full admin dashboard | Users need user/ticket/config management from day one | — Pending |
+| Keep current styling | Avoid scope creep, style is already functional | — Pending |
+| Include one demo page | Show developers how to structure new pages | — Pending |
+| Clear data, keep schema | Clean template but preserves working structure | — Pending |
 
 ---
-*Last updated: 2026-01-31 after v1.1 milestone completion*
+*Last updated: 2026-01-31 after initialization*
