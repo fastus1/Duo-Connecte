@@ -143,25 +143,9 @@ export const circleUserDataSchema = z.object({
 
 export type CircleUserData = z.infer<typeof circleUserDataSchema>;
 
-// Session state for conversation flow
+// Session state for template (simplified)
 export const sessionStateSchema = z.object({
-  senderName: z.string().min(1),
-  receiverName: z.string().min(1),
-  currentStep: z.number().min(0).max(38),
-  // App type (Duo only - Solo moved to separate app)
-  appType: z.literal('duo').optional(),
-  // Checklist states (parcours normal)
-  checklistSituation: z.boolean().optional(),
-  checklistVecu: z.boolean().optional(),
-  checklistInterpretation: z.boolean().optional(),
-  checklistImpact: z.boolean().optional(),
-  // Checklist states (parcours inversé)
-  checklistVecuInverse: z.boolean().optional(),
-  checklistInterpretationInverse: z.boolean().optional(),
-  checklistImpactInverse: z.boolean().optional(),
-  // Follow-up needed
-  suiviNecessaire: z.boolean().optional(),
-  // Timestamp for session tracking
+  currentStep: z.number().min(0).default(0),
   lastUpdated: z.string().optional(),
 });
 
@@ -219,84 +203,3 @@ export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit
 export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
 export type SupportTicket = typeof supportTickets.$inferSelect;
 
-// Flow configuration (Solo moved to separate app)
-export type FlowType = 'duo';
-
-export interface FlowConfig {
-  type: FlowType;
-  label: string;
-  progressColor: string; // CSS color for progress indicator
-  pages: ReadonlyArray<{
-    id: number;
-    path: string;
-    section: number;
-  }>;
-}
-
-// Duo flow configuration (Welcome is now a separate landing page)
-export const duoFlow: FlowConfig = {
-  type: 'duo',
-  label: 'Communication authentique',
-  progressColor: 'hsl(221, 83%, 53%)', // Blue for duo
-  pages: [
-    { id: 0, path: "/duo/presentation", section: 0 },
-    { id: 1, path: "/duo/roles", section: 0 },
-    { id: 2, path: "/duo/warnings", section: 0 },
-    { id: 3, path: "/duo/intention", section: 1 },
-    { id: 4, path: "/duo/sender-grounding", section: 1 },
-    { id: 5, path: "/duo/receiver-grounding", section: 1 },
-    { id: 6, path: "/duo/transition-1", section: 1 },
-    { id: 7, path: "/duo/sender-situation", section: 2 },
-    { id: 8, path: "/duo/sender-experience", section: 2 },
-    { id: 9, path: "/duo/sender-interpretation", section: 2 },
-    { id: 10, path: "/duo/sender-impact", section: 2 },
-    { id: 11, path: "/duo/sender-summary", section: 2 },
-    { id: 12, path: "/duo/receiver-validation", section: 3 },
-    { id: 13, path: "/duo/sender-confirmation", section: 3 },
-    { id: 14, path: "/duo/receiver-experience", section: 4 },
-    { id: 15, path: "/duo/sender-validation", section: 5 },
-    { id: 16, path: "/duo/receiver-confirmation", section: 5 },
-    { id: 17, path: "/duo/transition-2", section: 5 },
-    { id: 18, path: "/duo/sender-needs", section: 6 },
-    { id: 19, path: "/duo/receiver-response", section: 6 },
-    { id: 20, path: "/duo/transition-3", section: 6 },
-    { id: 21, path: "/duo/sender-closing", section: 7 },
-    { id: 22, path: "/duo/receiver-closing", section: 7 },
-    { id: 23, path: "/duo/feedback", section: 7 },
-    { id: 24, path: "/duo/completion", section: 7 },
-    // Parcours inversé (7a-20a)
-    { id: 25, path: "/duo/inversion-des-roles/page-7a", section: 2 },
-    { id: 26, path: "/duo/inversion-des-roles/page-8a", section: 2 },
-    { id: 27, path: "/duo/inversion-des-roles/page-9a", section: 2 },
-    { id: 28, path: "/duo/inversion-des-roles/page-10a", section: 2 },
-    { id: 29, path: "/duo/inversion-des-roles/page-11a", section: 2 },
-    { id: 30, path: "/duo/inversion-des-roles/page-12a", section: 3 },
-    { id: 31, path: "/duo/inversion-des-roles/page-13a", section: 3 },
-    { id: 32, path: "/duo/inversion-des-roles/page-14a", section: 4 },
-    { id: 33, path: "/duo/inversion-des-roles/page-15a", section: 5 },
-    { id: 34, path: "/duo/inversion-des-roles/page-16a", section: 5 },
-    { id: 35, path: "/duo/inversion-des-roles/page-17a", section: 5 },
-    { id: 36, path: "/duo/inversion-des-roles/page-18a", section: 6 },
-    { id: 37, path: "/duo/inversion-des-roles/page-19a", section: 6 },
-    { id: 38, path: "/duo/inversion-des-roles/page-20a", section: 6 },
-  ],
-};
-
-// Helper to get flow configuration (always returns duoFlow now)
-export function getFlow(_appType?: FlowType): FlowConfig {
-  return duoFlow;
-}
-
-// Legacy pages export for backward compatibility (defaults to duo)
-export const pages = duoFlow.pages;
-
-export const sectionNames = [
-  "Bienvenue",
-  "Mettre la table",
-  "Le vif du sujet - Émetteur",
-  "Récepteur - Valider l'émetteur",
-  "Ce que vit le récepteur",
-  "Valider le récepteur",
-  "Demande et besoin",
-  "Clôture",
-] as const;
