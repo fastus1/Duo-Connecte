@@ -1,3 +1,20 @@
+/**
+ * Storage Layer - Database Access Interface
+ *
+ * Provides a unified interface for all database operations.
+ * Uses the Repository pattern to abstract Drizzle ORM queries.
+ *
+ * Two implementations:
+ * - MemStorage: In-memory storage for testing (seeds default admin)
+ * - DbStorage: PostgreSQL via Drizzle ORM (production)
+ *
+ * Usage:
+ *   import { storage } from './storage';
+ *   const user = await storage.getUser(id);
+ *
+ * The active implementation is exported as `storage` singleton.
+ * Selection based on DATABASE_URL environment variable.
+ */
 import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, type PaidMember, type InsertPaidMember, type Feedback, type InsertFeedback, type SupportTicket, type InsertSupportTicket, users, loginAttempts, appConfig, paidMembers, feedbacks, supportTickets } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/neon-serverless";
@@ -5,48 +22,85 @@ import { eq, and, gt } from "drizzle-orm";
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
 
+/**
+ * Storage interface defining all database operations.
+ * Both MemStorage and DbStorage implement this interface.
+ */
 export interface IStorage {
   // User operations
+  /** Retrieves user by ID */
   getUser(id: string): Promise<User | undefined>;
+  /** Retrieves user by email address */
   getUserByEmail(email: string): Promise<User | undefined>;
+  /** Retrieves user by Circle.so public UID */
   getUserByPublicUid(publicUid: string): Promise<User | undefined>;
+  /** Creates new user record */
   createUser(user: InsertUser): Promise<User>;
+  /** Updates user's last login timestamp */
   updateUserLastLogin(userId: string): Promise<void>;
+  /** Updates user's admin role status */
   updateUserRole(userId: string, isAdmin: boolean): Promise<void>;
+  /** Updates user's Circle.so public UID */
   updateUserPublicUid(userId: string, publicUid: string): Promise<void>;
+  /** Updates or clears user's PIN hash */
   updateUserPin(userId: string, pinHash: string | null): Promise<void>;
+  /** Deletes user and associated login attempts */
   deleteUser(userId: string): Promise<void>;
 
   // Login attempt operations
+  /** Records a login attempt for security auditing */
   logLoginAttempt(attempt: InsertLoginAttempt): Promise<LoginAttempt>;
+  /** Gets login attempts within time window for rate limiting */
   getRecentLoginAttempts(userId: string, windowMs: number): Promise<LoginAttempt[]>;
 
   // App config operations
+  /** Retrieves application configuration (singleton) */
   getAppConfig(): Promise<AppConfig>;
+  /** Updates application configuration */
   updateAppConfig(config: Partial<Omit<AppConfig, 'id' | 'updatedAt'>>): Promise<AppConfig>;
 
   // Paid members operations
+  /** Checks if email has paid access */
   getPaidMemberByEmail(email: string): Promise<PaidMember | undefined>;
+  /** Adds a paid member (via webhook) */
   createPaidMember(member: InsertPaidMember): Promise<PaidMember>;
+  /** Lists all paid members */
   getAllPaidMembers(): Promise<PaidMember[]>;
+  /** Removes paid member access */
   deletePaidMember(email: string): Promise<void>;
 
   // Feedback operations
+  /** Stores user feedback submission */
   createFeedback(feedback: InsertFeedback): Promise<Feedback>;
+  /** Gets all non-archived feedbacks */
   getAllFeedbacks(): Promise<Feedback[]>;
+  /** Gets archived feedbacks */
   getArchivedFeedbacks(): Promise<Feedback[]>;
+  /** Archives a feedback entry */
   archiveFeedback(id: string): Promise<void>;
+  /** Restores archived feedback */
   unarchiveFeedback(id: string): Promise<void>;
+  /** Permanently deletes feedback */
   deleteFeedback(id: string): Promise<void>;
 
   // Support ticket operations
+  /** Creates a new support ticket */
   createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket>;
+  /** Gets all support tickets */
   getAllSupportTickets(): Promise<SupportTicket[]>;
+  /** Gets a single support ticket */
   getSupportTicket(id: string): Promise<SupportTicket | undefined>;
+  /** Updates ticket status (new/in_progress/resolved) */
   updateSupportTicketStatus(id: string, status: string): Promise<SupportTicket | undefined>;
+  /** Deletes a support ticket */
   deleteSupportTicket(id: string): Promise<void>;
 }
 
+/**
+ * In-memory storage implementation.
+ * Used for development/testing when DATABASE_URL is not set.
+ * Seeds a default admin user on initialization.
+ */
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private loginAttempts: Map<string, LoginAttempt>;
@@ -318,6 +372,11 @@ export class MemStorage implements IStorage {
   }
 }
 
+/**
+ * PostgreSQL implementation of IStorage interface.
+ * Uses Drizzle ORM for type-safe database queries.
+ * Connects via Neon serverless driver with WebSocket support.
+ */
 export class DbStorage implements IStorage {
   private db;
 

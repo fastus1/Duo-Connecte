@@ -1,8 +1,28 @@
+/**
+ * Database Schema Definitions
+ *
+ * Defines all database tables using Drizzle ORM's pgTable.
+ * Also exports Zod schemas for runtime validation.
+ *
+ * Tables:
+ * - users: Authenticated users from Circle.so
+ * - loginAttempts: Security audit log for login events
+ * - appConfig: Application-wide settings (single row)
+ * - paidMembers: Users who have paid for premium access
+ * - feedbacks: User feedback submissions
+ * - supportTickets: Support request tracking
+ *
+ * @see https://orm.drizzle.team/docs/sql-schema-declaration
+ */
 import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, integer, boolean, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+/**
+ * Users table - Authenticated Circle.so members
+ * Created when user first authenticates via Circle.so SSO
+ */
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
@@ -14,6 +34,10 @@ export const users = pgTable("users", {
   lastLogin: timestamp("last_login"),
 });
 
+/**
+ * Login attempts - Security audit log
+ * Tracks successful and failed login attempts for rate limiting
+ */
 export const loginAttempts = pgTable("login_attempts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id"),
@@ -24,6 +48,10 @@ export const loginAttempts = pgTable("login_attempts", {
   index("idx_login_attempts_user_timestamp").on(table.userId, table.timestamp),
 ]);
 
+/**
+ * App configuration - Application settings (singleton)
+ * Single row with id='main' stores all app-wide settings
+ */
 export const appConfig = pgTable("app_config", {
   id: varchar("id").primaryKey().default("main"),
   requireCircleDomain: boolean("require_circle_domain").notNull().default(true),
@@ -39,6 +67,10 @@ export const appConfig = pgTable("app_config", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+/**
+ * Paid members - Premium access list
+ * Populated via webhook when user completes payment
+ */
 export const paidMembers = pgTable("paid_members", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
@@ -151,7 +183,10 @@ export const sessionStateSchema = z.object({
 
 export type SessionState = z.infer<typeof sessionStateSchema>;
 
-// Feedback table for anonymous user feedback
+/**
+ * Feedbacks - User feedback submissions
+ * Stores ratings and improvement suggestions
+ */
 export const feedbacks = pgTable("feedbacks", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   rating: integer("rating").notNull(), // 0.5-5 (demi-étoiles)
@@ -181,7 +216,10 @@ export const insertFeedbackSchema = createInsertSchema(feedbacks).omit({
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
 export type Feedback = typeof feedbacks.$inferSelect;
 
-// Support tickets table
+/**
+ * Support tickets - Help requests
+ * Tracks support requests from new to resolved status
+ */
 export const supportTickets = pgTable("support_tickets", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
