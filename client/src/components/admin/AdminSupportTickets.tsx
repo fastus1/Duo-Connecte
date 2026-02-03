@@ -79,6 +79,11 @@ export function AdminSupportTickets() {
     },
   });
 
+  // Trier les tickets du plus récent au plus ancien
+  const sortedTickets = [...tickets].sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
   const newTickets = tickets.filter(t => t.status === 'new');
   const inProgressTickets = tickets.filter(t => t.status === 'in_progress');
   const resolvedTickets = tickets.filter(t => t.status === 'resolved');
@@ -135,7 +140,7 @@ export function AdminSupportTickets() {
         </Card>
       </div>
 
-      {tickets.length === 0 ? (
+      {sortedTickets.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <Ticket className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -145,7 +150,7 @@ export function AdminSupportTickets() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {tickets.map((ticket) => {
+          {sortedTickets.map((ticket) => {
             const statusInfo = statusLabels[ticket.status] || statusLabels.new;
             const isExpanded = expandedTicket === ticket.id;
             
