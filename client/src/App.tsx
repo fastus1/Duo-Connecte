@@ -372,6 +372,8 @@ function SessionRouter() {
 }
 
 function App() {
+  const isStaging = import.meta.env.VITE_APP_ENV === 'staging';
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system">
@@ -380,6 +382,11 @@ function App() {
             <SessionProvider>
               <Toaster />
               <SessionRouter />
+              {isStaging && (
+                <div className="fixed bottom-2 left-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded z-50">
+                  STAGING
+                </div>
+              )}
             </SessionProvider>
           </AccessProvider>
         </TooltipProvider>
