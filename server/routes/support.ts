@@ -95,7 +95,7 @@ router.post("/tickets", async (req, res) => {
                             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 24px;">
                               <tr>
                                 <td align="center">
-                                  <a href="${appUrl}/admin"
+                                  <a href="https://communaute.avancersimplement.com/duo-connecte-application"
                                      style="background: #074491; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 500; font-size: 14px;">
                                     Voir et répondre au ticket
                                   </a>
