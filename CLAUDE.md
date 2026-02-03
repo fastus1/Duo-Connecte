@@ -11,11 +11,11 @@
 | `main` | Production (Railway → Circle.so) |
 
 ### Environnements
-| Environnement | Branche | URL |
-|---------------|---------|-----|
-| Local | `staging` | `localhost:5000` |
-| Portainer (staging) | `staging` | À configurer |
-| Railway (production) | `main` | Circle.so |
+| Environnement | Branche | Indicateur | Déploiement |
+|---------------|---------|------------|-------------|
+| Local | `staging` | - | `npm run dev` |
+| Portainer (staging) | `staging` | Badge orange "STAGING" | Manuel (Pull and redeploy) |
+| Railway (production) | `main` | Aucun | Auto sur push |
 
 ### Workflow obligatoire
 
@@ -26,12 +26,14 @@ git checkout staging
 # 2. Développer et tester localement
 npm run dev
 
-# 3. Commit sur staging
+# 3. Commit et push sur staging
 git add .
 git commit -m "feat: description"
 git push origin staging
 
-# 4. Tester sur Portainer (staging) si configuré
+# 4. Redéployer sur Portainer
+#    → Stacks → duo-connecte-staging → Pull and redeploy
+#    → Vérifier le badge orange "STAGING" visible
 
 # 5. SEULEMENT quand tout est validé → merge vers main
 git checkout main
@@ -43,12 +45,24 @@ git push origin main   # → Railway déploie automatiquement vers Circle.so
 
 1. **Ne JAMAIS push directement sur main** - toujours passer par staging
 2. **Tester localement** avant de commit sur staging
-3. **Valider sur staging** avant de merge vers main
+3. **Valider sur Portainer (staging)** avant de merge vers main
 4. Les commits sur `main` déclenchent le déploiement production
+5. Le badge orange "STAGING" confirme que tu es sur l'environnement de test
 
 ## Project Info
 
 - **Platform:** Circle.so (embedded)
 - **Production:** Railway (auto-deploy from `main`)
-- **Staging:** Portainer (à configurer)
+- **Staging:** Portainer (port 5001, branche `staging`)
 - **Database:** Neon PostgreSQL
+
+## Docker
+
+Le projet utilise Docker pour le déploiement staging:
+- `Dockerfile` - Build multi-stage Node.js
+- `docker-compose.yml` - Configuration Portainer avec `VITE_APP_ENV=staging`
+
+## Identificateur d'environnement
+
+- **Staging:** Badge orange "STAGING" en bas à gauche (visible)
+- **Production:** Aucun badge (clean pour les utilisateurs)
