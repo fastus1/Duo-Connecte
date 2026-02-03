@@ -29,27 +29,93 @@ router.post("/tickets", async (req, res) => {
           to: 'support@avancersimplement.com',
           subject: `[Nouveau Ticket] ${ticket.subject}`,
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #074491;">Nouveau ticket de support</h2>
-              <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>De :</strong> ${ticket.name} (${ticket.email})</p>
-                <p><strong>Sujet :</strong> ${ticket.subject}</p>
-                <p><strong>Date :</strong> ${createdDate}</p>
-              </div>
-              <div style="background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
-                <h3 style="margin-top: 0;">Message :</h3>
-                <p style="white-space: pre-wrap;">${ticket.description}</p>
-              </div>
-              <div style="margin-top: 20px; text-align: center;">
-                <a href="${appUrl}/admin"
-                   style="background: #074491; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                  Voir et répondre au ticket
-                </a>
-              </div>
-              <p style="color: #666; font-size: 12px; margin-top: 20px; text-align: center;">
-                ID du ticket : ${ticket.id}
-              </p>
-            </div>
+            <!DOCTYPE html>
+            <html lang="fr">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #f0f3f5; font-family: 'Inter', Arial, sans-serif;">
+              <center>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                  <tr>
+                    <td align="center" style="padding: 40px 0;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px; border-collapse: collapse; background-color: #FFFFFF; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);">
+
+                        <tr>
+                          <td align="left" style="padding: 24px 30px; background-color: #FFFFFF; border-bottom: 1px solid #E4E7EB;">
+                            <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                              <tr>
+                                <td style="vertical-align: middle; padding-right: 12px;">
+                                  <img src="https://res.cloudinary.com/dxhn08di4/image/upload/v1768749285/avancer-simplement/_shared/logos/logo-bleu-320.png"
+                                       alt="Logo Avancer Simplement"
+                                       width="48"
+                                       height="48"
+                                       style="display: block; border: 0;">
+                                </td>
+                                <td style="vertical-align: middle;">
+                                  <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 20px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; letter-spacing: 0.5px;">
+                                    AVANCER SIMPLEMENT
+                                  </h1>
+                                  <p style="margin: 2px 0 0 0; font-size: 11px; color: #6b7280; font-weight: 500;">
+                                    Duo-Connecte
+                                  </p>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="padding: 30px;">
+                            <h2 style="margin: 0 0 20px 0; font-size: 18px; color: #074491; font-weight: 600;">
+                              Nouveau ticket de support
+                            </h2>
+
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background: #f5f5f5; border-radius: 8px; margin-bottom: 20px;">
+                              <tr>
+                                <td style="padding: 20px;">
+                                  <p style="margin: 0 0 8px 0; font-size: 14px; color: #333;"><strong>De :</strong> ${ticket.name} (${ticket.email})</p>
+                                  <p style="margin: 0 0 8px 0; font-size: 14px; color: #333;"><strong>Sujet :</strong> ${ticket.subject}</p>
+                                  <p style="margin: 0; font-size: 14px; color: #333;"><strong>Date :</strong> ${createdDate}</p>
+                                </td>
+                              </tr>
+                            </table>
+
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background: #fff; border: 1px solid #E4E7EB; border-radius: 8px;">
+                              <tr>
+                                <td style="padding: 20px;">
+                                  <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #374151; font-weight: 600;">Message :</h3>
+                                  <p style="margin: 0; font-size: 14px; line-height: 22px; color: #333; white-space: pre-wrap;">${ticket.description}</p>
+                                </td>
+                              </tr>
+                            </table>
+
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 24px;">
+                              <tr>
+                                <td align="center">
+                                  <a href="${appUrl}/admin"
+                                     style="background: #074491; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 500; font-size: 14px;">
+                                    Voir et répondre au ticket
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
+
+                            <p style="color: #9ca3af; font-size: 12px; margin: 20px 0 0 0; text-align: center;">
+                              ID du ticket : ${ticket.id}
+                            </p>
+                          </td>
+                        </tr>
+
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </center>
+            </body>
+            </html>
           `
         });
         console.log('[RESEND] Notification email sent for ticket:', ticket.id);
@@ -148,12 +214,25 @@ router.post("/admin/tickets/:id/reply", requireAdmin, async (req, res) => {
                     
                     <tr>
                       <td align="left" style="padding: 24px 30px; background-color: #FFFFFF; border-bottom: 1px solid #E4E7EB;">
-                        <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 22px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; letter-spacing: 0.5px;">
-                          AVANCER SIMPLEMENT
-                        </h1>
-                        <p style="margin: 4px 0 0 0; font-size: 12px; color: #6b7280; font-weight: 500;">
-                          Duo-Connecte
-                        </p>
+                        <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                          <tr>
+                            <td style="vertical-align: middle; padding-right: 12px;">
+                              <img src="https://res.cloudinary.com/dxhn08di4/image/upload/v1768749285/avancer-simplement/_shared/logos/logo-bleu-320.png"
+                                   alt="Logo Avancer Simplement"
+                                   width="48"
+                                   height="48"
+                                   style="display: block; border: 0;">
+                            </td>
+                            <td style="vertical-align: middle;">
+                              <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 20px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; letter-spacing: 0.5px;">
+                                AVANCER SIMPLEMENT
+                              </h1>
+                              <p style="margin: 2px 0 0 0; font-size: 11px; color: #6b7280; font-weight: 500;">
+                                Duo-Connecte
+                              </p>
+                            </td>
+                          </tr>
+                        </table>
                       </td>
                     </tr>
                     
