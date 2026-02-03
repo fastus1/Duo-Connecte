@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
-import { HelpCircle, Send, ChevronDown, ChevronUp, Mail, MessageSquare, CheckCircle } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { HelpCircle, Send, ChevronDown, ChevronUp, Mail, MessageSquare, CheckCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -107,7 +108,16 @@ function FAQItem({ question, answer, hasLink, linkText, linkUrl }: FAQItemProps)
 
 export default function SupportPage() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      setLocation('/welcome');
+    }
+  };
   
   const form = useForm<SupportFormValues>({
     resolver: zodResolver(supportFormSchema),
@@ -146,6 +156,19 @@ export default function SupportPage() {
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-3xl mx-auto space-y-8">
+        <div className="flex justify-start">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+            data-testid="button-back-from-support"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Retour à l'application
+          </Button>
+        </div>
+
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-primary/10">
             <HelpCircle className="h-8 w-8 text-primary" />
