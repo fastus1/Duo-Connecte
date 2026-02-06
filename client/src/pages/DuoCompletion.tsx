@@ -9,9 +9,7 @@ export default function Completion() {
   const [hasChosenOption, setHasChosenOption] = useState(false);
 
   const handleRestart = () => {
-    if (window.confirm('Êtes-vous sûr de vouloir recommencer une nouvelle session? Toutes les données actuelles seront effacées.')) {
-      resetSession();
-    }
+    resetSession();
   };
 
   const handleNoThanks = () => {
@@ -132,7 +130,6 @@ export default function Completion() {
             <Button
               size="lg"
               onClick={handleRestart}
-              disabled={!hasChosenOption}
               className="gap-2"
               data-testid="button-restart"
             >
