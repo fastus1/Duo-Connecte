@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/contexts/SessionContext';
 import { CheckCircle2, RotateCcw, ExternalLink, User, Users, Smile } from 'lucide-react';
@@ -6,10 +7,12 @@ import { PageLayout } from '@/components/PageLayout';
 
 export default function Completion() {
   const { resetSession } = useSession();
+  const [, navigate] = useLocation();
   const [hasChosenOption, setHasChosenOption] = useState(false);
 
   const handleRestart = () => {
     resetSession();
+    navigate('/welcome');
   };
 
   const handleNoThanks = () => {
