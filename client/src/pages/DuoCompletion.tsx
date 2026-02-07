@@ -40,7 +40,7 @@ export default function Completion() {
           </p>
 
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-            Prendre le temps d'avoir les conversations difficiles demande de l'effort, de l'engagement et parfois de la vulnérabilité. Ce n'est pas facile mais vous l'avez fait. Bravo!
+            Prendre le temps d'avoir les conversations difficiles demande de l'effort, de l'engagement et parfois de la vulnérabilité. Ce n'est pas facile, mais vous l'avez fait. Bravo!
           </p>
 
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-left space-y-2">
@@ -48,8 +48,8 @@ export default function Completion() {
               Rappelez-vous :
             </p>
             <ul className="space-y-1 text-xs md:text-sm text-muted-foreground">
-              <li>• La communication authentique demande de la pratique</li>
-              <li>• Chaque conversation est une opportunité d'apprendre</li>
+              <li>• La communication authentique se cultive avec la pratique</li>
+              <li>• Chaque conversation est une opportunité d'apprentissage</li>
               <li>• La connexion est plus importante que la perfection</li>
             </ul>
           </div>

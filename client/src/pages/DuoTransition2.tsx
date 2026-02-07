@@ -201,7 +201,7 @@ export default function Transition2() {
       )
     },
     {
-      title: "Pourquoi ça libère",
+      title: "Pourquoi cette distinction libère de l'exigence?",
       icon: Sparkles,
       content: (
         <div className="space-y-8">
@@ -226,10 +226,10 @@ export default function Transition2() {
               Après (avec distinction) :
             </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
-              "J'ai besoin de me sentir importante pour toi. Pourrais-tu poser ton téléphone quand je te parle?"
+              "J'ai besoin de me sentir considéré-e par toi. Pourrais-tu poser ton téléphone quand je te parle?"
             </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              → L'autre comprend le besoin et peut proposer : "Je peux faire ça les soirs de semaine, mais pas les fins de semaine. Comment c'est pour toi?"
+              → L'autre comprend le besoin et peut proposer: "Je peux faire attention, ça va me faire plaisir, mais si tu vois que je ne le fais pas, tu n'as qu'à me le demander doucement, je ne m'en rends pas toujours compte. Est-ce que ça te convient?"
             </p>
           </div>
           
@@ -240,10 +240,14 @@ export default function Transition2() {
       )
     },
     {
-      title: "Processus complet",
+      title: "Processus complet - Exemple:",
       icon: FileText,
       content: (
         <div className="space-y-8">
+          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
+            Voici comment ça fonctionne du début à la fin:
+          </p>
+
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
             Face à la situation de départ où l'autre regarde souvent son téléphone quand vous discutez.
           </p>
@@ -253,9 +257,9 @@ export default function Transition2() {
               L'introspection :
             </p>
             <ol className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground list-decimal list-inside">
-              <li>Besoin : "J'ai besoin de me sentir respecté et écouté"</li>
-              <li>Désir : "Je désire son attention visuelle quand on parle"</li>
-              <li>Demande : "Pourrais-tu me regarder quand je te parle?"</li>
+              <li>Besoin : "Me sentir considéré-e"</li>
+              <li>Désir : "J'aimerais avoir son attention quand on se parle"</li>
+              <li>Demande : "Pourrais-tu poser ton téléphone quand je te parle?"</li>
             </ol>
           </div>
           
@@ -264,7 +268,7 @@ export default function Transition2() {
               Ce que vous dites à votre partenaire (expression) :
             </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
-              "J'ai besoin de me sentir respecté et écouté. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
+              "J'ai besoin de me sentir considéré-e. Pourrais-tu faire attention de me regarder quand je te parle? Ça ferait une vraie différence pour moi."
             </p>
           </div>
         </div>
@@ -286,11 +290,11 @@ export default function Transition2() {
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
-              <span>"Je comprends, mais je ne peux pas tous les jours. Et si je le faisais les soirs?"</span>
+              <span>"Je comprends, je vais faire attention, mais si je ne le fais pas, demande-le-moi doucement, ça va me faire plaisir."</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
-              <span>"C'est difficile pour moi, mais je désire vraiment répondre à ton besoin de respect. Peut-être qu'on pourrait démarrer le téléphone dans une autre pièce?"</span>
+              <span>"C'est difficile pour moi, mais je désire vraiment répondre à ton besoin de respect. Peut-être qu'on pourrait se céduler des moments où je laisse le téléphone dans une autre pièce?"</span>
             </li>
           </ul>
           

@@ -73,15 +73,15 @@ export default function DuoInversionPage10a() {
           <ul className="space-y-3 text-base md:text-lg leading-relaxed text-muted-foreground">
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
-              <span>"Quand j'interprète que tu me juges, je deviens distant·e pour me protéger."</span>
+              <span>"Face à ce sentiment d'être dépassé, je réagis en partant brusquement, ce qui crée encore plus de distance entre nous."</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
-              <span>"Quand je pense que ça ne t'intéresse pas, je me retire et j'arrête d'essayer."</span>
+              <span>"Quand je me concentre sur autre chose sans m'en rendre compte, je répète le comportement et ça perpétue le problème."</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
-              <span>"Face à cette situation, je réagis en me justifiant excessivement."</span>
+              <span>"Face à mes réflexions internes, je me retire dans le silence, ce qui te laisse dans l'incertitude et amplifie le malentendu."</span>
             </li>
           </ul>
         </div>
@@ -110,7 +110,7 @@ export default function DuoInversionPage10a() {
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <div className="space-y-4">
             <h2 className="text-xl md:text-2xl font-medium text-foreground text-center">
-              {session.receiverName}, quel a été l'impact sur toi, comment as-tu réagis?
+              {session.receiverName}, quel a été l'impact sur toi, comment as-tu réagi?
             </h2>
 
             <ul className="space-y-3">
@@ -139,7 +139,7 @@ export default function DuoInversionPage10a() {
             <MultiPageModal
               triggerText="Plus d'infos: Théories"
               pages={theoryPages}
-              finalButtonText="On continu…"
+              finalButtonText="On continue…"
               onComplete={handleContinue}
             />
           </div>
@@ -152,7 +152,7 @@ export default function DuoInversionPage10a() {
               disabled={isTransitioning}
               data-testid="button-next"
             >
-              On continu…
+              On continue…
             </Button>
             {isTransitioning && (
               <Progress value={progress} className="w-full md:w-48" />

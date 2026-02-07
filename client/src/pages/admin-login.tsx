@@ -11,7 +11,6 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
-  const [email, setEmail] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +24,7 @@ export default function AdminLogin() {
       const response = await fetch('/api/auth/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, pin }),
+        body: JSON.stringify({ pin }),
       });
 
       const data = await response.json();
@@ -57,7 +56,7 @@ export default function AdminLogin() {
         <CardHeader className="text-center space-y-4">
           <Logo size="lg" className="mx-auto" />
           <CardTitle className="text-2xl font-semibold">
-            Connexion
+            Administration
           </CardTitle>
           <CardDescription>
             Accédez à l'espace administrateur
@@ -73,20 +72,6 @@ export default function AdminLogin() {
           )}
 
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
-                data-testid="input-email"
-              />
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="pin">NIP (4-6 chiffres)</Label>
               <Input
@@ -107,7 +92,7 @@ export default function AdminLogin() {
             <Button
               onClick={(e) => handleSubmit(e)}
               className="w-full h-12"
-              disabled={isLoading || !email || pin.length < 4}
+              disabled={isLoading || pin.length < 4}
               data-testid="button-submit"
             >
               {isLoading ? (

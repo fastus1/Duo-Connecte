@@ -25,7 +25,7 @@ export default function SenderSituation() {
           </p>
           
           <div className="space-y-4">
-            <Subtitle>Pourquoi rester factuel est crucial</Subtitle>
+            <Subtitle>Pourquoi rester factuel est crucial?</Subtitle>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
               Quand tu mélanges faits et interprétations dès le départ, l'autre se met immédiatement sur la défensive. "Tu m'as ignoré" provoque une réaction. "Tu regardais ton téléphone pendant que je te parlais" est un fait observable qui laisse place à la discussion.
             </p>
@@ -38,7 +38,7 @@ export default function SenderSituation() {
       icon: ListChecks,
       content: (
         <div className="space-y-8">
-          <Subtitle>La différence entre fait et interprétation</Subtitle>
+          <Subtitle>La différence entre fait et interprétation :</Subtitle>
           
           <div className="space-y-4">
             <div className="flex items-start gap-3">
@@ -100,7 +100,7 @@ export default function SenderSituation() {
           />
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Les émotions et interprétations viendront plus tard. Pour l'instant, tu nomme le déclencheur.
+            Les émotions et interprétations viendront plus tard. Pour l'instant, tu nommes le déclencheur.
           </p>
         </div>
       )

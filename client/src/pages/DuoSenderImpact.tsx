@@ -31,10 +31,8 @@ export default function SenderImpact() {
       icon: RefreshCw,
       content: (
         <div className="space-y-8">
-          <Subtitle>Les différents types d'impact</Subtitle>
-          
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Ton interprétation déclenche tes émotions et des réactions automatiques lorsque tu n'arrives pas à les accueillir. Reconnaître ton pattern de réaction aide l'autre à comprendre ton comportement sans le prendre personnellement.
+            Ton interprétation déclenche tes émotions et des réactions automatiques lorsque tu n'arrives pas à les accueillir. Reconnaître ton fonctionnement défensif aide l'autre à comprendre ton comportement sans le prendre personnellement.
           </p>
         </div>
       )
@@ -57,18 +55,19 @@ export default function SenderImpact() {
             </p>
             <p className="text-base md:text-lg leading-relaxed">
               <span className="font-medium text-foreground">Contre-attaque :</span>{" "}
-              <span className="text-muted-foreground">"Je pointe ses torts à lui/elle pour équilibrer."</span>
+              <span className="text-muted-foreground">"Je pointe ses torts à lui/elle pour me défendre."</span>
             </p>
             <p className="text-base md:text-lg leading-relaxed">
               <span className="font-medium text-foreground">Bouderie :</span>{" "}
               <span className="text-muted-foreground">"Je me renferme dans un silence lourd."</span>
             </p>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              "Je deviens inquiet·e, j'anticipe le pire."
+            <p className="text-base md:text-lg leading-relaxed">
+              <span className="font-medium text-foreground">Scénarios imaginaires :</span>{" "}
+              <span className="text-muted-foreground">"Je deviens inquiet·ète, j'anticipe le pire."</span>
             </p>
             <p className="text-base md:text-lg leading-relaxed">
-              <span className="font-medium text-foreground">Hypercontrôle :</span>{" "}
-              <span className="text-muted-foreground">"J'essaie de tout gérer pour ne plus ressentir ça."</span>
+              <span className="font-medium text-foreground">Contrôle :</span>{" "}
+              <span className="text-muted-foreground">"J'essaie de tout gérer pour éviter de ressentir."</span>
             </p>
           </div>
         </div>
@@ -82,7 +81,7 @@ export default function SenderImpact() {
           <Subtitle>Pourquoi nommer ta réaction</Subtitle>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            En identifiant ton pattern, tu passes de "Il/elle me fait réagir" à "Voici comment je réagis quand j'interprète les choses de cette façon". C'est reprendre du pouvoir sur tes automatismes.
+            En identifiant ton fonctionnement défensif, tu te responsabilises, tu passes de "Il/elle me fait réagir" à "je réagis de cette façon quand j'interprète". C'est reprendre du pouvoir sur tes automatismes.
           </p>
           
           <div className="space-y-4">
@@ -115,7 +114,7 @@ export default function SenderImpact() {
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
           <Ear className="w-5 h-5 text-primary" />
           <p className="text-base md:text-lg text-muted-foreground">
-            {session.receiverName}: écoute attentive et bienveillante
+            {session.receiverName}: continue avec ta présence ouverte
           </p>
         </div>
 
@@ -128,7 +127,7 @@ export default function SenderImpact() {
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Quand ça arrive, je me sens rejeté / pas important / incompris...
+                Quand ça arrive, je me sens rejeté·e / pas important·e / incompris·e...
               </span>
             </li>
             <li className="flex items-start gap-3">

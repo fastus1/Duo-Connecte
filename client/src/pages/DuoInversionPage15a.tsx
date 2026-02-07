@@ -34,7 +34,7 @@ export default function DuoInversionPage15a() {
               Pourquoi c'est si puissant :
             </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Être entendu·e apaise profondément. Même si vous avez vécu la même situation différemment, reformuler montre que tu reconnais son vécu. C'est ça qui crée la connexion. Ça permet de comprendre qu'une même situation peut être vécue de deux façons complètement différentes.
+              Être entendu·e apaise. Même si vous avez vécu la même situation différemment, reformuler montre que tu reconnais son vécu. C'est ça qui crée la connexion. Ça permet de comprendre qu'une même situation peut être vécue de deux façons complètement différentes.
             </p>
           </div>
         </div>

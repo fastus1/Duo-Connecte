@@ -53,7 +53,7 @@ export default function DuoInversionPage17a() {
       )
     },
     {
-      title: "Pourquoi cette distinction",
+      title: "Pourquoi cette distinction est importante",
       icon: HelpCircle,
       content: (
         <div className="space-y-8">

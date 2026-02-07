@@ -120,7 +120,7 @@ export default function ReceiverExperience() {
               La nuance importante :
             </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Tu peux reconnaître tes réaction défensives et même te dénoncer : "Je me sens sur la défensive et j'ai envie de me justifier" est une expression honnête de ton vécu, pas une justification.
+              Tu peux reconnaître tes réactions défensives et même te dénoncer : "Je me sens sur la défensive et j'ai envie de me justifier" est une expression honnête de ton vécu, pas une justification.
             </p>
           </div>
           

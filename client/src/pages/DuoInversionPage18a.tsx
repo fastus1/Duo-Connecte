@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
 import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { Heart, Ear, MessageSquare, Shield, CheckCircle, AlertTriangle, Lightbulb } from 'lucide-react';
+import { Heart, Ear, MessageSquare, Shield, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { MultiPageModal } from '@/components/flow';
 
@@ -16,7 +16,7 @@ export default function DuoInversionPage18a() {
 
   const theoryPages = [
     {
-      title: "Exemple 1 - Être écouté·e",
+      title: "Exemple 1 - Le besoin d'être écouté·e",
       icon: MessageSquare,
       content: (
         <div className="space-y-8">
@@ -42,7 +42,7 @@ export default function DuoInversionPage18a() {
       )
     },
     {
-      title: "Exemple 2 - La confiance",
+      title: "Exemple 2 - Le besoin de confiance",
       icon: Shield,
       content: (
         <div className="space-y-8">
@@ -68,7 +68,7 @@ export default function DuoInversionPage18a() {
       )
     },
     {
-      title: "Simplement être entendu·e",
+      title: "Si ton besoin était simplement d'être entendu·e",
       icon: CheckCircle,
       content: (
         <div className="space-y-8">
@@ -92,7 +92,7 @@ export default function DuoInversionPage18a() {
       )
     },
     {
-      title: "Ce qui fonctionne",
+      title: "Ce qui fonctionne vs ce qui ne fonctionne pas",
       icon: AlertTriangle,
       content: (
         <div className="space-y-8">
@@ -145,46 +145,6 @@ export default function DuoInversionPage18a() {
           </p>
         </div>
       )
-    },
-    {
-      title: "Rappel final",
-      icon: Lightbulb,
-      content: (
-        <div className="space-y-8">
-          <div className="space-y-4">
-            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-              Structure simple à utiliser:
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
-              "J'ai besoin de [ton besoin légitime]. Pourrais-tu [ta demande concrète]?"
-            </p>
-          </div>
-          
-          <div className="space-y-4">
-            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-              Rappelle-toi:
-            </p>
-            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>Ton besoin est légitime et mérite d'être entendu</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>Ta demande est une proposition créative, pas une exigence</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>{session.senderName} peut y répondre de plusieurs façons</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>Vous cherchez ensemble, vous ne vous opposez pas</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      )
     }
   ];
 
@@ -218,7 +178,7 @@ export default function DuoInversionPage18a() {
                   Étape 1 - Identifie ton besoin
                 </p>
                 <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                  Demande-toi: "Qu'est-ce qui me manque vraiment dans cette situation? Quel besoin humain fondamental n'est pas comblé?"
+                  Demande-toi: "Qu'est-ce qui me manque vraiment dans cette situation? Quel besoin n'est pas comblé?"
                 </p>
               </div>
 

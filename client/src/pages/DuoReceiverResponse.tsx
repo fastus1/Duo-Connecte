@@ -43,7 +43,7 @@ export default function ReceiverResponse() {
               <ul className="text-base md:text-lg leading-relaxed text-muted-foreground">
                 <li className="flex items-start gap-3">
                   <span className="text-primary text-xl">•</span>
-                  <span>Exemple : "Oui, je peux poser mon téléphone quand tu me parles. Ça fait du sens."</span>
+                  <span>Exemple : "Oui, je peux poser mon téléphone quand tu me parles. Ça va me faire plaisir."</span>
                 </li>
               </ul>
             </div>
@@ -58,7 +58,7 @@ export default function ReceiverResponse() {
               <ul className="text-base md:text-lg leading-relaxed text-muted-foreground">
                 <li className="flex items-start gap-3">
                   <span className="text-primary text-xl">•</span>
-                  <span>Exemple : "Je ne peux pas promettre tous les soirs, mais je peux m'engager à te donner mon attention pleine trois fois par semaine."</span>
+                  <span>Exemple : "Je ne peux pas promettre d'être parfait, mais je peux m'engager à te donner mon attention au mieux de ma capacité, demande-moi si tu vois que je ne le fais pas."</span>
                 </li>
               </ul>
             </div>
@@ -110,40 +110,6 @@ export default function ReceiverResponse() {
       )
     },
     {
-      title: "Exemples de réponses",
-      icon: MessageSquare,
-      content: (
-        <div className="space-y-8">
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Même si tu ne peux pas répondre à la demande exacte de {session.senderName}, son <em>besoin</em> reste valide et important. Ton refus ou ta limite ne nie pas son besoin.
-          </p>
-          
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-            Exemples concrets de réponses honnêtes :
-          </p>
-          
-          <ul className="space-y-3 text-base md:text-lg leading-relaxed text-muted-foreground">
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">•</span>
-              <span>"Oui, je peux faire ça. Je comprends pourquoi c'est important pour toi."</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">•</span>
-              <span>"Je ne peux pas m'engager sur tous les soirs, mais je peux le faire les mardis et jeudis. Est-ce que ça pourrait aider?"</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">•</span>
-              <span>"Ce que tu demandes me met mal à l'aise, mais je pourrais plutôt... Est-ce que ça répondrait à ton besoin?"</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">•</span>
-              <span>"Je ne peux pas promettre ça parce que je ne sais pas si je suis capable de tenir cet engagement. Mais je veux vraiment qu'on trouve une solution qui fonctionne pour nous deux."</span>
-            </li>
-          </ul>
-        </div>
-      )
-    },
-    {
       title: "Ce qu'il faut éviter",
       icon: AlertTriangle,
       content: (
@@ -178,40 +144,6 @@ export default function ReceiverResponse() {
               <span>Contre-attaquer ("Toi aussi tu fais ça!")</span>
             </li>
           </ul>
-        </div>
-      )
-    },
-    {
-      title: "Ce qui fonctionne",
-      icon: CheckCircle,
-      content: (
-        <div className="space-y-8">
-          <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-            Ce qui fonctionne :
-          </p>
-          
-          <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">✓</span>
-              <span>Reconnaître le besoin même si tu refuses la demande</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">✓</span>
-              <span>Proposer des alternatives créatives</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">✓</span>
-              <span>Être clair sur ce que tu peux vraiment offrir</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-primary text-xl">✓</span>
-              <span>Exprimer ta volonté de trouver une solution ensemble</span>
-            </li>
-          </ul>
-          
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Ton honnêteté respectueuse ouvre la porte à une vraie négociation, pas à un compromis forcé.
-          </p>
         </div>
       )
     }

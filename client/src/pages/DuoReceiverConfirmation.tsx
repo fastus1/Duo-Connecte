@@ -21,7 +21,7 @@ export default function ReceiverConfirmation() {
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-          As-tu été bien entendu?
+          {session.receiverName}, as-tu été bien entendu?
         </h1>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
@@ -31,7 +31,7 @@ export default function ReceiverConfirmation() {
             </h2>
 
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              Si {session.senderName} a saisi l'essentiel de ton vécu, tu peux continuer. Sinon, prends le temps de clarifier ce qui est important pour toi et continuez par la suite.
+              Si {session.senderName} a saisi l'essentiel de ton feedback, tu peux continuer. Sinon, prends le temps de clarifier ce qui est important pour toi et continuez par la suite.
             </p>
           </div>
 

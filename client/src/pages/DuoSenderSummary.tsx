@@ -38,7 +38,7 @@ export default function SenderSummary() {
             <BulletList
               variant="primary"
               items={[
-                "Garde-le court (Quelques phrase, reste à l'essentiel)",
+                "Garde-le court (Quelques phrases, reste à l'essentiel)",
                 "Enchaîne les 4 éléments de façon fluide",
                 "Reste fidèle à ce que tu as partagé",
                 "Parle comme si tu racontais une histoire, pas comme si tu récitais une liste"

@@ -40,15 +40,15 @@ export default function DuoInversionPage9a() {
             <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
-                <span>"Quand tu es parti·e sans dire au revoir, j'ai pensé que tu avais besoin d'espace."</span>
+                <span>"Quand je suis parti sans dire au revoir, c'est parce que je me sentais dépassé et j'avais besoin de prendre l'air."</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
-                <span>"Quand tu n'as pas répondu, j'ai eu l'impression que c'était pas si important pour toi."</span>
+                <span>"Quand j'ai regardé mon téléphone pendant que tu parlais, je pensais juste vérifier l'heure, je ne réalisais pas que ça te blessait."</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
-                <span>"Pour moi, ton silence voulait dire que tu réfléchissais."</span>
+                <span>"Quand je n'ai pas répondu tout de suite, pour moi je réfléchissais à ce que tu venais de dire."</span>
               </li>
             </ul>
           </div>

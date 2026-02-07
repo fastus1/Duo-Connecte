@@ -55,7 +55,7 @@ export default function DuoInversionPage19a() {
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
-              <span>"Je ne peux pas m'engager sur tous les soirs, mais je peux le faire les mardis et jeudis. Est-ce que ça pourrait aider?"</span>
+              <span>"Je ne peux pas m'engager à être parfait, mais je peux m'engager à faire de mon mieux. Est-ce que ça te satisfait?"</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>

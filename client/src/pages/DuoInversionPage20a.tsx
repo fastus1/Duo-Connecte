@@ -21,7 +21,7 @@ export default function DuoInversionPage20a() {
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <div className="space-y-4 text-center">
             <p className="text-base md:text-lg text-foreground leading-relaxed">
-              Les deux perspectives ont été partagées. Il est maintenant temps de clôturer en vous partageant un dernier feedback sur comment vous vous sentez après tous ces échanges.
+              Les deux perspectives ont été partagées et entendues. Il est maintenant temps de clôturer en partageant un dernier feedback sur votre état présent après tous ces échanges.
             </p>
           </div>
 

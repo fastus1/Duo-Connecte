@@ -21,7 +21,7 @@ export default function DuoInversionPage14a() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            C'est l'une des étapes les plus difficiles du parcours. Après avoir écouté {session.senderName}, ton instinct te pousse peut-être à te défendre, à expliquer ton intention, à corriger sa perception.
+            C'est l'une des étapes les plus difficiles du parcours. Après avoir écouté {session.receiverName}, ton instinct te pousse peut-être à te défendre, à expliquer ton intention, à corriger sa perception.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
@@ -78,7 +78,7 @@ export default function DuoInversionPage14a() {
       content: (
         <div className="space-y-4 text-base md:text-lg leading-relaxed text-muted-foreground">
           <p className="italic">
-            "Quand tu m'expliques que tu pensais que j'avais besoin d'espace, je me sens soulagé·e de comprendre ton intention. Je croyais que tu m'ignorais, mais maintenant je vois que ce n'était pas ça du tout."
+            "Quand tu m'expliques que tu te sentais dépassé·e et que tu avais besoin de prendre l'air, je me sens soulagé·e de comprendre. Je croyais que tu voulais me fuir, mais maintenant je vois que ce n'était pas ça."
           </p>
           
           <p className="italic">
@@ -86,7 +86,7 @@ export default function DuoInversionPage14a() {
           </p>
           
           <p className="italic">
-            "Entendre que tu ne voulais pas me blesser, ça me touche. Je me sens compris·e et j'ai moins l'impression d'avoir imaginé des choses."
+            "Entendre que tu ne réalisais pas l'impact de ton comportement, ça m'aide. Je me sens compris·e et j'ai moins l'impression que c'était intentionnel."
           </p>
         </div>
       )
@@ -101,7 +101,7 @@ export default function DuoInversionPage14a() {
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Entendre le vécu de {session.senderName} peut déclencher tes mécanismes de défense.
+            Entendre le vécu de {session.receiverName} peut déclencher tes mécanismes de défense.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
@@ -124,7 +124,7 @@ export default function DuoInversionPage14a() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Se justifier maintenant casserait le lien qui vient de se créer. {session.senderName} a pris un risque en se montrant vulnérable. Si tu réponds par une défensive, tu invalides son vécu. Tu auras ton tour pour partager ta perspective plus tard.
+            Se justifier maintenant casserait le lien qui vient de se créer. {session.receiverName} a pris un risque en se montrant vulnérable. Si tu réponds par une défensive, tu invalides son vécu. Tu auras ton tour pour partager ta perspective plus tard.
           </p>
           
           <div className="space-y-4">
@@ -132,7 +132,7 @@ export default function DuoInversionPage14a() {
               La nuance importante :
             </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Tu peux reconnaître tes réaction défensives et même te dénoncer : "Je me sens sur la défensive et j'ai envie de me justifier" est une expression honnête de ton vécu, pas une justification.
+              Tu peux reconnaître tes réactions défensives et même te dénoncer : "Je me sens sur la défensive et j'ai envie de me justifier" est une expression honnête de ton vécu, pas une justification.
             </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
               Reste avec tes émotions. Laisse ton point de vue pour plus tard.
@@ -157,18 +157,18 @@ export default function DuoInversionPage14a() {
         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
           <Ear className="w-5 h-5 text-primary" />
           <p className="text-base md:text-lg text-muted-foreground">
-            {session.senderName} : écoute attentive et bienveillante
+            {session.receiverName} : écoute attentive et bienveillante
           </p>
         </div>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <div className="space-y-4">
             <h2 className="text-xl md:text-2xl font-medium text-foreground text-center">
-              {session.receiverName}, comment te sens-tu maintenant?
+              {session.senderName}, comment te sens-tu maintenant?
             </h2>
 
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed text-center">
-              Parle de ce que tu vis en lien avec ce que tu viens d'entendre de la part de {session.senderName}
+              Parle de ce que tu vis en lien avec ce que tu viens d'entendre de la part de {session.receiverName}
             </p>
             
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed text-center">
@@ -203,7 +203,7 @@ export default function DuoInversionPage14a() {
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  Reste en lien avec ton vécu face à celui de {session.senderName}
+                  Reste en lien avec ton vécu face à celui de {session.receiverName}
                 </span>
               </li>
             </ul>

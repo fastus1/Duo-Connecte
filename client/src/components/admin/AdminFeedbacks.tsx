@@ -186,7 +186,7 @@ export function AdminFeedbacks() {
                 markdown += `**Facilité d'achat:** ${feedback.purchaseEase}/5\n\n`;
             }
             if (feedback.experienceRating) {
-                markdown += `**Expérience:** ${feedback.experienceRating}/5\n\n`;
+                markdown += `**Expérience:** ${feedback.experienceRating}\n\n`;
             }
             if (feedback.instructionsClarity) {
                 markdown += `**Clarté des instructions:** ${feedback.instructionsClarity}/5\n\n`;
@@ -504,7 +504,12 @@ export function AdminFeedbacks() {
                                 </h3>
                                 <div className="bg-card border rounded-lg p-4">
                                     <RatingRow label="Facilité du processus d'achat" value={selectedFeedback.purchaseEase} />
-                                    <RatingRow label="Expérience globale" value={selectedFeedback.experienceRating} />
+                                    {selectedFeedback.experienceRating && (
+                                        <div className="py-2 border-b border-border">
+                                            <p className="text-sm text-muted-foreground mb-1">Expérience globale</p>
+                                            <p className="text-sm font-medium">{selectedFeedback.experienceRating}</p>
+                                        </div>
+                                    )}
                                     <RatingRow label="Clarté des instructions" value={selectedFeedback.instructionsClarity} />
                                     <RatingRow label="Utilité perçue" value={selectedFeedback.perceivedUtility} />
                                     <RatingRow label="Probabilité de réutilisation" value={selectedFeedback.continuedUseLikelihood} />

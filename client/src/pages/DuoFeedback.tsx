@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { PageLayout } from '@/components/PageLayout';
 import { usePageTransition } from '@/hooks/usePageTransition';
@@ -20,7 +21,7 @@ import { Label } from '@/components/ui/label';
 interface FeedbackData {
   rating: number;
   purchaseEase: number | null;
-  experienceRating: number | null;
+  experienceRating: string | null;
   instructionsClarity: number | null;
   perceivedUtility: number | null;
   helpfulAspect: string | null;
@@ -192,12 +193,15 @@ export default function Feedback() {
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              Comment décririez-vous votre expérience?
+              Rapidement, comment décririez-vous votre expérience?
             </p>
-            <ScaleRating
-              value={feedbackData.experienceRating}
-              onChange={(val) => updateFeedback('experienceRating', val)}
-              labels={['Désagréable', '', 'Neutre', '', 'Agréable']}
+            <Input
+              type="text"
+              placeholder='Par exemple: "Transformatrice", "Éclairante", "Utile"'
+              value={feedbackData.experienceRating || ''}
+              onChange={(e) => updateFeedback('experienceRating', e.target.value || null)}
+              className="w-full"
+              data-testid="input-experience"
             />
           </div>
         );
@@ -218,7 +222,7 @@ export default function Feedback() {
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              L'application vous a-t-elle aidé à dénouer une situation difficile ou à vous rapprocher?
+              L'application vous a-t-elle aidé à améliorer votre communication de couple?
             </p>
             <ScaleRating
               value={feedbackData.perceivedUtility}
@@ -233,42 +237,13 @@ export default function Feedback() {
             <p className="text-base md:text-lg text-foreground">
               Qu'est-ce qui a été le plus utile pour vous?
             </p>
-            <RadioGroup
+            <Textarea
+              placeholder="Par exemple la structure étape par étape, les explications détaillées"
               value={feedbackData.helpfulAspect || ''}
-              onValueChange={(val) => updateFeedback('helpfulAspect', val)}
-              className="flex flex-col gap-3"
-            >
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="structure" id="helpful-structure" className="mt-1" />
-                <Label htmlFor="helpful-structure" className="text-base leading-relaxed">
-                  La structure étape par étape du parcours
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="cadre" id="helpful-cadre" className="mt-1" />
-                <Label htmlFor="helpful-cadre" className="text-base leading-relaxed">
-                  Le cadre sécurisant pour aborder un sujet difficile
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="theorie" id="helpful-theorie" className="mt-1" />
-                <Label htmlFor="helpful-theorie" className="text-base leading-relaxed">
-                  Les explications théoriques (popups "Plus d'infos")
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="roles" id="helpful-roles" className="mt-1" />
-                <Label htmlFor="helpful-roles" className="text-base leading-relaxed">
-                  La séparation claire des rôles (émetteur/récepteur)
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="intention" id="helpful-intention" className="mt-1" />
-                <Label htmlFor="helpful-intention" className="text-base leading-relaxed">
-                  Le rappel de l'intention ("être bien ensemble")
-                </Label>
-              </div>
-            </RadioGroup>
+              onChange={(e) => updateFeedback('helpfulAspect', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-helpful"
+            />
           </div>
         );
       case 5:
@@ -277,48 +252,13 @@ export default function Feedback() {
             <p className="text-base md:text-lg text-foreground">
               Qu'est-ce qui pourrait être amélioré?
             </p>
-            <RadioGroup
+            <Textarea
+              placeholder="Vos suggestions pour rendre cet outil encore plus efficace"
               value={feedbackData.improvementSuggestion || ''}
-              onValueChange={(val) => updateFeedback('improvementSuggestion', val)}
-              className="flex flex-col gap-3"
-            >
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="duree" id="improve-duree" className="mt-1" />
-                <Label htmlFor="improve-duree" className="text-base leading-relaxed">
-                  La durée du parcours (trop long)
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="clarte" id="improve-clarte" className="mt-1" />
-                <Label htmlFor="improve-clarte" className="text-base leading-relaxed">
-                  La clarté des instructions
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="navigation" id="improve-navigation" className="mt-1" />
-                <Label htmlFor="improve-navigation" className="text-base leading-relaxed">
-                  La navigation entre les étapes
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="equilibre" id="improve-equilibre" className="mt-1" />
-                <Label htmlFor="improve-equilibre" className="text-base leading-relaxed">
-                  L'équilibre entre les rôles émetteur/récepteur
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="interface" id="improve-interface" className="mt-1" />
-                <Label htmlFor="improve-interface" className="text-base leading-relaxed">
-                  L'interface visuelle de l'application
-                </Label>
-              </div>
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="exemples" id="improve-exemples" className="mt-1" />
-                <Label htmlFor="improve-exemples" className="text-base leading-relaxed">
-                  Les exemples fournis pour guider les réponses
-                </Label>
-              </div>
-            </RadioGroup>
+              onChange={(e) => updateFeedback('improvementSuggestion', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-improvement"
+            />
           </div>
         );
       case 6:
@@ -411,12 +351,11 @@ export default function Feedback() {
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              Quelle est la probabilité que vous utilisiez Duo-Connecte de nouveau?
+              Quelle est la probabilité que vous utilisiez Duo-Connecte régulièrement?
             </p>
-            <ScaleRating
+            <ScaleRating10
               value={feedbackData.continuedUseLikelihood}
               onChange={(val) => updateFeedback('continuedUseLikelihood', val)}
-              labels={['Très improbable', 'Improbable', 'Neutre', 'Probable', 'Très probable']}
             />
           </div>
         );
@@ -551,7 +490,7 @@ export default function Feedback() {
             className="text-muted-foreground"
             data-testid="button-skip"
           >
-            Passer cette étape
+            Passer
           </Button>
         </div>
       </div>

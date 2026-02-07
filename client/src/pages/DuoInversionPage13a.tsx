@@ -30,7 +30,7 @@ export default function DuoInversionPage13a() {
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <div className="space-y-4">
             <h2 className="text-xl md:text-2xl font-medium text-foreground">
-              {session.senderName} vient de reformuler ce que tu as partagé, est-ce que tu as bien été entendu?
+              {session.senderName} vient de reformuler ce que tu as partagé, est-ce que tu as bien été entendu-e?
             </h2>
 
             <ul className="space-y-3">
@@ -60,7 +60,7 @@ export default function DuoInversionPage13a() {
               Prends le temps nécessaire
             </p>
             <p className="text-sm text-foreground">
-              Il est important que tu te sentes vraiment entendu avant de passer à la suite. N'hésite pas à rectifier ou préciser si quelque chose n'a pas été bien compris.
+              Il est important que tu te sentes vraiment entendu-e avant de passer à la suite. N'hésite pas à rectifier ou préciser si quelque chose n'a pas été bien compris.
             </p>
           </div>
 
@@ -74,7 +74,7 @@ export default function DuoInversionPage13a() {
                 data-testid="button-confirm"
               >
                 <CheckCheck className="w-5 h-5 mr-2" />
-                J'ai bien été entendu
+                J'ai bien été entendu-e
               </Button>
             </div>
             

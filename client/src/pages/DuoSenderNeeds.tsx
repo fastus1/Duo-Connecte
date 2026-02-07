@@ -92,7 +92,7 @@ export default function SenderNeeds() {
               Ce que tu dis :
             </p>
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
-              "J'ai besoin de sécurité émotionnelle. Pourrais-tu me prévenir quand tu as besoin de temps seul? L'incertitude me fait de l'anxiété."
+              "J'ai besoin d'être rassuré. L'incertitude me rend anxieux·se, pourrais-tu me prévenir quand tu as besoin de temps seul?"
             </p>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function SenderNeeds() {
       )
     },
     {
-      title: "Si tu bloques",
+      title: "Si tu n'arrives pas à identifier ton besoin",
       icon: HelpCircle,
       content: (
         <div className="space-y-8">
@@ -315,7 +315,7 @@ export default function SenderNeeds() {
                   Étape 1 - Identifie ton besoin
                 </p>
                 <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                  Demande-toi : "Qu'est-ce qui me manque vraiment dans cette situation? Quel besoin humain fondamental n'est pas comblé?"
+                  Demande-toi : "Qu'est-ce qui me manque vraiment dans cette situation? Quel besoin n'est pas comblé?"
                 </p>
               </div>
 

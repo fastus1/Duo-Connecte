@@ -36,7 +36,7 @@ export default function SenderGrounding() {
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Pour {session.receiverName}, ça risque de l'aider à se déposer également. Au lieu de se préparer à se défendre, il/elle peut t'accueillir. Ça baisse les défenses des deux côtés.
+            Pour {session.receiverName}, risque de l'aider à se déposer également. Au lieu de se préparer à se défendre, il/elle peut t'accueillir. Ça baisse les défenses des deux côtés.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
@@ -46,7 +46,7 @@ export default function SenderGrounding() {
       )
     },
     {
-      title: "Exemples",
+      title: "",
       icon: MessageCircle,
       content: (
         <div className="space-y-8">

@@ -77,12 +77,8 @@ export default function DuoPresentation() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Prenez le temps de ralentir et de suivre chaque étape du processus. S'il y a de la résistance à y participer ou si l'une des personnes est fortement déclenchée, reportez la conversation.
+            Prenez le temps de ralentir et de suivre chaque étape du processus. S'il y a de la résistance à y participer ou si l'une des personnes est fortement déclenché·e, reportez la conversation. La disponibilité émotionnelle des deux est essentielle.
           </p>
-          
-          <Callout variant="primary">
-            La disponibilité émotionnelle des deux est essentielle.
-          </Callout>
         </div>
       )
     }
