@@ -55,7 +55,7 @@ router.post("/tickets", async (req, res) => {
                                        style="display: block; border: 0;">
                                 </td>
                                 <td style="vertical-align: middle;">
-                                  <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 20px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; letter-spacing: 0.5px;">
+                                  <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 20px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; ">
                                     AVANCER SIMPLEMENT
                                   </h1>
                                   <p style="margin: 2px 0 0 0; font-size: 11px; color: #6b7280; font-weight: 500;">
@@ -224,7 +224,7 @@ router.post("/admin/tickets/:id/reply", requireAdmin, async (req, res) => {
                                    style="display: block; border: 0;">
                             </td>
                             <td style="vertical-align: middle;">
-                              <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 20px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; letter-spacing: 0.5px;">
+                              <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 20px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; ">
                                 AVANCER SIMPLEMENT
                               </h1>
                               <p style="margin: 2px 0 0 0; font-size: 11px; color: #6b7280; font-weight: 500;">
