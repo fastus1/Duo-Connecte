@@ -199,25 +199,10 @@ router.post("/admin/tickets/:id/reply", requireAdmin, async (req, res) => {
                     
                     <tr>
                       <td align="left" style="padding: 24px 30px; background-color: #FFFFFF; border-bottom: 1px solid #E4E7EB;">
-                        <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-                          <tr>
-                            <td style="vertical-align: middle; padding-right: 12px;">
-                              <img src="https://res.cloudinary.com/dxhn08di4/image/upload/v1768749285/avancer-simplement/_shared/logos/logo-bleu-320.png"
-                                   alt="Logo Avancer Simplement"
-                                   width="48"
-                                   height="48"
-                                   style="display: block; border: 0;">
-                            </td>
-                            <td style="vertical-align: middle;">
-                              <h1 style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 20px; font-weight: 900; font-style: italic; text-transform: uppercase; color: #074491; ">
-                                AVANCER SIMPLEMENT
-                              </h1>
-                              <p style="margin: 2px 0 0 0; font-size: 11px; color: #6b7280; font-weight: 500;">
-                                Duo-Connecte
-                              </p>
-                            </td>
-                          </tr>
-                        </table>
+                        <img src="https://res.cloudinary.com/dxhn08di4/image/upload/v1770574080/logo-plateforme-074491_1_xg5whn.png"
+                             alt="Avancer Simplement"
+                             height="40"
+                             style="display: block; border: 0; height: 40px; width: auto;">
                       </td>
                     </tr>
                     
