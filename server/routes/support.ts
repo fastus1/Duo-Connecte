@@ -45,7 +45,7 @@ router.post("/tickets", async (req, res) => {
 
                         <tr>
                           <td align="left" style="padding: 24px 30px; background-color: #FFFFFF; border-bottom: 1px solid #E4E7EB;">
-                            <img src="https://res.cloudinary.com/dxhn08di4/image/upload/v1770574080/logo-plateforme-074491_1_xg5whn.png"
+                            <img src="https://res.cloudinary.com/dxhn08di4/image/upload/v1770574588/logo-plateforme-074491_800_x_80_px_ds17is.png"
                                  alt="Avancer Simplement"
                                  height="40"
                                  style="display: block; border: 0; height: 40px; width: auto;">
@@ -199,7 +199,7 @@ router.post("/admin/tickets/:id/reply", requireAdmin, async (req, res) => {
                     
                     <tr>
                       <td align="left" style="padding: 24px 30px; background-color: #FFFFFF; border-bottom: 1px solid #E4E7EB;">
-                        <img src="https://res.cloudinary.com/dxhn08di4/image/upload/v1770574080/logo-plateforme-074491_1_xg5whn.png"
+                        <img src="https://res.cloudinary.com/dxhn08di4/image/upload/v1770574588/logo-plateforme-074491_800_x_80_px_ds17is.png"
                              alt="Avancer Simplement"
                              height="40"
                              style="display: block; border: 0; height: 40px; width: auto;">
