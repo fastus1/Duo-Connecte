@@ -20,18 +20,12 @@ import { Label } from '@/components/ui/label';
 
 interface FeedbackData {
   rating: number;
-  purchaseEase: number | null;
   experienceRating: string | null;
-  instructionsClarity: number | null;
   perceivedUtility: number | null;
+  instructionsClarity: number | null;
+  durationFeedback: string | null;
   helpfulAspect: string | null;
   improvementSuggestion: string | null;
-  difficulties: string | null;
-  confusingElements: string | null;
-  technicalIssues: string | null;
-  missingFeatures: string | null;
-  durationFeedback: string | null;
-  continuedUseLikelihood: number | null;
 }
 
 export default function Feedback() {
@@ -44,18 +38,12 @@ export default function Feedback() {
 
   // Feedback data state
   const [feedbackData, setFeedbackData] = useState<Omit<FeedbackData, 'rating'>>({
-    purchaseEase: null,
     experienceRating: null,
-    instructionsClarity: null,
     perceivedUtility: null,
+    instructionsClarity: null,
+    durationFeedback: null,
     helpfulAspect: null,
     improvementSuggestion: null,
-    difficulties: null,
-    confusingElements: null,
-    technicalIssues: null,
-    missingFeatures: null,
-    durationFeedback: null,
-    continuedUseLikelihood: null,
   });
 
   const submitFeedbackMutation = useMutation({
@@ -99,7 +87,7 @@ export default function Feedback() {
     transitionToStep(24);
   };
 
-  const totalPages = 12;
+  const totalPages = 6;
 
   const updateFeedback = <K extends keyof Omit<FeedbackData, 'rating'>>(
     key: K,
@@ -142,58 +130,13 @@ export default function Feedback() {
     </div>
   );
 
-  // Scale component for 1-10 ratings
-  const ScaleRating10 = ({
-    value,
-    onChange,
-  }: {
-    value: number | null;
-    onChange: (val: number) => void;
-  }) => (
-    <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-5 gap-1">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-          <button
-            key={num}
-            onClick={() => onChange(num)}
-            className={`py-3 px-2 rounded-lg border-2 transition-all text-sm font-medium ${
-              value === num
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border bg-card hover-elevate'
-            }`}
-            data-testid={`scale10-${num}`}
-          >
-            {num}
-          </button>
-        ))}
-      </div>
-      <div className="flex justify-between text-xs text-muted-foreground px-1">
-        <span>Très improbable</span>
-        <span>Très probable</span>
-      </div>
-    </div>
-  );
-
   const renderPage = () => {
     switch (currentPage) {
       case 0:
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              Comment évaluez-vous la facilité du processus d'achat de l'application?
-            </p>
-            <ScaleRating
-              value={feedbackData.purchaseEase}
-              onChange={(val) => updateFeedback('purchaseEase', val)}
-              labels={['Très difficile', 'Difficile', 'Neutre', 'Facile', 'Très facile']}
-            />
-          </div>
-        );
-      case 1:
-        return (
-          <div className="space-y-6">
-            <p className="text-base md:text-lg text-foreground">
-              Rapidement, comment décririez-vous votre expérience?
+              En un mot, comment décririez-vous votre expérience avec Duo-Connecte?
             </p>
             <Input
               type="text"
@@ -205,24 +148,11 @@ export default function Feedback() {
             />
           </div>
         );
-      case 2:
+      case 1:
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              Les instructions et explications étaient-elles claires?
-            </p>
-            <ScaleRating
-              value={feedbackData.instructionsClarity}
-              onChange={(val) => updateFeedback('instructionsClarity', val)}
-              labels={['Très confuses', 'Confuses', 'Adéquates', 'Claires', 'Très claires']}
-            />
-          </div>
-        );
-      case 3:
-        return (
-          <div className="space-y-6">
-            <p className="text-base md:text-lg text-foreground">
-              L'application vous a-t-elle aidé à améliorer votre communication de couple?
+              L'application vous a-t-elle aidé à mieux communiquer en couple?
             </p>
             <ScaleRating
               value={feedbackData.perceivedUtility}
@@ -231,97 +161,20 @@ export default function Feedback() {
             />
           </div>
         );
-      case 4:
+      case 2:
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              Qu'est-ce qui a été le plus utile pour vous?
+              Les instructions et le parcours étaient-ils faciles à suivre?
             </p>
-            <Textarea
-              placeholder="Par exemple la structure étape par étape, les explications détaillées"
-              value={feedbackData.helpfulAspect || ''}
-              onChange={(e) => updateFeedback('helpfulAspect', e.target.value || null)}
-              className="min-h-24"
-              data-testid="input-helpful"
+            <ScaleRating
+              value={feedbackData.instructionsClarity}
+              onChange={(val) => updateFeedback('instructionsClarity', val)}
+              labels={['Très confus', 'Confus', 'Adéquat', 'Clair', 'Très clair']}
             />
           </div>
         );
-      case 5:
-        return (
-          <div className="space-y-6">
-            <p className="text-base md:text-lg text-foreground">
-              Qu'est-ce qui pourrait être amélioré?
-            </p>
-            <Textarea
-              placeholder="Vos suggestions pour rendre cet outil encore plus efficace"
-              value={feedbackData.improvementSuggestion || ''}
-              onChange={(e) => updateFeedback('improvementSuggestion', e.target.value || null)}
-              className="min-h-24"
-              data-testid="input-improvement"
-            />
-          </div>
-        );
-      case 6:
-        return (
-          <div className="space-y-6">
-            <p className="text-base md:text-lg text-foreground">
-              Avez-vous rencontré des difficultés avec certaines fonctionnalités? Si oui, lesquelles?
-            </p>
-            <Textarea
-              placeholder="Décrivez les obstacles ou blocages rencontrés"
-              value={feedbackData.difficulties || ''}
-              onChange={(e) => updateFeedback('difficulties', e.target.value || null)}
-              className="min-h-24"
-              data-testid="input-difficulties"
-            />
-          </div>
-        );
-      case 7:
-        return (
-          <div className="space-y-6">
-            <p className="text-base md:text-lg text-foreground">
-              Y a-t-il des éléments de l'interface qui vous ont semblé confus ou difficiles à utiliser?
-            </p>
-            <Textarea
-              placeholder="Par exemple: boutons, textes, navigation, disposition"
-              value={feedbackData.confusingElements || ''}
-              onChange={(e) => updateFeedback('confusingElements', e.target.value || null)}
-              className="min-h-24"
-              data-testid="input-confusing"
-            />
-          </div>
-        );
-      case 8:
-        return (
-          <div className="space-y-6">
-            <p className="text-base md:text-lg text-foreground">
-              Avez-vous rencontré des bugs ou des problèmes techniques?
-            </p>
-            <Textarea
-              placeholder="Décrivez le problème (ex: crash, gel, affichage incorrect, etc.)"
-              value={feedbackData.technicalIssues || ''}
-              onChange={(e) => updateFeedback('technicalIssues', e.target.value || null)}
-              className="min-h-24"
-              data-testid="input-technical"
-            />
-          </div>
-        );
-      case 9:
-        return (
-          <div className="space-y-6">
-            <p className="text-base md:text-lg text-foreground">
-              Quelles fonctionnalités aimeriez-vous voir ajoutées?
-            </p>
-            <Textarea
-              placeholder="Par exemple: nouvelles étapes, outils supplémentaires, ressources additionnelles"
-              value={feedbackData.missingFeatures || ''}
-              onChange={(e) => updateFeedback('missingFeatures', e.target.value || null)}
-              className="min-h-24"
-              data-testid="input-features"
-            />
-          </div>
-        );
-      case 10:
+      case 3:
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
@@ -347,15 +200,33 @@ export default function Feedback() {
             </RadioGroup>
           </div>
         );
-      case 11:
+      case 4:
         return (
           <div className="space-y-6">
             <p className="text-base md:text-lg text-foreground">
-              Quelle est la probabilité que vous utilisiez Duo-Connecte régulièrement?
+              Qu'est-ce qui vous a le plus marqué ou aidé?
             </p>
-            <ScaleRating10
-              value={feedbackData.continuedUseLikelihood}
-              onChange={(val) => updateFeedback('continuedUseLikelihood', val)}
+            <Textarea
+              placeholder="Par exemple la structure étape par étape, le cadre sécurisant, les explications"
+              value={feedbackData.helpfulAspect || ''}
+              onChange={(e) => updateFeedback('helpfulAspect', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-helpful"
+            />
+          </div>
+        );
+      case 5:
+        return (
+          <div className="space-y-6">
+            <p className="text-base md:text-lg text-foreground">
+              Un commentaire, une suggestion ou quelque chose à améliorer?
+            </p>
+            <Textarea
+              placeholder="Bugs, idées, difficultés, suggestions... tout est bienvenu!"
+              value={feedbackData.improvementSuggestion || ''}
+              onChange={(e) => updateFeedback('improvementSuggestion', e.target.value || null)}
+              className="min-h-24"
+              data-testid="input-improvement"
             />
           </div>
         );
@@ -366,18 +237,12 @@ export default function Feedback() {
 
   const getPageTitle = () => {
     const titles = [
-      "Processus d'achat",
       "Votre expérience",
-      "Clarté des Instructions",
-      "Utilité Perçue",
-      "Ce qui a été le plus utile",
-      "Ce qui pourrait être amélioré",
-      "Difficultés Rencontrées",
-      "Éléments Confus",
-      "Bugs ou Problèmes Techniques",
-      "Fonctionnalités Manquantes",
-      "Durée du Parcours",
-      "Probabilité d'Utilisation Continue",
+      "Impact sur votre couple",
+      "Facilité du parcours",
+      "Durée du parcours",
+      "Ce qui vous a marqué",
+      "Suggestions",
     ];
     return titles[currentPage];
   };
