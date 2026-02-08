@@ -7,7 +7,8 @@ export function usePageTransition() {
   const [progress, setProgress] = useState(0);
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const transitionDelay = prefersReducedMotion ? 0 : 1200;
+  const isAdmin = localStorage.getItem('is_admin') === 'true';
+  const transitionDelay = prefersReducedMotion || isAdmin ? 0 : 1200;
 
   useEffect(() => {
     setIsTransitioning(false);

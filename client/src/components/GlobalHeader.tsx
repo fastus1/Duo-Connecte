@@ -83,7 +83,14 @@ export function GlobalHeader({ onEnterPreview }: GlobalHeaderProps) {
                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => setLocation(isLoggedIn ? '/welcome' : '/')}>
                     <Logo size="md" />
                     <div>
-                        <h1 className="text-xl font-semibold">{title}</h1>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-xl font-semibold">{title}</h1>
+                            {isAdmin && (
+                                <span className="text-xs font-medium bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                                    Admin
+                                </span>
+                            )}
+                        </div>
                         <p className="text-sm text-muted-foreground">{subtitle}</p>
                     </div>
                 </div>
