@@ -1,26 +1,15 @@
-import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/contexts/SessionContext';
-import { CheckCircle2, RotateCcw, ExternalLink, User, Users, Smile } from 'lucide-react';
+import { CheckCircle2, RotateCcw, ExternalLink, User, Users } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 
 export default function Completion() {
   const { resetSession } = useSession();
   const [, navigate] = useLocation();
-  const [hasChosenOption, setHasChosenOption] = useState(false);
-
   const handleRestart = () => {
     resetSession();
     navigate('/welcome');
-  };
-
-  const handleNoThanks = () => {
-    setHasChosenOption(true);
-  };
-
-  const handleTherapyClick = () => {
-    setHasChosenOption(true);
   };
 
   return (
@@ -59,7 +48,7 @@ export default function Completion() {
               Un suivi est-il nécessaire?
             </h2>
 
-            <div className="grid md:grid-cols-3 gap-3 md:gap-4">
+            <div className="grid md:grid-cols-2 gap-3 md:gap-4">
               {/* Option 1 - Thérapie individuelle */}
               <div className="flex flex-col items-center p-4 md:p-5 rounded-lg border-2 border-border hover-elevate active-elevate-2 transition-all">
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 md:mb-3">
@@ -74,7 +63,6 @@ export default function Completion() {
                 <Button
                   size="sm"
                   asChild
-                  onClick={handleTherapyClick}
                   className="text-xs md:text-sm px-4 w-full mt-auto"
                   data-testid="button-therapy-individual"
                 >
@@ -98,31 +86,12 @@ export default function Completion() {
                 <Button
                   size="sm"
                   asChild
-                  onClick={handleTherapyClick}
                   className="text-xs md:text-sm px-4 w-full mt-auto"
                   data-testid="button-therapy-couple"
                 >
                   <a href="https://www.gorendezvous.com/fr/Diane_Lapensee_TRA" target="_blank" rel="noopener noreferrer">
                     Prendre rendez-vous
                   </a>
-                </Button>
-              </div>
-
-              {/* Option 3 - Non merci */}
-              <div className="flex flex-col items-center p-4 md:p-5 rounded-lg border-2 border-border hover-elevate active-elevate-2 transition-all">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 md:mb-3">
-                  <Smile className="w-5 h-5 md:w-6 md:h-6 text-primary" />
-                </div>
-                <h3 className="text-sm md:text-base font-bold text-foreground mb-2 text-center leading-snug" style={{ fontFamily: 'Figtree, sans-serif' }}>
-                  Non merci, je n'ai pas besoin d'un suivi en thérapie pour l'instant 🙂
-                </h3>
-                <Button
-                  size="sm"
-                  onClick={handleNoThanks}
-                  className="text-xs md:text-sm px-4 w-full mt-auto"
-                  data-testid="button-no-thanks"
-                >
-                  Non merci
                 </Button>
               </div>
             </div>
@@ -143,13 +112,14 @@ export default function Completion() {
             <Button
               size="lg"
               variant="outline"
-              disabled={!hasChosenOption}
-              onClick={() => window.open('https://communaute.avancersimplement.com/feed', '_blank')}
+              asChild
               className="gap-2"
               data-testid="button-resources"
             >
-              <ExternalLink className="w-4 h-4" />
-              Ressources supplémentaires
+              <a href="https://communaute.avancersimplement.com/feed" target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-4 h-4" />
+                Retour à la plateforme
+              </a>
             </Button>
           </div>
         </div>
