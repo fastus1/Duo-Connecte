@@ -1,0 +1,64 @@
+## Page 13 - Confirmation émetteur Duo (DuoSenderConfirmation.tsx)
+
+### Titre
+
+{senderName}, as-tu été bien entendu·e?
+
+### Bannière
+
+{receiverName}: écoute attentive
+
+### Sous-titre
+
+{receiverName} vient de reformuler ce que tu as partagé, est-ce que tu as bien été entendu·e?
+
+### Instructions (puces)
+
+- Valide que {receiverName} t'as bien entendu·e si nécessaire
+- Précise ou rectifie ce qui n'est pas tout à fait juste
+- Insiste sur ce qui est particulièrement important pour toi
+- Ajoute un élément qui a été oublié
+
+### Encadré
+
+**Texte:** L'objectif est que {receiverName} comprenne vraiment ce que tu vis. Prends le temps nécessaire pour t'assurer que ton message est bien passé.
+
+**Bouton: Plus d'infos: Théories**
+
+### Popup multi-page
+
+***Popup page 1: Titres:* Validation cruciale**
+
+Cette validation finale est cruciale. C'est votre dernière opportunité de vous assurer que le message est bien passé avant de continuer.
+
+**Pourquoi clarifier :**
+
+Si tu passes à l'étape suivante avec l'impression que ton message n'a pas été compris, tu risques de te sentir frustré·e plus tard. Cette validation assure que tu es bien compris·e avant de continuer.
+
+***Popup page 2:* Exemples de clarifications**
+
+- "Oui, exactement. Merci d'avoir compris."
+- "Tu as bien compris, mais j'aimerais insister sur le fait que je me suis senti·e vraiment seul·e, pas juste un peu déçu·e."
+- "Presque, mais quand tu dis 'fâché', c'est plutôt de la tristesse mêlée d'impuissance."
+
+***Popup page 3:* Quand valider ou clarifier**
+
+Si {receiverName} a saisi l'essentiel de ton vécu — la situation, tes émotions, ton interprétation, ton impact — alors tu peux valider et continuer. Pas besoin que ce soit parfait mot à mot.
+
+**Signes que tu dois clarifier :**
+
+- {receiverName} a minimisé une émotion importante ("un peu triste" alors que tu étais "profondément blessé·e")
+- Une partie de ton vécu n'a pas été mentionnée
+- L'interprétation reformulée change le sens de ton message
+
+Cette étape protège la suite de votre échange. Prenez-la au sérieux.
+
+## Bouton
+
+J'ai été entendu·e
+
+***Fin du popup***
+
+## Bouton
+
+J'ai été entendu·e
