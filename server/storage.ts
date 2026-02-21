@@ -1,8 +1,10 @@
 import { type User, type InsertUser, type LoginAttempt, type InsertLoginAttempt, type AppConfig, type PaidMember, type InsertPaidMember, type Feedback, type InsertFeedback, type SupportTicket, type InsertSupportTicket, users, loginAttempts, appConfig, paidMembers, feedbacks, supportTickets } from "@shared/schema";
 import { randomUUID } from "crypto";
-import { drizzle } from "drizzle-orm/neon-serverless";
+import { drizzle as drizzleNeon } from "drizzle-orm/neon-serverless";
+import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
 import { eq, and, gt } from "drizzle-orm";
-import { Pool, neonConfig } from "@neondatabase/serverless";
+import { Pool as NeonPool, neonConfig } from "@neondatabase/serverless";
+import pg from "pg";
 import ws from "ws";
 
 export interface IStorage {
@@ -322,9 +324,15 @@ export class DbStorage implements IStorage {
   private db;
 
   constructor(databaseUrl: string) {
-    neonConfig.webSocketConstructor = ws;
-    const pool = new Pool({ connectionString: databaseUrl });
-    this.db = drizzle({ client: pool });
+    const isNeon = databaseUrl.includes('.neon.tech');
+    if (isNeon) {
+      neonConfig.webSocketConstructor = ws;
+      const pool = new NeonPool({ connectionString: databaseUrl });
+      this.db = drizzleNeon({ client: pool });
+    } else {
+      const pool = new pg.Pool({ connectionString: databaseUrl });
+      this.db = drizzlePg({ client: pool });
+    }
   }
 
   async getUser(id: string): Promise<User | undefined> {
