@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  duo-postgres:
+    image: postgres:15-alpine
+    container_name: duo-postgres
+    environment:
+      POSTGRES_DB: duoconnecte
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - duo_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - duo-network
+
   app:
     build:
       context: .
@@ -11,8 +26,20 @@ services:
       - "5001:5000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL}
-      - JWT_SECRET=${JWT_SECRET}
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - APP_URL=${APP_URL}
+      - DATABASE_URL=postgresql://postgres:postgres@duo-postgres:5432/duoconnecte
+      - JWT_SECRET=dev_secret_key_12345
+      - RESEND_API_KEY=
+      - APP_URL=http://100.85.235.119:5001
+    depends_on:
+      - duo-postgres
     restart: unless-stopped
+    networks:
+      - duo-network
+
+volumes:
+  duo_postgres_data:
+    driver: local
+
+networks:
+  duo-network:
+    driver: bridge
