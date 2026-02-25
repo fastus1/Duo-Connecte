@@ -525,6 +525,14 @@ router.post('/check-paywall', async (req: Request, res: Response) => {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
+
+    // Admin bypass: admins always have access
+    const user = await storage.getUserByEmail(normalizedEmail);
+    if (user && user.isAdmin) {
+      console.log(`[PAYWALL CHECK] Admin bypass for ${normalizedEmail}`);
+      return res.json({ hasAccess: true, paywallEnabled: true });
+    }
+
     const paidMember = await storage.getPaidMemberByEmail(normalizedEmail);
     console.log(`[PAYWALL CHECK] Checking: "${normalizedEmail}", found: ${paidMember ? 'YES - ' + paidMember.email : 'NO'}`);
 

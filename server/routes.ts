@@ -142,6 +142,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!email) {
           return res.json({ hasAccess: false, mode: 'production', reason: 'email_required_for_paywall' });
         }
+        // Admin bypass
+        const user = await storage.getUserByEmail(email);
+        if (user && user.isAdmin) {
+          return res.json({ hasAccess: true, mode: 'production' });
+        }
         const paidMember = await storage.getPaidMemberByEmail(email);
         if (!paidMember) {
           return res.json({ hasAccess: false, mode: 'production', reason: 'paywall' });
