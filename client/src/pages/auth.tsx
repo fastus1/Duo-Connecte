@@ -231,35 +231,44 @@ export default function AuthPage() {
     // Check if user already has a valid session
     const existingToken = getSessionToken();
     if (existingToken) {
-      // If paywall is enabled, verify access before redirecting
-      if (appConfig.requirePaywall) {
-        const userEmail = localStorage.getItem('user_email');
-        if (userEmail) {
-          fetch('/api/auth/check-paywall', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: userEmail }),
-          })
-            .then(res => res.json())
-            .then(result => {
-              if (result.hasAccess) {
-                setLocation('/welcome');
-              } else {
-                // Paywall block: show paywall but keep session intact
-                setPaywallInfo({
-                  paywallTitle: result.paywallTitle || 'Accès Réservé',
-                  paywallMessage: result.paywallMessage || 'Cette application est réservée aux membres payants.',
-                  paywallPurchaseUrl: result.paywallPurchaseUrl || '',
-                  paywallInfoUrl: result.paywallInfoUrl || '',
+      // Verify token is still valid server-side (checks token version + expiry)
+      fetch('/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${existingToken}` },
+      })
+        .then(res => {
+          if (!res.ok) {
+            // Token invalidated (reset by admin or expired) — clear and restart auth
+            clearAuth();
+            return;
+          }
+          // Token valid — check paywall if needed, then redirect
+          if (appConfig.requirePaywall) {
+            const userEmail = localStorage.getItem('user_email');
+            if (userEmail) {
+              return fetch('/api/auth/check-paywall', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userEmail }),
+              })
+                .then(r => r.json())
+                .then(result => {
+                  if (result.hasAccess) {
+                    setLocation('/welcome');
+                  } else {
+                    setPaywallInfo({
+                      paywallTitle: result.paywallTitle || 'Accès Réservé',
+                      paywallMessage: result.paywallMessage || 'Cette application est réservée aux membres payants.',
+                      paywallPurchaseUrl: result.paywallPurchaseUrl || '',
+                      paywallInfoUrl: result.paywallInfoUrl || '',
+                    });
+                    setAuthStep('paywall_blocked');
+                  }
                 });
-                setAuthStep('paywall_blocked');
-              }
-            })
-            .catch(() => setLocation('/welcome')); // fail-open
-          return;
-        }
-      }
-      setLocation('/welcome');
+            }
+          }
+          setLocation('/welcome');
+        })
+        .catch(() => setLocation('/welcome')); // fail-open on network error
       return;
     }
 
