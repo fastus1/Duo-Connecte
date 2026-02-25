@@ -58,7 +58,7 @@ export function MultiPageModal({
       const timer = setTimeout(() => {
         setPageDirection(null);
         setIsAnimating(false);
-      }, 500);
+      }, 700);
       return () => clearTimeout(timer);
     }
   }, [pageDirection]);
@@ -165,8 +165,8 @@ export function MultiPageModal({
                 <div
                   className={cn(
                     "text-foreground space-y-6",
-                    pageDirection === 'right' && "animate-in slide-in-from-right-12 fade-in-0 duration-500 ease-out",
-                    pageDirection === 'left' && "animate-in slide-in-from-left-12 fade-in-0 duration-500 ease-out"
+                    pageDirection === 'right' && "animate-in slide-in-from-right-12 fade-in-0 duration-700 ease-out",
+                    pageDirection === 'left' && "animate-in slide-in-from-left-12 fade-in-0 duration-700 ease-out"
                   )}
                   key={currentPage}
                 >
