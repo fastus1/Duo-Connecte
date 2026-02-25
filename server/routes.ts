@@ -113,7 +113,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         paywallInfoUrl: config.paywallInfoUrl,
         paywallTitle: config.paywallTitle,
         paywallMessage: config.paywallMessage,
-        environment: config.environment,
         isPublicMode,
       });
     } catch (error) {
@@ -126,7 +125,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const config = await storage.getAppConfig();
       return res.json({
-        environment: config.environment,
         circleOnlyMode: config.requireCircleDomain,
       });
     } catch (error) {
@@ -139,13 +137,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email } = req.body;
       const config = await storage.getAppConfig();
-
-      if (config.environment === 'development') {
-        return res.json({
-          hasAccess: true,
-          mode: 'development'
-        });
-      }
 
       if (config.requirePaywall) {
         if (!email) {

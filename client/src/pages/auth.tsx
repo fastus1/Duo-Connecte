@@ -10,7 +10,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getSessionToken } from '@/lib/auth';
+import { getSessionToken, clearAuth } from '@/lib/auth';
 
 type AuthStep = 'waiting' | 'validating' | 'new_user' | 'existing_user' | 'authenticated' | 'error' | 'public_landing' | 'paywall_blocked';
 
@@ -171,6 +171,9 @@ export default function AuthPage() {
         return data;
       });
 
+      // Store email for paywall re-check on existing sessions
+      localStorage.setItem('user_email', dataToValidate.email);
+
       // Check paywall (Couche 3) before continuing
       const paywallPassed = await checkPaywallAccess(dataToValidate.email);
       if (!paywallPassed) {
@@ -228,7 +231,35 @@ export default function AuthPage() {
     // Check if user already has a valid session
     const existingToken = getSessionToken();
     if (existingToken) {
-      // User is already logged in, redirect to welcome
+      // If paywall is enabled, verify access before redirecting
+      if (appConfig.requirePaywall) {
+        const userEmail = localStorage.getItem('user_email');
+        if (userEmail) {
+          fetch('/api/auth/check-paywall', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userEmail }),
+          })
+            .then(res => res.json())
+            .then(result => {
+              if (result.hasAccess) {
+                setLocation('/welcome');
+              } else {
+                // Paywall block: clear session and show paywall
+                clearAuth();
+                setPaywallInfo({
+                  paywallTitle: result.paywallTitle || 'Accès Réservé',
+                  paywallMessage: result.paywallMessage || 'Cette application est réservée aux membres payants.',
+                  paywallPurchaseUrl: result.paywallPurchaseUrl || '',
+                  paywallInfoUrl: result.paywallInfoUrl || '',
+                });
+                setAuthStep('paywall_blocked');
+              }
+            })
+            .catch(() => setLocation('/welcome')); // fail-open
+          return;
+        }
+      }
       setLocation('/welcome');
       return;
     }
