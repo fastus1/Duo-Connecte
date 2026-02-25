@@ -234,11 +234,7 @@ export default function AuthPage() {
       // If paywall is enabled, verify access before redirecting
       if (appConfig.requirePaywall) {
         const userEmail = localStorage.getItem('user_email');
-        if (!userEmail) {
-          // No email stored - can't verify paywall, force re-auth
-          clearAuth();
-          // Fall through to Circle auth flow
-        } else {
+        if (userEmail) {
           fetch('/api/auth/check-paywall', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -263,10 +259,9 @@ export default function AuthPage() {
             .catch(() => setLocation('/welcome')); // fail-open
           return;
         }
-      } else {
-        setLocation('/welcome');
-        return;
       }
+      setLocation('/welcome');
+      return;
     }
 
     // Public mode: all 4 layers disabled - go directly to welcome (no login required)
