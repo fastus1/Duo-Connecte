@@ -245,8 +245,7 @@ export default function AuthPage() {
               if (result.hasAccess) {
                 setLocation('/welcome');
               } else {
-                // Paywall block: clear session and show paywall
-                clearAuth();
+                // Paywall block: show paywall but keep session intact
                 setPaywallInfo({
                   paywallTitle: result.paywallTitle || 'Accès Réservé',
                   paywallMessage: result.paywallMessage || 'Cette application est réservée aux membres payants.',
