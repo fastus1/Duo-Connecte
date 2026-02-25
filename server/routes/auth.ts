@@ -92,7 +92,7 @@ router.post('/validate', async (req: Request, res: Response) => {
         success: true,
         ipAddress: req.ip || null,
       });
-      const sessionToken = generateSessionToken(existingUser.id, existingUser.email);
+      const sessionToken = generateSessionToken(existingUser.id, existingUser.email, appConfig.tokenVersion);
 
       return res.json({
         status: 'auto_login',
@@ -223,7 +223,7 @@ router.post('/create-pin', async (req: Request, res: Response) => {
       ipAddress: req.ip || null,
     });
 
-    const sessionToken = generateSessionToken(user.id, user.email);
+    const sessionToken = generateSessionToken(user.id, user.email, appConfig.tokenVersion);
 
     return res.json({
       success: true,
@@ -293,7 +293,7 @@ router.post('/create-user-no-pin', async (req: Request, res: Response) => {
         success: true,
         ipAddress: req.ip || null,
       });
-      const sessionToken = generateSessionToken(existingUser.id, existingUser.email);
+      const sessionToken = generateSessionToken(existingUser.id, existingUser.email, appConfig.tokenVersion);
       return res.json({
         success: true,
         session_token: sessionToken,
@@ -317,7 +317,7 @@ router.post('/create-user-no-pin', async (req: Request, res: Response) => {
       ipAddress: req.ip || null,
     });
 
-    const sessionToken = generateSessionToken(user.id, user.email);
+    const sessionToken = generateSessionToken(user.id, user.email, appConfig.tokenVersion);
 
     return res.json({
       success: true,
@@ -386,7 +386,7 @@ router.post('/validate-pin', pinRateLimiter, async (req: Request, res: Response)
       ipAddress: req.ip || null,
     });
 
-    const sessionToken = generateSessionToken(user.id, user.email);
+    const sessionToken = generateSessionToken(user.id, user.email, appConfig.tokenVersion);
 
     return res.json({
       success: true,
@@ -410,6 +410,7 @@ router.post('/admin-login', pinRateLimiter, async (req: Request, res: Response) 
       return res.status(400).json({ error: 'Email et NIP requis' });
     }
 
+    const appConfig = await storage.getAppConfig();
     const user = await storage.getUserByEmail(email);
     console.log('[ADMIN-LOGIN] User lookup result:', { 
       email, 
@@ -459,7 +460,7 @@ router.post('/admin-login', pinRateLimiter, async (req: Request, res: Response) 
       ipAddress: req.ip || null,
     });
 
-    const sessionToken = generateSessionToken(user.id, user.email);
+    const sessionToken = generateSessionToken(user.id, user.email, appConfig.tokenVersion);
 
     return res.json({
       success: true,
@@ -477,7 +478,16 @@ router.post('/admin-login', pinRateLimiter, async (req: Request, res: Response) 
 
 router.get('/me', requireAuth, async (req: Request, res: Response) => {
   try {
-    const { userId } = (req as any).user;
+    const payload = (req as any).user;
+    const { userId } = payload;
+
+    // Check token version - invalidate if admin reset sessions
+    const config = await storage.getAppConfig();
+    const payloadVersion = payload.tokenVersion ?? 0;
+    if (payloadVersion < config.tokenVersion) {
+      return res.status(401).json({ error: 'Session réinitialisée par un administrateur. Veuillez vous reconnecter.' });
+    }
+
     const user = await storage.getUser(userId);
 
     if (!user) {

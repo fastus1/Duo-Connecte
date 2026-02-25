@@ -1,8 +1,11 @@
-import { Loader2, Shield } from 'lucide-react';
+import { useState } from 'react';
+import { Loader2, Shield, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { UseMutationResult } from '@tanstack/react-query';
+import { getSessionToken } from '@/lib/auth';
 
 interface AppConfig {
   requireCircleDomain: boolean;
@@ -144,7 +147,68 @@ export function SecurityTab({ configData, configLoading, updateConfigMutation }:
             <strong>Note :</strong> Désactiver la Couche 1 permet de tester l'app sans être dans Circle.so. À réactiver en production.
           </p>
         </div>
+
+        <ResetSessionsButton />
       </CardContent>
     </Card>
+  );
+}
+
+function ResetSessionsButton() {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  const handleReset = async () => {
+    if (!confirm('Êtes-vous sûr ? Tous les utilisateurs devront se reconnecter.')) return;
+
+    setLoading(true);
+    setResult(null);
+    try {
+      const token = getSessionToken();
+      const res = await fetch('/api/admin/reset-sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setResult({ success: true, message: data.message });
+      } else {
+        setResult({ success: false, message: data.error || 'Erreur inconnue' });
+      }
+    } catch {
+      setResult({ success: false, message: 'Erreur réseau' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="pt-4 border-t space-y-2">
+      <div className="flex items-center justify-between gap-4">
+        <div className="space-y-1 flex-1">
+          <Label className="text-sm font-medium">Réinitialiser les sessions</Label>
+          <p className="text-xs text-muted-foreground">
+            Déconnecte tous les utilisateurs. Utile après un changement de couche de sécurité.
+          </p>
+        </div>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={handleReset}
+          disabled={loading}
+        >
+          {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RotateCcw className="h-4 w-4 mr-2" />}
+          Reset
+        </Button>
+      </div>
+      {result && (
+        <p className={`text-xs ${result.success ? 'text-green-600' : 'text-red-600'}`}>
+          {result.message}
+        </p>
+      )}
+    </div>
   );
 }

@@ -35,6 +35,7 @@ export const appConfig = pgTable("app_config", {
   paywallTitle: text("paywall_title").default("Accès Réservé"),
   paywallMessage: text("paywall_message").default("Cette application est réservée aux membres ayant souscrit à l'offre."),
   webhookAppUrl: text("webhook_app_url").default(""),
+  tokenVersion: integer("token_version").default(0).notNull(),
   environment: text("environment").default("development").notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

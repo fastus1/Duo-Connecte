@@ -74,7 +74,8 @@ export class MemStorage implements IStorage {
       paywallTitle: "Accès Réservé",
       paywallMessage: "Cette application est réservée aux membres ayant souscrit à l'offre.",
       webhookAppUrl: "",
-      environment: "development", // Added environment here
+      tokenVersion: 0,
+      environment: "development",
       updatedAt: new Date(),
     };
 

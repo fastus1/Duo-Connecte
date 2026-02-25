@@ -10,11 +10,12 @@ const BCRYPT_ROUNDS = 10;
 export interface JWTPayload {
   userId: string;
   email: string;
+  tokenVersion?: number;
 }
 
-export function generateSessionToken(userId: string, email: string): string {
+export function generateSessionToken(userId: string, email: string, tokenVersion: number = 0): string {
   return jwt.sign(
-    { userId, email } as JWTPayload,
+    { userId, email, tokenVersion } as JWTPayload,
     SESSION_SECRET,
     { expiresIn: '60m' }
   );
@@ -115,7 +116,7 @@ export const pinRateLimiter = rateLimit({
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
-  
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Non autorisé' });
   }
@@ -129,6 +130,39 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
   (req as any).user = payload;
   next();
+}
+
+// Async version of requireAuth that also checks tokenVersion against app config
+export function createRequireAuthWithVersionCheck(storage: { getAppConfig: () => Promise<{ tokenVersion: number }> }) {
+  return async function requireAuthWithVersionCheck(req: Request, res: Response, next: NextFunction) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Non autorisé' });
+    }
+
+    const token = authHeader.substring(7);
+    const payload = verifySessionToken(token);
+
+    if (!payload) {
+      return res.status(401).json({ error: 'Session invalide ou expirée' });
+    }
+
+    // Check token version against current app config
+    try {
+      const config = await storage.getAppConfig();
+      const payloadVersion = payload.tokenVersion ?? 0;
+      if (payloadVersion < config.tokenVersion) {
+        return res.status(401).json({ error: 'Session réinitialisée par un administrateur. Veuillez vous reconnecter.' });
+      }
+    } catch (error) {
+      // If we can't check config, let the request through rather than blocking everyone
+      console.error('[AUTH] Error checking token version:', error);
+    }
+
+    (req as any).user = payload;
+    next();
+  };
 }
 
 // Factory function to create requireAdmin middleware with storage dependency

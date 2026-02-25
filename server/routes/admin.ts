@@ -162,4 +162,25 @@ router.post('/reset-user-pin', requireAdmin, async (req: Request, res: Response)
   }
 });
 
+router.post('/reset-sessions', requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const adminUser = (req as any).adminUser;
+    const config = await storage.getAppConfig();
+    const newVersion = config.tokenVersion + 1;
+
+    await storage.updateAppConfig({ tokenVersion: newVersion });
+
+    console.log(`[ADMIN] Sessions reset by ${adminUser?.email} at ${new Date().toISOString()} — tokenVersion: ${config.tokenVersion} → ${newVersion}`);
+
+    return res.json({
+      success: true,
+      message: 'Toutes les sessions ont été réinitialisées.',
+      tokenVersion: newVersion,
+    });
+  } catch (error) {
+    console.error('Error in POST /api/admin/reset-sessions:', error);
+    return res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 export default router;
