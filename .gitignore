@@ -12,3 +12,8 @@ vite.config.ts.*
 .replit
 repl.nix
 .cache/
+
+# Staging / local only
+docker-compose.yml
+z-scratch/
+docs/pages.md
