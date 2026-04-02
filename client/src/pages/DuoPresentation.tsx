@@ -154,6 +154,17 @@ export default function DuoPresentation() {
           </div>
         </div>
 
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleContinue}
+          disabled={isTransitioning}
+          className="text-muted-foreground"
+          data-testid="button-skip"
+        >
+          Passer les instructions
+        </Button>
+
         {isTransitioning && (
           <Progress value={progress} className="w-64" />
         )}
