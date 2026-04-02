@@ -11,11 +11,10 @@
 | `main` | Production (Railway → Circle.so) |
 
 ### Environnements
-| Environnement | Branche | Indicateur | Déploiement |
-|---------------|---------|------------|-------------|
-| Local | `staging` | - | `npm run dev` |
-| Portainer (staging) | `staging` | Badge orange "STAGING" | Manuel (Pull and redeploy) |
-| Railway (production) | `main` | Aucun | Auto sur push |
+| Environnement | Branche | Déploiement |
+|---------------|---------|-------------|
+| Local | `staging` | `npm run dev` |
+| Railway (production) | `main` | Auto sur push |
 
 ### Workflow obligatoire
 
@@ -31,11 +30,7 @@ git add .
 git commit -m "feat: description"
 git push origin staging
 
-# 4. Redéployer sur Portainer
-#    → Stacks → duo-connecte-staging → Pull and redeploy
-#    → Vérifier le badge orange "STAGING" visible
-
-# 5. SEULEMENT quand tout est validé → merge vers main
+# 4. Quand validé → merge vers main
 git checkout main
 git merge staging
 git push origin main   # → Railway déploie automatiquement vers Circle.so
@@ -45,24 +40,10 @@ git push origin main   # → Railway déploie automatiquement vers Circle.so
 
 1. **Ne JAMAIS push directement sur main** - toujours passer par staging
 2. **Tester localement** avant de commit sur staging
-3. **Valider sur Portainer (staging)** avant de merge vers main
-4. Les commits sur `main` déclenchent le déploiement production
-5. Le badge orange "STAGING" confirme que tu es sur l'environnement de test
+3. Les commits sur `main` déclenchent le déploiement production
 
 ## Project Info
 
 - **Platform:** Circle.so (embedded)
 - **Production:** Railway (auto-deploy from `main`)
-- **Staging:** Portainer (port 5001, branche `staging`)
 - **Database:** Neon PostgreSQL
-
-## Docker
-
-Le projet utilise Docker pour le déploiement staging:
-- `Dockerfile` - Build multi-stage Node.js
-- `docker-compose.yml` - Configuration Portainer avec `VITE_APP_ENV=staging`
-
-## Identificateur d'environnement
-
-- **Staging:** Badge orange "STAGING" en bas à gauche (visible)
-- **Production:** Aucun badge (clean pour les utilisateurs)
