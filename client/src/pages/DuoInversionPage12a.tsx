@@ -27,7 +27,7 @@ export default function DuoInversionPage12a() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Ton rôle : montrer à {session.receiverName} que tu as vraiment écouté·e. Reformule dans tes propres mots, sans juger, sans minimiser, sans ajouter ton point de vue.
+            Ton rôle : montrer à {session.receiverName} que tu as vraiment écouté·e. Reformule du mieux que tu le peux, sans juger, sans minimiser, sans ajouter ton point de vue. {session.receiverName} pourra ensuite confirmer ou rectifier.
           </p>
           
           <div className="space-y-4">
@@ -50,9 +50,6 @@ export default function DuoInversionPage12a() {
             </ul>
           </div>
           
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Reformule oralement chaque point, puis coche la case correspondante. {session.receiverName} pourra ensuite confirmer ou rectifier.
-          </p>
         </div>
       )
     }

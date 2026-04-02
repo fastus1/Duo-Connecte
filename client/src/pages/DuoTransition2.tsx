@@ -136,7 +136,7 @@ export default function Transition2() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
-                <span>Des moments physiques</span>
+                <span>De l'affection ou de l'intimité</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>

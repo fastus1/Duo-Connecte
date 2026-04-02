@@ -20,7 +20,7 @@ export default function DuoPresentation() {
 
   const theoryPages = [
     {
-      title: "Pourquoi ça fonctionne",
+      title: "Pourquoi ça fonctionne?",
       icon: Sparkles,
       content: (
         <div className="space-y-8">
@@ -29,7 +29,7 @@ export default function DuoPresentation() {
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            La plupart des conflits ne proviennent pas d'opinions différentes, mais d'une difficulté à communiquer adéquatement.
+            La plupart des conflits ne sont pas causé par des différences d'opinion, mais par une difficulté à communiquer adéquatement.
           </p>
           
           <Callout variant="primary">

@@ -17,7 +17,7 @@ export default function DuoInversionPage7a() {
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold font-sans text-foreground text-center">
-          À ton tour, {session.receiverName}
+          À ton tour {session.receiverName}
         </h1>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">

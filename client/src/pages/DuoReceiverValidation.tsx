@@ -4,7 +4,7 @@ import { useSession } from '@/contexts/SessionContext';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { Progress } from '@/components/ui/progress';
 import { Ear, MessageSquare, Heart, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { MultiPageModal, BulletList } from '@/components/flow';
+import { MultiPageModal, BulletList, Callout } from '@/components/flow';
 
 export default function ReceiverValidation() {
   const { session } = useSession();
@@ -194,6 +194,12 @@ export default function ReceiverValidation() {
               </div>
             ))}
           </div>
+
+          <Callout variant="primary">
+            <p className="text-sm md:text-base">
+              <span className="font-semibold">Pas de pression !</span> Le but n'est pas d'être parfait·e, mais de montrer que tu as écouté. Si c'est inexact, l'émetteur pourra rectifier sans problème.
+            </p>
+          </Callout>
 
           <div className="flex justify-center">
             <MultiPageModal

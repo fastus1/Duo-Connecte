@@ -21,7 +21,7 @@ export default function DuoInversionPage9a() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Ta vision de la situation a créé tes émotions. Comment tu as interprété ce qui s'est passé explique ce que tu as ressenti.
+            Ce que tu as ressenti — tes émotions — dépend directement de ta façon d'interpréter la situation.
           </p>
           
           <div className="space-y-4">

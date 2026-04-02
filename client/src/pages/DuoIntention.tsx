@@ -50,7 +50,7 @@ export default function Intention() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            L'inconfort est inévitable. Ne pas l'accepter consciemment et le prendre de face nous pousse à minimiser, contre-attaquer ou fuir.
+            L'inconfort est inévitable. Ne pas l'accepter consciemment ni y faire face nous pousse à minimiser, contre-attaquer ou fuir.
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
@@ -119,13 +119,13 @@ export default function Intention() {
             </p>
 
             <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-              Accepter ce malaise tout en restant en lien est la clé d'une communication réussie.
+              Accepter ces malaises tout en restant en lien est la clé d'une communication réussie.
             </p>
           </div>
 
           <div className="prose prose-sm max-w-none text-muted-foreground">
             <p className="leading-relaxed text-base md:text-lg">
-              Sortez de la dynamique du "qui a raison". Cette conversation n'est pas un débat à gagner, mais une chance de vous rapprocher. Essayez de vous comprendre plutôt que de convaincre.
+              Sortez de la dynamique du "qui a raison". Cette conversation n'est pas une guerre de pouvoir ou un débat à gagner, mais une chance de vous rapprocher. Essayez de vous comprendre plutôt que de vous convaincre.
             </p>
           </div>
         </div>

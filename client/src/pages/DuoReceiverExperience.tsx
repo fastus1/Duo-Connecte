@@ -29,7 +29,7 @@ export default function ReceiverExperience() {
           </p>
           
           <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-            Ton seul travail maintenant : nommer ton vécu
+            Ton seul travail maintenant : nommer ton vécu <em className="font-semibold">en lien avec ce que tu viens d'entendre</em>
           </p>
         </div>
       )

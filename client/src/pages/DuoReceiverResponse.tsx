@@ -174,7 +174,7 @@ export default function ReceiverResponse() {
             </h2>
 
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              Est-ce que tu es capable et volontaire pour répondre à la demande de {session.senderName}?
+              Est-ce que tu es capable et disposé·e à répondre à la demande de {session.senderName}?
             </p>
           </div>
 

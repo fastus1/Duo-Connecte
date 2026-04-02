@@ -2,9 +2,8 @@ import { Button } from '@/components/ui/button';
 import { PageLayout } from '@/components/PageLayout';
 import { usePageTransition } from '@/hooks/usePageTransition';
 import { useSession } from '@/contexts/SessionContext';
-import { GitBranch, MessageSquare, Repeat, Clock, RefreshCw } from 'lucide-react';
+import { GitBranch, MessageSquare, Repeat } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { MultiPageModal } from '@/components/flow';
 
 export default function Transition3() {
   const { isTransitioning, transitionToStep, progress } = usePageTransition();
@@ -17,79 +16,6 @@ export default function Transition3() {
   const handleOption2 = () => {
     transitionToStep(25);
   };
-
-  const theoryPages = [
-    {
-      title: "Quand clôturer",
-      icon: Clock,
-      content: (
-        <div className="space-y-8">
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Cette décision vous appartient. Les deux choix sont légitimes selon où vous en êtes.
-          </p>
-          
-          <div className="space-y-4">
-            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-              Quand clôturer maintenant :
-            </p>
-            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>L'essentiel a été dit et entendu·e</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>La tension s'est apaisée</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>Vous avez trouvé des pistes concrètes</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>Vous êtes épuisé·e·s émotionnellement</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "Quand inverser les rôles",
-      icon: RefreshCw,
-      content: (
-        <div className="space-y-8">
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Clôturer ne signifie pas que {session.receiverName} n'a rien à dire. Ça veut dire que c'est suffisant pour l'instant. Vous pouvez toujours revenir plus tard.
-          </p>
-          
-          <div className="space-y-4">
-            <p className="text-base md:text-lg leading-relaxed text-foreground font-semibold">
-              Quand inverser les rôles :
-            </p>
-            <ul className="space-y-2 text-base md:text-lg leading-relaxed text-muted-foreground">
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>{session.receiverName} a aussi un vécu important à partager sur cette situation</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>Vous avez l'énergie pour continuer</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary text-xl">•</span>
-                <span>Vous voulez comprendre les deux perspectives de la même situation</span>
-              </li>
-            </ul>
-          </div>
-          
-          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Il n'y a pas de mauvais choix. Écoutez ce qui fait du sens pour vous deux.
-          </p>
-        </div>
-      )
-    }
-  ];
 
   return (
     <PageLayout>
@@ -107,14 +33,6 @@ export default function Transition3() {
             Vous avez partagé vos vécus, validé mutuellement vos émotions, et trouvé des pistes d'entente. Vous pouvez maintenant choisir la suite.
           </p>
 
-          <div className="flex justify-center">
-            <MultiPageModal
-              triggerText="Plus d'infos: Théories"
-              pages={theoryPages}
-              finalButtonText="Fermer"
-            />
-          </div>
-
           <div className="grid md:grid-cols-2 gap-3 md:gap-4 pt-4 md:pt-6 max-w-2xl mx-auto px-4">
             <div className="flex flex-col items-center p-4 md:p-6 rounded-lg border-2 border-border hover-elevate active-elevate-2 transition-all">
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2 md:mb-3">
@@ -127,7 +45,7 @@ export default function Transition3() {
                 Un dernier feedback dans l'ici et maintenant
               </p>
               <p className="text-xs md:text-sm text-muted-foreground text-center leading-relaxed mb-4 flex-grow">
-                Partagez comment vous vous sentez après cet échange.
+                Partagez comment vous vous sentez une dernière fois puis clôturez.
               </p>
               <Button
                 size="default"

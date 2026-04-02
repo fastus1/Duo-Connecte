@@ -32,7 +32,7 @@ export default function ReceiverGrounding() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Peut-être ressens-tu de l'ouverture, de la curiosité, ou au contraire de l'appréhension, de la fatigue, voire de la défensive. Ces ressentis sont tous légitimes. Les nommer maintenant te permet de les reconnaître et de créer un espace intérieur pour ce qui va suivre.
+            Peut-être ressens-tu de l'ouverture, de la curiosité, ou au contraire de l'appréhension, de la fatigue, voire de la peur. Ces émotions et sentiments sont tous légitimes. Les nommer maintenant te permet de les reconnaître et de créer un espace intérieur pour ce qui va suivre.
           </p>
         </div>
       )

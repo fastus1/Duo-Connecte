@@ -134,7 +134,7 @@ export default function SenderConfirmation() {
 
           <Callout variant="primary">
             <p className="text-sm md:text-base">
-              L'objectif est que {session.receiverName} comprenne vraiment ce que tu vis. Prends le temps nécessaire pour t'assurer que ton message est bien passé.
+              L'objectif est que {session.receiverName} comprenne vraiment ce que tu vis, pas de le prendre en défaut. Prends le temps nécessaire pour t'assurer que ton message est bien passé.
             </p>
           </Callout>
 

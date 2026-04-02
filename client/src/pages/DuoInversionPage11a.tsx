@@ -78,7 +78,7 @@ export default function DuoInversionPage11a() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground italic">
-            "Face à cette situation, je me suis senti·e dépassé·e et submergé·e <em>[vécu]</em>. J'ai eu l'impression que j'avais besoin de prendre l'air pour me calmer <em>[interprétation]</em>, et ça m'a poussé·e à partir brusquement sans dire au revoir, ce qui a créé encore plus de distance entre nous <em>[impact]</em>."
+            "Face à cette situation, je me suis senti·e dépassé·e et submergé·e <em>[vécu]</em>. J'ai eu l'impression que tu te foutais de mes limites <em>[interprétation]</em>, et ça m'a poussé·e à partir brusquement sans dire au revoir, ce qui a créé encore plus de distance entre nous <em>[impact]</em>."
           </p>
           
           <div className="space-y-4">

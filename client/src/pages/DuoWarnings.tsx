@@ -77,7 +77,7 @@ export default function Warnings() {
             <BulletList
               variant="primary"
               items={[
-                "L'un de vous crie ou claque des portes",
+                "L'un de vous crie, est agités et montre des signes d'agressivité",
                 "Vous avez eu une dispute intense il y a moins de 30 minutes",
                 "L'un de vous résiste à y participer",
                 "Vous êtes sous l'influence d'alcool ou de substances"

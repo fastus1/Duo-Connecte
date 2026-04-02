@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { PageLayout } from '@/components/PageLayout';
 import { usePageTransition } from '@/hooks/usePageTransition';
-import { Star, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -35,6 +35,7 @@ export default function Feedback() {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
+  const [review, setReview] = useState('');
 
   // Feedback data state
   const [feedbackData, setFeedbackData] = useState<Omit<FeedbackData, 'rating'>>({
@@ -79,6 +80,7 @@ export default function Feedback() {
       submitFeedbackMutation.mutate({
         rating: Math.round(rating * 10), // Store as integer (0.5 -> 5, 5 -> 50)
         ...feedbackData,
+        difficulties: review || null,
       });
     }
   };
@@ -336,6 +338,20 @@ export default function Feedback() {
           </div>
         </div>
 
+        {/* Section écrire un avis */}
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground leading-relaxed text-center">
+            Vos avis sont importants pour l'amélioration continue de cet outil et la confiance de nos clients.
+          </p>
+          <Textarea
+            placeholder="Écrivez votre avis ici... (optionnel)"
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
+            className="min-h-24"
+            data-testid="input-review"
+          />
+        </div>
+
         {/* Boutons toujours visibles */}
         <div className="flex flex-col gap-4 pt-4">
           <Button
@@ -364,18 +380,9 @@ export default function Feedback() {
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-xl font-semibold">
-                {getPageTitle()}
-              </DialogTitle>
-              <button
-                onClick={() => setShowModal(false)}
-                className="rounded-full p-1 hover-elevate"
-                data-testid="button-close-modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            <DialogTitle className="text-xl font-semibold">
+              {getPageTitle()}
+            </DialogTitle>
             {/* Page indicators */}
             <div className="flex justify-center gap-1.5 pt-2">
               {Array.from({ length: totalPages }).map((_, idx) => (

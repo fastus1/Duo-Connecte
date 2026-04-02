@@ -117,19 +117,19 @@ export default function DuoInversionPage10a() {
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  Quand ça arrive, je me sens rejeté·e / pas important·e / incompris·e...
+                  Quand j'interprète la situation comme ça, je réagis en me boudant / te faisant le traitement du silence, ou en m'en allant...
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  L'impact sur moi est que...
+                  Ma réaction automatique, c'est de ne pas te laisser d'espace, d'insister davantage, et de lever le ton...
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary text-xl">•</span>
                 <span className="text-base md:text-lg leading-relaxed">
-                  Je réagis généralement en...
+                  L'effet concret sur moi, c'est que je me ferme, je fais si comme tout était correct, je joue l'indifférence...
                 </span>
               </li>
             </ul>

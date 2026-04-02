@@ -127,19 +127,19 @@ export default function SenderImpact() {
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Quand ça arrive, je me sens rejeté·e / pas important·e / incompris·e...
+                Quand j'interprète la situation comme ça, je réagis en me fermant / me justifiant / contre-attaquant...
               </span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                L'impact sur moi est que...
+                Ma réaction automatique, c'est de... (ex. créer de la distance, insister davantage, bouder)
               </span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary text-xl">•</span>
               <span className="text-base md:text-lg leading-relaxed">
-                Je réagis généralement en...
+                L'effet concret sur moi, c'est que... (ex. je m'éloigne, la tension monte, je ne te parle plus)
               </span>
             </li>
           </ul>
