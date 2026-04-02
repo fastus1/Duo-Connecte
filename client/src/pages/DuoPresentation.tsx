@@ -77,8 +77,22 @@ export default function DuoPresentation() {
       content: (
         <div className="space-y-8">
           <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-            Prenez le temps de ralentir et de suivre chaque étape du processus. S'il y a de la résistance à y participer ou si l'une des personnes est fortement déclenché·e, reportez la conversation. La disponibilité émotionnelle des deux est essentielle.
+            Le parcours est linéaire et volontairement structuré. Prenez votre temps et utilisez les popups pédagogiques pour mieux comprendre les concepts derrière chaque étape.
           </p>
+
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Le parcours peut avoir l'air enfantin ou répétitif à l'occasion — c'est voulu. Jouez le jeu, suivez les étapes, prenez votre rôle au sérieux, vous serez surpris de voir à quel point ça peut être un outil puissant.
+          </p>
+
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            Il se peut que ça ne fonctionne pas du premier coup. C'est parfois difficile de communiquer, même avec l'aide d'un professionnel dans la pièce avec vous.
+          </p>
+
+          <Callout variant="primary">
+            <p className="text-base md:text-lg">
+              Si vous avez de la difficulté à vous servir de l'outil, n'hésitez pas à consulter un thérapeute en relation d'aide (TRA) spécialisé en thérapie relationnelle pour quelques séances.
+            </p>
+          </Callout>
         </div>
       )
     }
@@ -95,9 +109,14 @@ export default function DuoPresentation() {
           Se connecter
         </h1>
 
-        <p className="text-base md:text-lg text-muted-foreground leading-relaxed text-center max-w-2xl">
-          Ce guide vous aide à naviguer une conversation difficile avec authenticité. Il crée un espace pour vous rapprocher et dissiper les malaises entre vous.
-        </p>
+        <div className="max-w-2xl space-y-4 text-center">
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+            Ce guide vous aide à naviguer une conversation difficile avec authenticité. Il crée un espace pour vous rapprocher et dissiper les malaises entre vous.
+          </p>
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+            Cet outil n'est pas une solution rapide. C'est un parcours structuré qui demande un engagement sincère et le désir de faire face aux malaises pour en ressortir plus libre, plus fort et plus connecté.
+          </p>
+        </div>
 
         <div className="w-full max-w-2xl space-y-6 md:space-y-8">
           <div className="space-y-4">
@@ -127,7 +146,7 @@ export default function DuoPresentation() {
 
           <div className="flex justify-center">
             <MultiPageModal
-              triggerText="Plus d'infos: Théories"
+              triggerText="Instructions"
               pages={theoryPages}
               finalButtonText="Commencer le parcours"
               onComplete={handleContinue}
@@ -135,20 +154,9 @@ export default function DuoPresentation() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center pt-4 space-y-4">
-          <Button
-            size="lg"
-            onClick={handleContinue}
-            disabled={isTransitioning}
-            className="min-w-48"
-            data-testid="button-continue"
-          >
-            Commencer le parcours
-          </Button>
-          {isTransitioning && (
-            <Progress value={progress} className="w-64" />
-          )}
-        </div>
+        {isTransitioning && (
+          <Progress value={progress} className="w-64" />
+        )}
       </div>
     </PageLayout>
   );
