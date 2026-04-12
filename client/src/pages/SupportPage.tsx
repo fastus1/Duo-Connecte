@@ -50,10 +50,7 @@ const faqItems = [
   },
   {
     question: "Puis-je utiliser l'application seul·e?",
-    answer: "Non, Duo-Connecte est conçu pour être utilisé à deux, en même temps. Les deux partenaires doivent être présents et disponibles pour que le parcours fonctionne.\n\nSi vous souhaitez travailler la gestion de vos émotions en solo, découvrez Solo-Connecte, notre application d'accompagnement individuel.",
-    hasLink: true,
-    linkText: "Essayer Solo-Connecte",
-    linkUrl: "https://avancersimplement.com/solo-connecte"
+    answer: "Non, Duo-Connecte est conçu pour être utilisé à deux, en même temps. Les deux partenaires doivent être présents et disponibles pour que le parcours fonctionne."
   },
 ];
 

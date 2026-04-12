@@ -335,13 +335,9 @@ export default function Transition2() {
               Pour y arriver, vous devez d'abord comprendre la différence entre un <span className="text-foreground font-medium">besoin</span>, un <span className="text-foreground font-medium">désir</span> et une <span className="text-foreground font-medium">demande</span>.
             </p>
 
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="text-base text-primary font-semibold hover:underline cursor-pointer"
-              data-testid="link-open-theory"
-            >
+            <p className="text-base text-muted-foreground leading-relaxed">
               Cliquez pour en apprendre davantage (notions importantes)
-            </button>
+            </p>
           </div>
 
           <div className="flex justify-center">
