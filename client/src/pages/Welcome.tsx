@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { PageLayout } from '@/components/PageLayout';
-import { InstallBanner } from '@/components/InstallBanner';
+import { BookmarkDialog } from '@/components/BookmarkDialog';
 import { useSession } from '@/contexts/SessionContext';
 import { useLocation } from 'wouter';
 import { Users } from 'lucide-react';
@@ -44,7 +44,7 @@ export default function Welcome() {
 
   return (
     <PageLayout showNav={true} showBackButton={false}>
-      <InstallBanner />
+      <BookmarkDialog />
       <div className="flex items-center justify-center min-h-[calc(100vh-180px)] md:min-h-[60vh]">
         <div className="max-w-2xl mx-auto text-center space-y-4 md:space-y-8 py-4">
           <div className="space-y-1">
